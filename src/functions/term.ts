@@ -36,25 +36,23 @@ import Dinero from 'dinero.js'
 //   }
 
 
-  export function calculateTerm(kredit: number, zins: number, rate: number): number {
+  export function calculateTerm(kredit: number, zins: number, tilgung: number, rate?: number): number {
+    let loopCounter = 0
     let laufzeit = 0;
     let restschuld = kredit;
-    while (restschuld > 0) {
-      laufzeit += 1;
-      restschuld = restschuld * (1 + zins / 100 / 12) - rate;
-    }
-    return laufzeit;
-  }
-  
 
-  function berechneLaufzeit(kredit, zins, tilgung) {
-    let laufzeit = 0;
-    let restschuld = kredit;
-    let rate = (kredit * tilgung) / (12 * (1 - Math.pow(1 + zins/12, -laufzeit)));
-    console.log(rate)
+    let newRate = rate ? rate : (kredit * tilgung) / (12 * (1 - Math.pow(1 + zins/12, -laufzeit)));
+
     while (restschuld > 0) {
+      loopCounter++;
+      if (loopCounter > 1200) {
+        console.error('Endless loop detected');
+        laufzeit = Infinity
+        break;
+      }
+
       laufzeit += 1;
-      restschuld = restschuld * (1 + zins / 100 / 12) - rate;
+      restschuld = restschuld * (1 + zins / 100 / 12) - newRate;
     }
     return laufzeit;
   }

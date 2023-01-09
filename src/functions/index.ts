@@ -76,11 +76,18 @@
   
 
 export function createPaymentSchedule(principal, interestRate, monthlyPayment, extraPayments = {}, paymentsMade = 0, balance = principal, schedule = [], interestPaidTotal = 0) {
+    let loopCounter = 0;
     // Berechne die monatliche Rate
     const monthlyRate = interestRate / 100 / 12;
   
     // Schleife, bis das Endguthaben kleiner als die monatliche Zahlung ist
     while (balance > monthlyPayment) {
+      loopCounter++;
+      if (loopCounter > 1200) {
+        console.error('Endless loop detected');
+        break;
+      }
+
       // Erhöhe die Anzahl der gemachten Zahlungen um 1
       paymentsMade++;
       // Berechne die Zinsen für diesen Monat

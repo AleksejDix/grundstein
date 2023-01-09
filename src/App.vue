@@ -2,51 +2,58 @@
   <div class="px-4 space-y-4 bg-gray-100">
 
     <div class="grid grid-cols-5 gap-4">
-      <InputLoan :modelValue="inputs.kredit" @update:model-value="onLoanChange"/>
-      <InputInterestRate :modelValue="inputs.zins" @update:model-value="onZinsChange"/>
-      <InputRepainmentRate :modelValue="inputs.tilgung" @update:model-value="onTilgungChange" />
-      <InputMonthlyRepainment :modelValue="inputs.rate" @update:model-value="onRateChange" />
-      <InputTerm :modelValue="inputs.term" @update:model-value="onTermChange"/>
+      <InputLoan :modelValue="inputs.kredit" @update:model-value="onLoanChange" />
+      <InputZins :modelValue="inputs.zins" @update:model-value="onZinsChange" />
+      <InputTilgung :modelValue="inputs.tilgung" @update:model-value="onTilgungChange" />
+      <InputRate :modelValue="inputs.rate" @update:model-value="onRateChange" />
+      <InputTerm :modelValue="inputs.term" @update:model-value="onTermChange" />
     </div>
 
 
     <div class="grid">
       <!-- 100% = kredit + zins / 100 + 10 -->
       <!-- zins =  -->
-      <div>
-        <div class="grid gap-[2px] grid-flow-col gap-y-12  p-12">
-          <div  @mouseenter="onBarChartHover(row)" v-for="(row, index) in plot" :key="row.balance" class="h-[256px] pb-[100px] relative rounded-full">
-            <div title="month" class="absolute inset-0 overflow-hidden bg-stone-900">
-        
-              <div 
-                class="absolute inset-0 transform-gpu bg-green-600 transition-all"  
-                :style="{
-                  '--tw-translate-y': `${(256 - (row.balance * 256 / inputs.kredit) - 1) }px`
-                }"
-              >
-                <div 
-                  class="bg-red-600 absolute bottom-full left-0 right-0" 
-                  :style="{
-                    height: `${row.interestPaid * 256 / inputs.kredit }px`
-                  }"> 
-                </div>
-
-                <div 
-                  class="bg-purple-800 absolute top-0 left-0 right-0 mix-blend-difference" 
-                  :style="{
-                    height: `${row.principalPaid * 256 / inputs.kredit }px`
+      <div class="rounded p-12 bg-gray-300">
+        <table class="table-fixed w-full border-collapse">
+          <tr>
+            <td @mouseenter="onBarChartHover(row)" v-for="(row, index) in plot" :key="row.balance"
+              class="h-[256px] relative" :class="{
+                'bg-green-200': row.interestPaid === 0
+              }">
+              <div title="month" class="absolute left-0 right-0 top-0 bottom-0 overflow-hidden">
+                <div class="absolute inset-0 transform-gpu bg-white transition-all" :style="{
+                  '--tw-translate-y': `${(256 - (row.balance * 256 / inputs.kredit) - 1)}px`
+                }">
+                  <!-- <div class="bg-red-600 absolute bottom-full left-0 right-0" :style="{
+                    height: `${row.interestPaid * 256 / inputs.kredit}px`
                   }">
+                  </div>
+
+                  <div class="bg-green-500 absolute top-0 left-0 right-0 mix-blend-difference" :style="{
+                    height: `${row.principalPaid * 256 / inputs.kredit}px`
+                  }">
+                  </div> -->
                 </div>
               </div>
-            </div>
-            <div class="absolute bg-gray-700 px-3 top-full whitespace-nowrap translate-y-2 text-center text-yellow-400 text-[10px]" v-if="index % 12 === 0">
-              <div class="h-2 w-[1px] absolute bottom-full left-0 bg-gray-700 font-bold" >
-              </div>
-            {{ index / 12 + 1 + 2022  }}
-          </div>
-        </div>
-      </div> 
-    </div>
+  
+            </td>
+          </tr>
+          <tr>
+            <template v-for="(row, index) in plot" >
+              <td colspan="12" v-if="index % 12 === 0" :key="row.balance" class="">
+                <div class="px-[2.5%]">
+                  <div class="h-2 rounded-b border-b border-l border-r border-gray-700">
+                    
+                  </div>
+                </div>
+                <div class="text-center">
+                  {{ index / 12 + 1 + 2022 }}
+                </div>
+              </td>
+            </template>
+          </tr>
+        </table>
+      </div>
 
       <div class="bg-white rounded-xl p-4">
 
@@ -97,10 +104,10 @@
             {{ formatCurrency(tooltip.balance) }}
           </dd>
         </dl>
-        
+
       </div>
 
-  </div>
+    </div>
 
     <!-- <div>
       <div class="text-right text-red-600">
@@ -116,8 +123,8 @@
 
 
 
-  
-          <!-- <div class="grid gap-2 grid-cols-12 mx-auto bg-gray-200 p-2 py-4 max-w-6xl w-full">
+
+    <!-- <div class="grid gap-2 grid-cols-12 mx-auto bg-gray-200 p-2 py-4 max-w-6xl w-full">
             <div v-for="entry in schedule" :key="entry.date" class="rounded bg-white">
               <div class="text-xs text-right p-2">
             
@@ -252,10 +259,10 @@
     </div>
 
 
-    
-  
-</div>
-  
+
+
+  </div>
+
 </template>
 
 
@@ -268,9 +275,9 @@ import { computed, ref, watchEffect, reactive, watch, onMounted } from 'vue'
 import { createPaymentSchedule } from '@/functions/'
 import { addMonths, getMonth, getYear } from 'date-fns'
 import InputLoan from '@/components/InputLoan.vue'
-import InputInterestRate from '@/components/InputInterestRate.vue'
-import InputRepainmentRate from '@/components/InputRepainmentRate.vue'
-import InputMonthlyRepainment from '@/components/InputMonthlyRepainment.vue'
+import InputZins from '@/components/InputZins.vue'
+import InputTilgung from '@/components/InputTilgung.vue'
+import InputRate from '@/components/InputRate.vue'
 import InputTerm from '@/components/InputTerm.vue'
 import { formatDate } from '@/format/formatDate'
 import { formatCurrency } from '@/format/formatCurrency'
@@ -279,10 +286,9 @@ import { rentIndex, meterSquaredMeterIndex } from '@/data/index'
 import { percentToDecimal, decimalToPercent } from '@/functions/unit'
 
 const inputs = reactive({
-  income: 50000,
-  kredit: 50000,
-  zins: 1,
-  tilgung: 8,
+  kredit: 155000,
+  zins: 3.75,
+  tilgung: 1.68,
   rate: 0,
   term: 0
 })
@@ -291,26 +297,26 @@ const inputs = reactive({
 const onLoanChange = (newLoan: number) => {
   inputs.kredit = newLoan
   inputs.rate = calculateRate(newLoan, inputs.zins, inputs.tilgung)
-  // Term should never change only the rate 
-  // inputs.term = calculateTerm(newLoan, inputs.zins, inputs.rate)
+  inputs.term = calculateTerm(newLoan, inputs.zins, inputs.tilgung, inputs.rate)
+  createSonderTilgungen()
 }
 
 const onZinsChange = (newZins: number) => {
   inputs.zins = newZins
   inputs.rate = calculateRate(inputs.kredit, newZins, inputs.tilgung)
-  inputs.term = calculateTerm(inputs.kredit, newZins, inputs.rate)
+  inputs.term = calculateTerm(inputs.kredit, newZins, inputs.tilgung, inputs.rate)
 }
 
 const onTilgungChange = (newTilgung: number) => {
   inputs.tilgung = newTilgung
   inputs.rate = calculateRate(inputs.kredit, inputs.zins, newTilgung)
-  inputs.term = calculateTerm(inputs.kredit, inputs.zins, inputs.rate)
+  inputs.term = calculateTerm(inputs.kredit, inputs.zins, newTilgung, inputs.rate)
 }
 
 const onRateChange = (newRate: number) => {
   inputs.rate = newRate
   inputs.tilgung = calculateTilgung(inputs.kredit, inputs.zins, newRate)
-  inputs.term = calculateTerm(inputs.kredit, inputs.zins, newRate)
+  inputs.term = calculateTerm(inputs.kredit, inputs.zins, inputs.tilgung, newRate)
 }
 
 const onTermChange = (newTerm: number) => {
@@ -326,32 +332,35 @@ const onBarChartHover = (row) => {
   tooltip.value = row
 }
 
+
+
 const tilgung = ref({
-  // 6: 2500,
-  // 18: 2500,
-  // 36: 2500,
-  // 48: 2500,
-  // 60: 2500,
-  // 72: 2500,
-  // 84: 2500,
-  // 96: 2500,
-  // 108: 2500,
-  // 120: 2500,
+
 })
 
 onMounted(() => {
   inputs.rate = calculateRate(inputs.kredit, inputs.zins, inputs.tilgung),
-  inputs.term = calculateTerm(inputs.kredit, inputs.zins, inputs.rate)
+  inputs.term = calculateTerm(inputs.kredit, inputs.zins, inputs.tilgung, inputs.rate)
+ 
+  createSonderTilgungen()
 })
+
+const createSonderTilgungen = () => {
+  Array.from({length: inputs.term}, (_, i) => i + 1).forEach((x, index) => {
+    if((index - 1) % 12 === 0) {
+      tilgung.value[index] = inputs.kredit * 0.05
+    }
+  })
+}
 
 const interestTotal = computed(() => inputs.zins + inputs.tilgung)
 
 const ratePerYear = computed(() => (interestTotal.value / 100) * inputs.kredit)
-const ratePerMonth =  computed(() => (interestTotal.value / 100) * inputs.kredit / 12)
+const ratePerMonth = computed(() => (interestTotal.value / 100) * inputs.kredit / 12)
 
 // =WENNFEHLER(WENN(C6=0;"sofort";WENN(C6=1;"in einem Jahr";VERKETTEN("in ";C6;" Jahren")));"in >99 Jahren")
 
-const zinsen = computed(() => inputs.kredit * (inputs.zins/ 100))
+const zinsen = computed(() => inputs.kredit * (inputs.zins / 100))
 
 // erstes jahr 2022
 const effektiveTilgung = computed(() => inputs.tilgung / 100 * inputs.kredit)
@@ -368,14 +377,14 @@ watchEffect(() => {
   plot.value = createPaymentSchedule(inputs.kredit, inputs.zins, ratePerMonth.value, tilgung.value)
 })
 
-const costs = computed(() => plot.value.reduce((sum, {interestPaid}) => sum + interestPaid , 0))
-const gewinn = computed(() => plot.value.reduce((sum, {gewinn}) => sum + gewinn , 0))
+const costs = computed(() => plot.value.reduce((sum, { interestPaid }) => sum + interestPaid, 0))
+const gewinn = computed(() => plot.value.reduce((sum, { gewinn }) => sum + gewinn, 0))
 const total = computed(() => inputs.kredit + costs.value)
 
 
 const mietspiegelMitProcent = computed(() => Object.entries(rentIndex).flatMap(([year, pricePerSquereMeter]) => {
 
-const zuwachs = rentIndex[year - 1] ? (rentIndex[year - 1] / 100 * (rentIndex[year] - rentIndex[year - 1]) * 100)  : 0
+  const zuwachs = rentIndex[year - 1] ? (rentIndex[year - 1] / 100 * (rentIndex[year] - rentIndex[year - 1]) * 100) : 0
 
   return {
     year,
@@ -386,15 +395,15 @@ const zuwachs = rentIndex[year - 1] ? (rentIndex[year - 1] / 100 * (rentIndex[ye
 
 const quadratMeterPreisSpiegelMitProcent = computed(() => Object.entries(meterSquaredMeterIndex).flatMap(([year, pricePerSquereMeter]) => {
 
-const hasLastYear = !!meterSquaredMeterIndex[year - 1]
+  const hasLastYear = !!meterSquaredMeterIndex[year - 1]
 
-const lastYearAmount = hasLastYear ? meterSquaredMeterIndex[year - 1]: 0
-const currentYearAmount = meterSquaredMeterIndex[year]
+  const lastYearAmount = hasLastYear ? meterSquaredMeterIndex[year - 1] : 0
+  const currentYearAmount = meterSquaredMeterIndex[year]
 
 
-const zuwachs = hasLastYear
-  ?  (currentYearAmount / lastYearAmount) - 1
-  : 0
+  const zuwachs = hasLastYear
+    ? (currentYearAmount / lastYearAmount) - 1
+    : 0
 
   return {
     year,
@@ -417,11 +426,11 @@ const plotWithPercent = computed(() => {
 
     let zuwachs = 0
     let reduction = 0
-    if(plot.value[index - 1] && plot.value[index]) {
-      zuwachs = (1 - plot.value[index - 1].balance / plot.value[index].balance ) * 100
+    if (plot.value[index - 1] && plot.value[index]) {
+      zuwachs = (1 - plot.value[index - 1].balance / plot.value[index].balance) * 100
       reduction = plot.value[index - 1].balance - plot.value[index].balance
     }
-    
+
     // const zuwachs = plot.value[index - 1] 
     //   ? (plot.value[index - 1].balance / 100 * (plot.value[index].balance - plot.value[index - 1].balance) * 100) 
     //   : 0
@@ -435,32 +444,32 @@ const plotWithPercent = computed(() => {
 })
 
 const years = 30
-const monthsInYear = 12 
+const monthsInYear = 12
 const today = ref(new Date())
 const year = getYear(today.value)
 
 const rate = ref(Dinero({ amount: 40000, currency: 'EUR', precision: 2 }))
 
-const schedule = Array.from({length: years * monthsInYear}, (_, index) => {
+const schedule = Array.from({ length: years * monthsInYear }, (_, index) => {
 
-  let expence = Dinero({amount: 0, currency: 'EUR', precision: 2})
+  let expence = Dinero({ amount: 0, currency: 'EUR', precision: 2 })
   const month = getMonth(today.value) + 1
   const rateYear = getYear(today.value)
 
-  if(month === 1 && year !== rateYear) {
+  if (month === 1 && year !== rateYear) {
     rate.value = rate.value.multiply('0.085')
   }
-  
-  if(plotWithPercent.value[index]) {
+
+  if (plotWithPercent.value[index]) {
     const amount = +(plotWithPercent.value[index].rate * 100).toFixed(0)
-    expence = Dinero({amount: isNaN(amount) ? 0 : amount, currency: 'EUR', precision: 2})
-  } 
-  
+    expence = Dinero({ amount: isNaN(amount) ? 0 : amount, currency: 'EUR', precision: 2 })
+  }
+
   today.value = addMonths(today.value, 1)
 
   const income = rate.value
 
-  
+
   return {
     expence,
     income,
@@ -469,9 +478,9 @@ const schedule = Array.from({length: years * monthsInYear}, (_, index) => {
   }
 });
 
-const kredit = schedule.reduce((sum, { expence }) => sum.add(expence), Dinero({amount: 0, currency: 'EUR', precision: 2}))
-const obotor = schedule.reduce((sum, { income }) => sum.add(income), Dinero({amount: 0, currency: 'EUR', precision: 2}))
-const dohod = schedule.reduce((sum, { total }) => sum.add(total), Dinero({amount: 0, currency: 'EUR', precision: 2}))
+const kredit = schedule.reduce((sum, { expence }) => sum.add(expence), Dinero({ amount: 0, currency: 'EUR', precision: 2 }))
+const obotor = schedule.reduce((sum, { income }) => sum.add(income), Dinero({ amount: 0, currency: 'EUR', precision: 2 }))
+const dohod = schedule.reduce((sum, { total }) => sum.add(total), Dinero({ amount: 0, currency: 'EUR', precision: 2 }))
 
 createPaymentSchedule(inputs.kredit, inputs.zins, ratePerMonth.value, tilgung.value)
 

@@ -1,20 +1,20 @@
 <template>
     <div>
-        <label for="repainmentRate">Tilgung</label>
+        <label for="tilgung">tilgung</label>
         <input 
             type="number"
-            id="repainmentRate" 
+            id="tilgung" 
             step="0.01"
-            name="repainmentRate" 
+            name="tilgung" 
             :value="modelValue"
             @input="$emit('update:modelValue', +$event.target.value)"
             class="rounded w-full"
         />
-        <label for="repainmentRaterange" hidden>repainmentRate</label>
+        <label for="tilgungSlider" hidden>tilgungSlider</label>
         <input
             type="range" 
-            id="repainmentRaterange" 
-            name="repainmentRaterange"
+            id="tilgungSlider" 
+            name="tilgungSlider"
             min="1"
             step="0.01"
             max="20"
