@@ -11,8 +11,7 @@ export function generateRepaymentSchedule(
   
     // Calculate the number of payments
     let numPayments = Math.log(rate / (rate - monthlyzinsen * summe)) / Math.log(1 + monthlyzinsen);
-  
-    console.log(numPayments, monthlytilgung)
+
 
     // Initialize the repayment schedule with the first payment
     let schedule: { month: number, Summe: number, payment: number, interest: number, summe: number }[] = [{

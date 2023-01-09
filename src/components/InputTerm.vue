@@ -1,23 +1,19 @@
 <template>
     <div>
-        <label for="loan">Hypothek</label>
+        <label for="term">Laufzeit</label>
         <input 
             type="number"
-            id="loan" 
-            min="50000"
-            step="1000"
-            name="loan" 
+            id="term" 
+            name="term" 
             :value="modelValue"
             @input="$emit('update:modelValue', +$event.target.value)"
             class="rounded w-full bg-gray-300 border-none"
         />
-        <label for="loanrange" hidden>Loan</label>
+        <label for="termrange" hidden>Term Range</label>
         <input
             type="range" 
-            id="loanrange" 
-            name="loanrange"
-            min="50000"
-            step="1000"
+            id="termrange" 
+            name="termrange"
             :value="modelValue"
             @input="$emit('update:modelValue', +$event.target.value)"
             class="w-full h-1 mb-6 bg-gray-300 rounded-lg appearance-none cursor-pointer">

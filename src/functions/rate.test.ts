@@ -1,53 +1,20 @@
-import { calculateRate, calculateMonthlyRate } from './rate';
+import { calculateRate } from './rate';
 import { describe, it, expect } from 'vitest'
 
-describe('conver percent and decimals', () => {
-  it('rate for 50k 1% 8%', () => {
+
+describe('rate', () => {
+  it('rate K = 50k p = 1% t = 9%', () => {
     const output = calculateRate(50000, 1, 8);
-    expect(output).toBe(378.47222222222223);
+    expect(output).toBe(375);
   });
 
-  it.skip('rate for 50k 1% 8%', () => {
-    const output = calculateRate(90000, 3.75, 1.6);
-    expect(output).toBe(400);
+  it('rate K = 90k p = 3.75% t = 1.58%', () => {
+    const output = calculateRate(90000, 3.75, 1.58);
+    expect(output).toBe(399.75);
   });
 
-//   it('should convert percent 0 to decimal 0', () => {
-//     const output = calculateRate(input);
-//     expect(output).toBe(0);
-//   });
-
-//   it('should convert decimal to percent', () => {
-//     const output = calculateRate(input);
-//     expect(output).toBe(30);
-//   });
-
-//   it('should convert decimal 0  to percent 0', () => {
-//     const output = calculateRate(input);
-//     expect(output).toBe(0);
-//   });
-});
-
-describe('Monatliche rate mit laufweit', () => {
-
-    it('rate for 50k 1% 8%', () => {
-      const output = calculateMonthlyRate(50000, 0.087, 400);
-      expect(output).toBe(400);
-    });
-  
-  //   it('should convert percent 0 to decimal 0', () => {
-  //     const output = calculateRate(input);
-  //     expect(output).toBe(0);
-  //   });
-  
-  //   it('should convert decimal to percent', () => {
-  //     const output = calculateRate(input);
-  //     expect(output).toBe(30);
-  //   });
-  
-  //   it('should convert decimal 0  to percent 0', () => {
-  //     const output = calculateRate(input);
-  //     expect(output).toBe(0);
-  //   });
+  it('rate K = 155k p = 3.75% t = 1.58%', () => {
+    const output = calculateRate(155000, 3.75, 1.67);
+    expect(output).toBe(700.08);
   });
-  
+})

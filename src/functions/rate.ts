@@ -1,21 +1,21 @@
-export function calculateRate(kredit: number, zinsen: number, tilgung: number): number {
-    return kredit * (((zinsen + tilgung) / 100) + 1) / 12 / 12
+import Dinero from 'dinero.js'
+
+export function calculateRate(kredit: number, zins: number, tilgung: number ) {
+    if(kredit === 0) return 0
+    const DineroKredit = Dinero({ amount: kredit * 100 })
+    const yearlyAnnu = DineroKredit.percentage(tilgung);
+    const yearlyZins = DineroKredit.percentage(zins);
+    const yearlyRate = yearlyAnnu.add(yearlyZins)
+    return yearlyRate.divide(12).getAmount() / 100
 }
 
 
-// const darlehen = 200000; // Darlehen in Euro
-// const zins = 0.03; // Zinssatz in Prozent
-// const laufzeit = 360; // Laufzeit in Monaten
 
-export function calculateMonthlyRate(darlehen: number, zins: number, laufzeit: number) {
-    return ((darlehen * zins) / (1 - Math.pow(1 + zins, -laufzeit)) / 12);
-}
-
-// Ratenzahlungen (vorschüssig):
-// Wenn man den Zinssatz, die Größe der Rate und die Anzahl der Jahre kennt, kann man den Zahlungsendwert ermitteln. Die Formel lautet dann:
-// Kn=R⋅q⋅(qn−1)q−1 (Zahlung zum Jahresanfang)
-
-
-Wenn man den Zinssatz, den Zahlungsendwert und die Anzahl der Jahre kennt, kann man die Größe der Rate ermitteln. Die Formel lautet dann:
-
-R=Kn⋅(q−1)q(qn−1) (Zahlung zum Jahresanfang)
+// function calculateMonthlyPayment(kredit: number, zins: number, term: number): number {
+//     // Berechne den monatlichen Zins
+//     const monthlyRate = zins / 100 / 12;
+//     // Berechne die monatliche Rate
+//     const monthlyPayment = (monthlyRate / (1 - Math.pow(1 + monthlyRate, -term))) * kredit;
+//     // Gib die monatliche Rate zurück
+//     return monthlyPayment;
+//   }
