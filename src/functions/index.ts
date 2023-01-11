@@ -75,7 +75,7 @@
 
   
 
-export function createPaymentSchedule(principal, interestRate, monthlyPayment, extraPayments = {}, paymentsMade = 0, balance = principal, schedule = [], interestPaidTotal = 0) {
+export function createPaymentSchedule(principal, interestRate, monthlyPayment, extraPayments = {}, paymentsMade = 0, balance = principal, schedule = [], interestPaidTotal = 0, principalPaidTotal = 0) {
     let loopCounter = 0;
     // Berechne die monatliche Rate
     const monthlyRate = interestRate / 100 / 12;
@@ -102,12 +102,15 @@ export function createPaymentSchedule(principal, interestRate, monthlyPayment, e
       balance -= principalPaid;
       // Erhöhe den Gesamtzinsen um die Zinsen dieses Monats
       interestPaidTotal += interest;
+      // Erhöhe den Gesamtzinsen um die Zinsen dieses Monats
+      principalPaidTotal += principalPaid;
       // Erstelle ein Objekt für den Eintrag im Tilgungsplan
       const entry = {
         paymentNumber: paymentsMade,
         principalPaid,
         interestPaid: interest,
         interestPaidTotal,
+        principalPaidTotal,
         rate: principalPaid + interest,
         balance,
       };
@@ -121,6 +124,7 @@ export function createPaymentSchedule(principal, interestRate, monthlyPayment, e
       principalPaid: balance,
       interestPaid: 0,
       interestPaidTotal,
+      principalPaidTotal,
       balance: 0
     };
     // Füge den letzten Eintrag dem Tilgungsplan hinzu

@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 space-y-4 bg-gray-100">
+  <div class="px-4 space-y-4 bg-gray-100 container">
 
     <div class="grid grid-cols-5 gap-4">
       <InputLoan :modelValue="inputs.kredit" @update:model-value="onLoanChange" />
@@ -10,40 +10,51 @@
     </div>
 
 
+    <div class="aspect-video">
+
+      <ChartAnnuity :plot="plot" />
+    </div>
+
+
+
     <div class="grid">
       <!-- 100% = kredit + zins / 100 + 10 -->
       <!-- zins =  -->
       <div class="rounded p-12 bg-gray-300">
         <table class="table-fixed w-full border-collapse">
           <tr>
-            <td @mouseenter="onBarChartHover(row)" v-for="(row, index) in plot" :key="row.balance"
-              class="h-[256px] relative" :class="{
-                'bg-green-200': row.interestPaid === 0
+            <td @click="onBarChartHover(row)" v-for="(row, index) in plot" :key="row.balance"
+              class="h-[256px] relative hover:bg-black cursor-pointer" :class="{
+                'bg-green-200': row.interestPaid === 0,
+                'border-r border-black': row.paymentNumber === 120
               }">
               <div title="month" class="absolute left-0 right-0 top-0 bottom-0 overflow-hidden">
-                <div class="absolute inset-0 transform-gpu bg-white transition-all" :style="{
-                  '--tw-translate-y': `${(256 - (row.balance * 256 / inputs.kredit) - 1)}px`
+                <div class="absolute inset-0 transform-gpu bg-pink-500 mix-blend-difference transition-all" :style="{
+                  '--tw-translate-y': `${(256 - row.balance * 256 / inputs.kredit)}px`
                 }">
-                  <!-- <div class="bg-red-600 absolute bottom-full left-0 right-0" :style="{
-                    height: `${row.interestPaid * 256 / inputs.kredit}px`
-                  }">
-                  </div>
+                  <div>
 
-                  <div class="bg-green-500 absolute top-0 left-0 right-0 mix-blend-difference" :style="{
-                    height: `${row.principalPaid * 256 / inputs.kredit}px`
-                  }">
-                  </div> -->
+                    <div class="bg-red-600 absolute bottom-full left-0 right-0" :style="{
+                      height: `${row.interestPaid * 256 / inputs.kredit}px`
+                    }">
+                    </div>
+
+                    <div class="bg-blue-500 absolute top-0 left-0 right-0" :style="{
+                      height: `${row.principalPaid * 256 / inputs.kredit}px`
+                    }">
+                    </div>
+                  </div>
                 </div>
               </div>
-  
+
             </td>
           </tr>
           <tr>
-            <template v-for="(row, index) in plot" >
+            <template v-for="(row, index) in plot">
               <td colspan="12" v-if="index % 12 === 0" :key="row.balance" class="">
                 <div class="px-[2.5%]">
                   <div class="h-2 rounded-b border-b border-l border-r border-gray-700">
-                    
+
                   </div>
                 </div>
                 <div class="text-center">
@@ -63,6 +74,7 @@
             <div>
               number
             </div>
+            <input type="text" v-model.number="tilgung[tooltip.paymentNumber]">
           </dt>
           <dd class="text-right">
             {{ tooltip.paymentNumber }}
@@ -108,159 +120,6 @@
       </div>
 
     </div>
-
-    <!-- <div>
-      <div class="text-right text-red-600">
-        {{ kredit.toFormat('$0,0.00')}}
-      </div>
-      <div class="text-right text-green-600">
-        {{ obotor.toFormat('$0,0.00') }}
-      </div>
-      <div class="text-right text-black font-bold bg-yellow-300">
-        {{ dohod.toFormat('$0,0.00') }}
-      </div>
-    </div> -->
-
-
-
-
-    <!-- <div class="grid gap-2 grid-cols-12 mx-auto bg-gray-200 p-2 py-4 max-w-6xl w-full">
-            <div v-for="entry in schedule" :key="entry.date" class="rounded bg-white">
-              <div class="text-xs text-right p-2">
-            
-                    <div class="rounded bg-red-100 text-red-800">
-                      - {{ entry.expence.toFormat('$0,0.00') }}
-                    </div>
-                    <div class="rounded bg-yellow-100 text-yellow-800">
-                      {{ entry.income.toFormat('$0,0.00') }}
-                    </div>
-  
-                  <div class="bg-green-100 rounded text-green-800 font-bold">
-                    {{ entry.total.toFormat('$0,0.00') }}
-                  </div>
-        
-              </div>
-            </div>
-          </div> -->
-
-
-
-
-
-
-    <div class="grid grid-cols-4 gap-12 p-12">
-
-
-      <div>
-
-        <!-- <dl class="grid grid-cols-2 gap-x-6">
-          <dt>
-            Rate / Year:
-          </dt>
-          <dd class="text-right">
-            {{ formatCurrency(ratePerYear) }}
-          </dd>
-          <dt>
-            Rate / Month:
-          </dt>
-          <dd  class="text-right">
-            {{ formatCurrency(ratePerMonth) }}
-          </dd>
-          <dt>
-            Rent / Month
-          </dt>
-          <dd  class="text-right">
-            {{ formatCurrency(optimalStartingRent) }}
-          </dd>
-        </dl> -->
-
-        <hr class="my-4">
-
-        <!-- <dl class="grid grid-cols-2 gap-x-6">
-          <dt>
-            kredit
-          </dt>
-          <dd class="text-right">
-            {{ formatCurrency(inputs.kredit) }}
-          </dd>
-          <dt>
-            Costs
-          </dt>
-          <dd class="text-right text-red-600 font-bold">
-            {{ formatCurrency(costs)}}
-          </dd>
-          <dt>
-            Total
-          </dt>
-          <dd class="text-right">
-            {{ formatCurrency(total - gewinn) }}
-          </dd>
-        </dl> -->
-
-        <hr class="my-4">
-
-        <h4>Annuity</h4>
-
-
-        <!-- <dl class="grid grid-cols-2 gap-x-6">
-          <dt>
-            Schuldenfrei in 
-          </dt>
-          <dd class="text-right">
-            {{  (plot.length / 12 | 0) + " years and " + plot.length % 12 +" months"  }}
-          </dd>
-        </dl>
-         -->
-      </div>
-
-
-      <!-- <div class="grid-colspan-2">
-        <table class="table-fixed	">
-          <tr v-for="row in plotWithPercent" :key="row.paymentNumber">
-            <td class="pt-1 px-4 border border-slate-600 whitespace-nowrap">
-              {{row.paymentNumber}}
-       
-            </td>
-            <td class="pt-1 px-4 border border-slate-600 text-right">{{formatCurrency(row.principalPaid)}}</td>
-            <td class="pt-1 px-4 border border-slate-600">
-
-              <div>
-
-                <div>
-                  {{ formatCurrency(row.rate) }}
-                </div>
-
-                
-                <div class="relative w-28 h-2 rounded-full">
-                  
-                  <div class="absolute  w-full bottom-0 left-0 top-0 bg-green-200 outline-green-500 outline rounded-l-full -outline-offset-1" :style="`width: ${(row.principalPaid / (row.principalPaid + row.interestPaid)) * 100 }%`">
-                    
-                  </div>
-                  <div class="absolute  w-full bottom-0 right-0 top-0 bg-red-200 outline-red-500 rounded-r-full outline -outline-offset-1" :style="`width: ${(row.interestPaid / (row.principalPaid + row.interestPaid)) * 100 }%`">
-                    
-                  </div>
-                </div>
-              </div>
-              
-              
-              
-            </td>
-            <td class="pt-1 px-4 border border-slate-600 text-right">{{formatCurrency(row.interestPaid)}}</td>
-            <td class="pt-1 px-4 border border-slate-600 text-right">
-              <input class="rounded w-32 h-4 px-1 text-right" type="number" v-model="tilgung[+row.paymentNumber]">
-            </td>
-            <td class="pt-1 px-4 border border-slate-600 text-right">{{formatCurrency(row.balance)}}</td>
-            <td class="pt-1 px-4 border border-slate-600 text-right">{{formatPercent(row.zuwachs)}}</td>
-            <td class="pt-1 px-4 border border-slate-600 text-right">{{formatCurrency(row.reduction)}}</td>
-          </tr>
-        </table>
-      </div> -->
-
-    </div>
-
-
-
-
   </div>
 
 </template>
@@ -268,6 +127,7 @@
 
 <script setup lang="ts">
 import Dinero from 'dinero.js'
+import ChartAnnuity from '@/charts/ChartAnnuity.vue'
 import { calculateRate } from '@/functions/rate'
 import { calculateTerm } from '@/functions/term'
 import { calculateTilgung, berechneTilgung } from '@/functions/tilgung'
@@ -288,7 +148,7 @@ import { percentToDecimal, decimalToPercent } from '@/functions/unit'
 const inputs = reactive({
   kredit: 155000,
   zins: 3.75,
-  tilgung: 1.68,
+  tilgung: 1.67,
   rate: 0,
   term: 0
 })
@@ -335,154 +195,54 @@ const onBarChartHover = (row) => {
 
 
 const tilgung = ref({
-
+  10: 7750,
+  // 18: 2500,
+  // 19: 2500,
+  // 48: 4500,
+  // 60: 4500,
+  // 72: 4500,
+  // 84: 4500,
+  // 96: 4500,
+  // 108: 4500,
+  // 120: 4500,
+  // 121: 22000,
+  // 7: 5000,
+  // 8: 2000,
+  // 18: 2500
 })
 
 onMounted(() => {
   inputs.rate = calculateRate(inputs.kredit, inputs.zins, inputs.tilgung),
-  inputs.term = calculateTerm(inputs.kredit, inputs.zins, inputs.tilgung, inputs.rate)
- 
+    inputs.term = calculateTerm(inputs.kredit, inputs.zins, inputs.tilgung, inputs.rate)
+
   createSonderTilgungen()
 })
 
+
+
 const createSonderTilgungen = () => {
-  Array.from({length: inputs.term}, (_, i) => i + 1).forEach((x, index) => {
-    if((index - 1) % 12 === 0) {
-      tilgung.value[index] = inputs.kredit * 0.05
-    }
+  Array.from({ length: inputs.term }, (_, i) => i + 1).forEach((x, index) => {
+    // if (index % 12 == 0) {
+    //   tilgung.value[index] = inputs.kredit * 0.05
+    // }
+
   })
 }
 
-const interestTotal = computed(() => inputs.zins + inputs.tilgung)
-
-const ratePerYear = computed(() => (interestTotal.value / 100) * inputs.kredit)
-const ratePerMonth = computed(() => (interestTotal.value / 100) * inputs.kredit / 12)
-
-// =WENNFEHLER(WENN(C6=0;"sofort";WENN(C6=1;"in einem Jahr";VERKETTEN("in ";C6;" Jahren")));"in >99 Jahren")
-
-const zinsen = computed(() => inputs.kredit * (inputs.zins / 100))
-
-// erstes jahr 2022
-const effektiveTilgung = computed(() => inputs.tilgung / 100 * inputs.kredit)
-
-
-const optimalStartingRent = computed(() => inputs.kredit * 0.005)
 
 const plot = ref([])
-const calculate = () => {
-  plot.value = createPaymentSchedule(inputs.kredit, inputs.zins, ratePerMonth.value, tilgung.value)
-}
-
 watchEffect(() => {
-  plot.value = createPaymentSchedule(inputs.kredit, inputs.zins, ratePerMonth.value, tilgung.value)
+  console.log(tilgung.value)
+  plot.value = createPaymentSchedule(inputs.kredit, inputs.zins, inputs.rate, tilgung.value)
 })
 
-const costs = computed(() => plot.value.reduce((sum, { interestPaid }) => sum + interestPaid, 0))
-const gewinn = computed(() => plot.value.reduce((sum, { gewinn }) => sum + gewinn, 0))
-const total = computed(() => inputs.kredit + costs.value)
 
+createPaymentSchedule(inputs.kredit, inputs.zins, inputs.rate, tilgung.value)
 
-const mietspiegelMitProcent = computed(() => Object.entries(rentIndex).flatMap(([year, pricePerSquereMeter]) => {
-
-  const zuwachs = rentIndex[year - 1] ? (rentIndex[year - 1] / 100 * (rentIndex[year] - rentIndex[year - 1]) * 100) : 0
-
-  return {
-    year,
-    pricePerSquereMeter,
-    zuwachs
-  }
-}))
-
-const quadratMeterPreisSpiegelMitProcent = computed(() => Object.entries(meterSquaredMeterIndex).flatMap(([year, pricePerSquereMeter]) => {
-
-  const hasLastYear = !!meterSquaredMeterIndex[year - 1]
-
-  const lastYearAmount = hasLastYear ? meterSquaredMeterIndex[year - 1] : 0
-  const currentYearAmount = meterSquaredMeterIndex[year]
-
-
-  const zuwachs = hasLastYear
-    ? (currentYearAmount / lastYearAmount) - 1
-    : 0
-
-  return {
-    year,
-    pricePerSquereMeter: pricePerSquereMeter / 100,
-    zuwachs
-  }
-}))
-
-const average = mietspiegelMitProcent.value.reduce((sum, b) => {
-  return sum + b.zuwachs
-}, 0) / mietspiegelMitProcent.value.length;
-
-const averageM = quadratMeterPreisSpiegelMitProcent.value.reduce((sum, b) => {
-  return sum + b.zuwachs
-}, 0) / quadratMeterPreisSpiegelMitProcent.value.length;
-
-
-const plotWithPercent = computed(() => {
-  return plot.value.map((x, index) => {
-
-    let zuwachs = 0
-    let reduction = 0
-    if (plot.value[index - 1] && plot.value[index]) {
-      zuwachs = (1 - plot.value[index - 1].balance / plot.value[index].balance) * 100
-      reduction = plot.value[index - 1].balance - plot.value[index].balance
-    }
-
-    // const zuwachs = plot.value[index - 1] 
-    //   ? (plot.value[index - 1].balance / 100 * (plot.value[index].balance - plot.value[index - 1].balance) * 100) 
-    //   : 0
-
-    return {
-      ...x,
-      zuwachs,
-      reduction
-    }
-  })
+watch(() => tilgung, (x) => {
+  console.log(x)
+}, {
+  immediate: true
 })
 
-const years = 30
-const monthsInYear = 12
-const today = ref(new Date())
-const year = getYear(today.value)
-
-const rate = ref(Dinero({ amount: 40000, currency: 'EUR', precision: 2 }))
-
-const schedule = Array.from({ length: years * monthsInYear }, (_, index) => {
-
-  let expence = Dinero({ amount: 0, currency: 'EUR', precision: 2 })
-  const month = getMonth(today.value) + 1
-  const rateYear = getYear(today.value)
-
-  if (month === 1 && year !== rateYear) {
-    rate.value = rate.value.multiply('0.085')
-  }
-
-  if (plotWithPercent.value[index]) {
-    const amount = +(plotWithPercent.value[index].rate * 100).toFixed(0)
-    expence = Dinero({ amount: isNaN(amount) ? 0 : amount, currency: 'EUR', precision: 2 })
-  }
-
-  today.value = addMonths(today.value, 1)
-
-  const income = rate.value
-
-
-  return {
-    expence,
-    income,
-    total: income.subtract(expence),
-    date: today.value
-  }
-});
-
-const kredit = schedule.reduce((sum, { expence }) => sum.add(expence), Dinero({ amount: 0, currency: 'EUR', precision: 2 }))
-const obotor = schedule.reduce((sum, { income }) => sum.add(income), Dinero({ amount: 0, currency: 'EUR', precision: 2 }))
-const dohod = schedule.reduce((sum, { total }) => sum.add(total), Dinero({ amount: 0, currency: 'EUR', precision: 2 }))
-
-createPaymentSchedule(inputs.kredit, inputs.zins, ratePerMonth.value, tilgung.value)
-
-const getNumbers = (min: number, max: number) => [...Array(max - min + 1).keys()].map(i => i + min);
 </script>
