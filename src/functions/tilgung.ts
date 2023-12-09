@@ -19,7 +19,7 @@ export function calculateTilgung(kredit: number, zins: number, rate: number) {
 
 // TODO FIX
 export function berechneTilgung(schulden, rate, laufzeit) {
-  let tilgung = (rate * 12) / schulden;
-  let tilgungsprozentsatz = (tilgung / laufzeit) * 100;
+  const tilgung = (rate * 12) / schulden;
+  const tilgungsprozentsatz = (tilgung / laufzeit) * 100;
   return Math.ceil(tilgungsprozentsatz * 100 * 100) / 100;
 }
