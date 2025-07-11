@@ -6,12 +6,22 @@ const router = createRouter({
     {
       path: "/",
       name: "dashboard",
+      component: () => import("../views/CashFlowDashboard.view.vue"),
+    },
+    {
+      path: "/old-calculator",
+      name: "old-calculator",
       component: () => import("../views/MortgageModern.view.vue"),
     },
     {
       path: "/portfolio",
       name: "portfolio",
-      component: () => import("../views/DebtOverview.view.vue"),
+      component: () => import("../views/PortfolioDashboard.view.vue"),
+    },
+    {
+      path: "/portfolio/:id",
+      name: "portfolio-detail",
+      component: () => import("../views/PortfolioDetail.view.vue"),
     },
     {
       path: "/calculator",

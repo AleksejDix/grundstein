@@ -1,5 +1,48 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center">
+            <RouterLink to="/" class="flex items-center space-x-3">
+              <div
+                class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center"
+              >
+                <svg
+                  class="w-5 h-5 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2L2 7v10c0 5.55 3.84 10 9 11 1.95-.45 3.73-1.28 5.31-2.38C19.77 17 22 13.55 22 9V7l-10-5z"
+                  />
+                </svg>
+              </div>
+              <span class="text-xl font-bold text-gray-900">Grundstein</span>
+            </RouterLink>
+          </div>
+          <div class="flex items-center space-x-6">
+            <RouterLink
+              to="/"
+              class="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
+              >Calculator</RouterLink
+            >
+            <RouterLink
+              to="/portfolio"
+              class="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
+              >Portfolio</RouterLink
+            >
+            <RouterLink
+              to="/calculator"
+              class="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
+              >Advanced</RouterLink
+            >
+          </div>
+        </div>
+      </div>
+    </nav>
+
     <div class="container mx-auto px-4 py-12 max-w-4xl">
       <!-- Header -->
       <div class="text-center mb-12">
@@ -787,16 +830,11 @@
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { MortgageAdapter } from "../presentation/adapters/MortgageAdapter";
-import {
-  LoanStorageService,
-  type StoredLoan,
-} from "../services/LoanStorageService";
+import { LoanStorageService } from "../services/LoanStorageService";
 
 // Components
 import EditableAmount from "../presentation/components/ui/EditableAmount.vue";
 import EditablePercentage from "../presentation/components/ui/EditablePercentage.vue";
-import EditableNumber from "../presentation/components/ui/EditableNumber.vue";
-import MetricCard from "../presentation/components/ui/MetricCard.vue";
 import PaymentSchedule from "../presentation/components/mortgage/PaymentScheduleSimple.vue";
 
 // Create adapter instance
@@ -860,7 +898,7 @@ function setPreset(presetType: string) {
   adapter.extraPayments.value = {};
 
   switch (presetType) {
-    case "smallLoan":
+    case "smallLoan": {
       // €15,000 at 8% starting 1.1.2024 with €182 extra payment every month
       adapter.inputs.loan = 15000;
       adapter.inputs.interestRate = 8;
@@ -874,6 +912,7 @@ function setPreset(presetType: string) {
         adapter.extraPayments.value[month] = 182;
       }
       break;
+    }
 
     case "largeLoan":
       // €100,000 at 5.6% starting 1.1.2023 with €17,000 extra payment in month 2
