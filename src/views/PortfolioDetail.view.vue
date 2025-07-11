@@ -1,108 +1,82 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center py-6">
-          <div class="flex items-center space-x-4">
-            <button @click="goBack" class="text-gray-500 hover:text-gray-700">
-              <svg
-                class="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
-            <div>
-              <h1 class="text-3xl font-bold text-gray-900">
-                {{ portfolio?.name || "Portfolio Details" }}
-              </h1>
-              <p class="text-gray-500 mt-1">{{ portfolio?.owner }}</p>
-            </div>
-          </div>
-          <div class="flex space-x-3">
-            <button
-              @click="showAddMortgage = true"
-              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-            >
-              + Add Mortgage
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
+  <DetailLayout>
+    <template #header>
+      <PageHeader
+        :title="portfolio?.name || 'Portfolio Details'"
+        :subtitle="portfolio?.owner || ''"
+      >
+        <template #actions v-if="portfolio">
+          <button
+            @click="showAddMortgage = true"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            + Add Mortgage
+          </button>
+        </template>
+      </PageHeader>
+    </template>
 
-    <!-- Loading/Error States -->
-    <div v-if="isLoading" class="flex justify-center items-center h-64">
-      <div
-        class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"
-      ></div>
-    </div>
+    <LoadingSpinner v-if="isLoading" message="Loading portfolio details..." />
+    <ErrorAlert v-else-if="error" :message="error" />
 
-    <div v-else-if="error" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-        <p class="text-red-800">Error: {{ error }}</p>
-      </div>
-    </div>
+    <template v-if="portfolioData" #metrics>
+      <MetricCard
+        label="Total Principal"
+        :value="formatCurrency(portfolioData.summary.totalPrincipal)"
+        icon-path="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
+        icon-bg-color="bg-blue-100"
+        icon-color="text-blue-600"
+      />
 
-    <!-- Portfolio Content -->
-    <main
-      v-else-if="portfolioData"
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
-    >
-      <!-- Portfolio Summary Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 class="text-sm font-medium text-gray-500">Total Principal</h3>
-          <p class="text-2xl font-bold text-gray-900 mt-2">
-            {{ formatCurrency(portfolioData.summary.totalPrincipal) }}
-          </p>
-        </div>
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 class="text-sm font-medium text-gray-500">Monthly Payment</h3>
-          <p class="text-2xl font-bold text-gray-900 mt-2">
-            {{ formatCurrency(portfolioData.summary.totalMonthlyPayment) }}
-          </p>
-        </div>
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 class="text-sm font-medium text-gray-500">Avg. Interest Rate</h3>
-          <p class="text-2xl font-bold text-blue-600 mt-2">
-            {{ portfolioData.summary.averageInterestRate.toFixed(2) }}%
-          </p>
-        </div>
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 class="text-sm font-medium text-gray-500">Active Mortgages</h3>
-          <p class="text-2xl font-bold text-green-600 mt-2">
-            {{ portfolioData.summary.activeMortgages }}
-          </p>
-        </div>
-      </div>
+      <MetricCard
+        label="Monthly Payment"
+        :value="formatCurrency(portfolioData.summary.totalMonthlyPayment)"
+        icon-path="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+        icon-bg-color="bg-green-100"
+        icon-color="text-green-600"
+        icon-fill-rule="evenodd"
+        icon-clip-rule="evenodd"
+      />
 
-      <!-- Mortgages Table -->
+      <MetricCard
+        label="Avg. Interest Rate"
+        :value="`${portfolioData.summary.averageInterestRate.toFixed(2)}%`"
+        icon-path="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+        icon-bg-color="bg-yellow-100"
+        icon-color="text-yellow-600"
+        icon-fill-rule="evenodd"
+        icon-clip-rule="evenodd"
+      />
+
+      <MetricCard
+        label="Active Mortgages"
+        :value="portfolioData.summary.activeMortgages.toString()"
+        icon-path="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        icon-bg-color="bg-purple-100"
+        icon-color="text-purple-600"
+      />
+    </template>
+
+    <template #primary>
       <div class="bg-white rounded-lg shadow-sm border border-gray-200">
         <div class="px-6 py-4 border-b border-gray-200">
           <h2 class="text-lg font-semibold text-gray-900">Mortgages</h2>
         </div>
 
-        <div
+        <EmptyState
           v-if="portfolio.mortgages.length === 0"
-          class="px-6 py-12 text-center"
+          title="No Mortgages"
+          description="This portfolio doesn't contain any mortgages yet."
         >
-          <p class="text-gray-500">No mortgages in this portfolio.</p>
-          <button
-            @click="showAddMortgage = true"
-            class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-          >
-            Add First Mortgage
-          </button>
-        </div>
+          <template #actions>
+            <button
+              @click="showAddMortgage = true"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              Add First Mortgage
+            </button>
+          </template>
+        </EmptyState>
 
         <div v-else class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
@@ -223,31 +197,126 @@
           </table>
         </div>
       </div>
-    </main>
+    </template>
 
-    <!-- Add Mortgage Modal Placeholder -->
-    <div
-      v-if="showAddMortgage"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    >
-      <div class="bg-white rounded-lg p-6 w-full max-w-2xl mx-4">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Add New Mortgage
-        </h3>
-        <p class="text-gray-600 mb-4">
-          Mortgage creation form will be implemented here.
-        </p>
-        <div class="flex justify-end">
-          <button
-            @click="showAddMortgage = false"
-            class="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
-          >
-            Close
-          </button>
+    <template v-if="portfolioData" #secondary>
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-900">Mortgages</h2>
+        </div>
+
+        <EmptyState
+          v-if="portfolio.mortgages.length === 0"
+          title="No Mortgages"
+          description="This portfolio doesn't contain any mortgages yet."
+          icon="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
+        >
+          <template #actions>
+            <Button label="Add Mortgage" @click="showAddMortgage = true" />
+          </template>
+        </EmptyState>
+
+        <div v-else class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Mortgage
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Principal
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Rate
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Monthly Payment
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Status
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr v-for="mortgage in portfolio.mortgages" :key="mortgage.id">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="font-medium text-gray-900">
+                    {{ mortgage.name }}
+                  </div>
+                  <div class="text-sm text-gray-500">{{ mortgage.bank }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ formatCurrency(mortgage.principal) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ mortgage.interestRate }}%
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ formatCurrency(calculateMonthlyPayment(mortgage)) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800"
+                  >
+                    Active
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <RouterLink
+                    :to="routes.mortgages.show(mortgage.id)"
+                    class="text-blue-600 hover:text-blue-900 mr-3"
+                  >
+                    View
+                  </RouterLink>
+                  <RouterLink
+                    :to="routes.mortgages.edit(mortgage.id)"
+                    class="text-blue-600 hover:text-blue-900"
+                  >
+                    Edit
+                  </RouterLink>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-    </div>
-  </div>
+    </template>
+
+    <!-- Add Mortgage Modal Placeholder -->
+    <Modal
+      :is-open="showAddMortgage"
+      title="Add New Mortgage"
+      subtitle="Create a new mortgage in this portfolio"
+      @close="showAddMortgage = false"
+    >
+      <p class="text-gray-600 mb-4">
+        Mortgage creation form will be implemented here.
+      </p>
+
+      <template #footer>
+        <Button
+          label="Close"
+          variant="secondary"
+          @click="showAddMortgage = false"
+        />
+      </template>
+    </Modal>
+  </DetailLayout>
 </template>
 
 <script setup lang="ts">
@@ -261,6 +330,14 @@ import type {
 } from "../application/services/PortfolioApplicationService";
 import type { Money } from "../domain/types/Money";
 import { toEuros } from "../domain/types/Money";
+import { DetailLayout } from "../layouts";
+import PageHeader from "../components/PageHeader.vue";
+import MetricCard from "../components/MetricCard.vue";
+import LoadingSpinner from "../components/LoadingSpinner.vue";
+import ErrorAlert from "../components/ErrorAlert.vue";
+import EmptyState from "../components/EmptyState.vue";
+import Modal from "../components/Modal.vue";
+import Button from "../components/Button.vue";
 
 const route = useRoute();
 const router = useRouter();

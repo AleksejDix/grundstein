@@ -57,22 +57,42 @@
             </div>
           </div>
 
-          <!-- Loan Term -->
+          <!-- Zinsbindung (Fixed Rate Period) -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Loan Term
+              Zinsbindung (Fixed Rate Period)
+            </label>
+            <select
+              v-model.number="mortgageForm.fixedRatePeriod"
+              class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="5">5 Jahre</option>
+              <option value="10">10 Jahre</option>
+              <option value="15">15 Jahre</option>
+              <option value="20">20 Jahre</option>
+              <option value="25">25 Jahre</option>
+              <option value="30">30 Jahre</option>
+            </select>
+          </div>
+
+          <!-- Monthly Payment -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Gewünschte monatliche Rate
             </label>
             <div class="relative">
+              <span
+                class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                >€</span
+              >
               <input
-                v-model.number="mortgageForm.termYears"
+                v-model.number="mortgageForm.monthlyPayment"
                 type="number"
-                class="w-full pr-16 pl-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="400"
                 required
               />
-              <span
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                >years</span
-              >
             </div>
           </div>
 
@@ -139,10 +159,16 @@
                 >
               </div>
               <div class="flex justify-between">
-                <span class="text-sm text-gray-600">Term:</span>
+                <span class="text-sm text-gray-600">Zinsbindung:</span>
                 <span class="text-sm font-medium"
-                  >{{ mortgageForm.termYears }} years</span
+                  >{{ mortgageForm.fixedRatePeriod }} Jahre</span
                 >
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Monthly Payment:</span>
+                <span class="text-sm font-medium">
+                  {{ formatCurrency(mortgageForm.monthlyPayment) }}
+                </span>
               </div>
               <div class="flex justify-between">
                 <span class="text-sm text-gray-600">Market:</span>
@@ -197,7 +223,8 @@ interface Mortgage {
   name: string;
   principal: number;
   interestRate: number;
-  termYears: number;
+  fixedRatePeriod: number;
+  monthlyPayment: number;
   market: "DE" | "CH";
   bank: string;
 }
@@ -216,7 +243,8 @@ const mortgageForm = ref({
   name: "",
   principal: 0,
   interestRate: 0,
-  termYears: 0,
+  fixedRatePeriod: 10,
+  monthlyPayment: 0,
   market: "DE" as "DE" | "CH",
   bank: "",
 });
@@ -255,7 +283,8 @@ async function loadMortgage() {
           name: foundMortgage.name,
           principal: foundMortgage.principal,
           interestRate: foundMortgage.interestRate,
-          termYears: foundMortgage.termYears,
+          fixedRatePeriod: foundMortgage.fixedRatePeriod || 10,
+          monthlyPayment: foundMortgage.monthlyPayment || 0,
           market: foundMortgage.market,
           bank: foundMortgage.bank || "Unknown Bank",
         };
@@ -264,7 +293,8 @@ async function loadMortgage() {
           name: mortgage.value.name,
           principal: mortgage.value.principal,
           interestRate: mortgage.value.interestRate,
-          termYears: mortgage.value.termYears,
+          fixedRatePeriod: mortgage.value.fixedRatePeriod || 10,
+          monthlyPayment: mortgage.value.monthlyPayment || 0,
           market: mortgage.value.market,
           bank: mortgage.value.bank,
         };

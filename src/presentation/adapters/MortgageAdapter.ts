@@ -14,7 +14,9 @@
 
 import { ref, computed, reactive, watch } from "vue";
 import {
-  MortgageService,
+  analyzeLoan,
+  analyzeSondertilgung,
+  getQuickEstimate,
   type LoanScenarioInput,
   type LoanAnalysis,
 } from "../../application/services/MortgageService";
@@ -66,13 +68,11 @@ export type MortgagePresentationModel = {
 export type ExtraPaymentsModel = Record<number, number>;
 
 /**
- * Mortgage Presentation Adapter Class
+ * Mortgage Presentation Adapter Composable
  */
-export class MortgageAdapter {
-  private mortgageService = new MortgageService();
-
+export function useMortgageAdapter() {
   // Reactive state
-  public readonly inputs = reactive<MortgageUIInputs>({
+  const inputs = reactive<MortgageUIInputs>({
     loan: 100000,
     interestRate: 5.6,
     principalRate: 2,
@@ -81,86 +81,63 @@ export class MortgageAdapter {
     startDate: "2023-01-01",
   });
 
-  public readonly extraPayments = ref<ExtraPaymentsModel>({
+  const extraPayments = ref<ExtraPaymentsModel>({
     2: 17000, // €5,000 extra payment in February 2023
   });
-  public readonly sondertilgungMaxPercent = ref(5);
+  const sondertilgungMaxPercent = ref(5);
 
-  // Computed presentation model
-  public readonly presentation = computed<MortgagePresentationModel>(() => {
-    return this.calculatePresentationModel();
-  });
-
-  // Quick estimation (for immediate UI feedback)
-  public readonly quickEstimate = computed(() => {
-    if (this.inputs.termMonths) {
-      return this.mortgageService.getQuickEstimate(
-        this.inputs.loan,
-        this.inputs.interestRate,
-        this.inputs.termMonths / 12
-      );
-    }
-    return null;
-  });
-
-  /**
-   * Calculate the complete presentation model from current inputs
-   */
-  private calculatePresentationModel(): MortgagePresentationModel {
+  // Helper function to calculate presentation model
+  function calculatePresentationModel(): MortgagePresentationModel {
     try {
       // Determine term specification
       let termInput: LoanScenarioInput;
 
-      if (this.inputs.termMonths) {
+      if (inputs.termMonths) {
         termInput = {
-          loanAmount: this.inputs.loan,
-          interestRate: this.inputs.interestRate,
-          termMonths: this.inputs.termMonths,
-          monthlyPayment: this.inputs.monthlyPayment,
+          loanAmount: inputs.loan,
+          interestRate: inputs.interestRate,
+          termMonths: inputs.termMonths,
+          monthlyPayment: inputs.monthlyPayment,
         };
       } else {
         // Calculate term from principal rate (German style)
-        const estimatedTermYears = this.estimateTermFromPrincipalRate();
+        const estimatedTermYears = estimateTermFromPrincipalRate();
         termInput = {
-          loanAmount: this.inputs.loan,
-          interestRate: this.inputs.interestRate,
+          loanAmount: inputs.loan,
+          interestRate: inputs.interestRate,
           termYears: estimatedTermYears,
-          monthlyPayment: this.inputs.monthlyPayment,
+          monthlyPayment: inputs.monthlyPayment,
         };
       }
 
       // Get domain analysis (this is now asynchronous, but we'll handle it)
       // For immediate UI feedback, we'll use the quick estimate
-      const quick = this.mortgageService.getQuickEstimate(
-        this.inputs.loan,
-        this.inputs.interestRate,
-        (this.inputs.termMonths || 360) / 12
+      const quick = getQuickEstimate(
+        inputs.loan,
+        inputs.interestRate,
+        (inputs.termMonths || 360) / 12
       );
 
       return {
         monthlyPayment: quick.monthlyPayment,
-        termMonths: this.inputs.termMonths || 360,
-        termYears: (this.inputs.termMonths || 360) / 12,
+        termMonths: inputs.termMonths || 360,
+        termYears: (inputs.termMonths || 360) / 12,
 
         // Calculate breakdown (simplified for now)
-        monthlyPrincipal: this.calculateMonthlyPrincipal(quick.monthlyPayment),
-        monthlyInterest: this.calculateMonthlyInterest(quick.monthlyPayment),
-        principalPercentage: this.calculatePrincipalPercentage(
-          quick.monthlyPayment
-        ),
+        monthlyPrincipal: calculateMonthlyPrincipal(quick.monthlyPayment),
+        monthlyInterest: calculateMonthlyInterest(quick.monthlyPayment),
+        principalPercentage: calculatePrincipalPercentage(quick.monthlyPayment),
 
         totalInterestPaid: quick.totalInterest,
         totalAmountPaid: quick.totalPaid,
 
         // First year estimates
         firstYearPayments: quick.monthlyPayment * 12,
-        firstYearInterest:
-          this.calculateMonthlyInterest(quick.monthlyPayment) * 12,
+        firstYearInterest: calculateMonthlyInterest(quick.monthlyPayment) * 12,
         firstYearPrincipal:
-          this.calculateMonthlyPrincipal(quick.monthlyPayment) * 12,
+          calculateMonthlyPrincipal(quick.monthlyPayment) * 12,
         firstYearEndBalance:
-          this.inputs.loan -
-          this.calculateMonthlyPrincipal(quick.monthlyPayment) * 12,
+          inputs.loan - calculateMonthlyPrincipal(quick.monthlyPayment) * 12,
 
         isValid: true,
       };
@@ -187,14 +164,13 @@ export class MortgageAdapter {
   /**
    * Estimate term in years from German-style principal rate
    */
-  private estimateTermFromPrincipalRate(): number {
+  function estimateTermFromPrincipalRate(): number {
     // This is a simplified estimation - German mortgages often specify
     // an annual principal repayment rate
-    const annualPrincipalAmount =
-      this.inputs.loan * (this.inputs.principalRate / 100);
+    const annualPrincipalAmount = inputs.loan * (inputs.principalRate / 100);
     const estimatedYears = Math.min(
       40,
-      Math.max(5, this.inputs.loan / annualPrincipalAmount)
+      Math.max(5, inputs.loan / annualPrincipalAmount)
     );
     return Math.round(estimatedYears);
   }
@@ -202,74 +178,45 @@ export class MortgageAdapter {
   /**
    * Calculate monthly principal payment
    */
-  private calculateMonthlyPrincipal(monthlyPayment: number): number {
-    const monthlyInterestRate = this.inputs.interestRate / 100 / 12;
-    const monthlyInterest = this.inputs.loan * monthlyInterestRate;
+  function calculateMonthlyPrincipal(monthlyPayment: number): number {
+    const monthlyInterestRate = inputs.interestRate / 100 / 12;
+    const monthlyInterest = inputs.loan * monthlyInterestRate;
     return Math.max(0, monthlyPayment - monthlyInterest);
   }
 
   /**
    * Calculate monthly interest payment
    */
-  private calculateMonthlyInterest(monthlyPayment: number): number {
-    const monthlyInterestRate = this.inputs.interestRate / 100 / 12;
-    return this.inputs.loan * monthlyInterestRate;
+  function calculateMonthlyInterest(monthlyPayment: number): number {
+    const monthlyInterestRate = inputs.interestRate / 100 / 12;
+    return inputs.loan * monthlyInterestRate;
   }
 
   /**
    * Calculate principal percentage of payment
    */
-  private calculatePrincipalPercentage(monthlyPayment: number): number {
+  function calculatePrincipalPercentage(monthlyPayment: number): number {
     if (monthlyPayment === 0) return 0;
-    const principal = this.calculateMonthlyPrincipal(monthlyPayment);
+    const principal = calculateMonthlyPrincipal(monthlyPayment);
     return (principal / monthlyPayment) * 100;
-  }
-
-  /**
-   * Update monthly payment (maintains existing UI behavior)
-   */
-  public setMonthlyPayment(newMonthlyPayment: number) {
-    this.inputs.monthlyPayment = newMonthlyPayment;
-
-    // Auto-calculate term if not locked (matching existing behavior)
-    if (newMonthlyPayment > 0) {
-      this.inputs.termMonths = this.calculateTermFromPayment(newMonthlyPayment);
-      this.inputs.principalRate =
-        this.calculatePrincipalRateFromPayment(newMonthlyPayment);
-    }
-  }
-
-  /**
-   * Update term in months (maintains existing UI behavior)
-   */
-  public setTermMonths(newTermMonths: number) {
-    this.inputs.termMonths = newTermMonths;
-
-    // Auto-calculate payment if not locked
-    const quick = this.mortgageService.getQuickEstimate(
-      this.inputs.loan,
-      this.inputs.interestRate,
-      newTermMonths / 12
-    );
-    this.inputs.monthlyPayment = quick.monthlyPayment;
   }
 
   /**
    * Calculate term from payment (reverse calculation)
    */
-  private calculateTermFromPayment(monthlyPayment: number): number {
-    const monthlyRate = this.inputs.interestRate / 100 / 12;
+  function calculateTermFromPayment(monthlyPayment: number): number {
+    const monthlyRate = inputs.interestRate / 100 / 12;
 
     if (monthlyRate === 0) {
-      return Math.ceil(this.inputs.loan / monthlyPayment);
+      return Math.ceil(inputs.loan / monthlyPayment);
     }
 
-    if (monthlyPayment <= this.inputs.loan * monthlyRate) {
+    if (monthlyPayment <= inputs.loan * monthlyRate) {
       return 360; // Payment too low
     }
 
     const numerator = Math.log(
-      monthlyPayment / (monthlyPayment - this.inputs.loan * monthlyRate)
+      monthlyPayment / (monthlyPayment - inputs.loan * monthlyRate)
     );
     const denominator = Math.log(1 + monthlyRate);
     const termInMonths = numerator / denominator;
@@ -280,77 +227,39 @@ export class MortgageAdapter {
   /**
    * Calculate principal rate from payment (German mortgage style)
    */
-  private calculatePrincipalRateFromPayment(monthlyPayment: number): number {
+  function calculatePrincipalRateFromPayment(monthlyPayment: number): number {
     const annualPayment = monthlyPayment * 12;
-    const annualInterest = this.inputs.loan * (this.inputs.interestRate / 100);
+    const annualInterest = inputs.loan * (inputs.interestRate / 100);
     const annualPrincipal = annualPayment - annualInterest;
 
-    return Math.max(0, (annualPrincipal / this.inputs.loan) * 100);
+    return Math.max(0, (annualPrincipal / inputs.loan) * 100);
   }
 
   /**
    * Analyze Sondertilgung impact (async)
    */
-  public async analyzeSondertilgung() {
-    if (Object.keys(this.extraPayments.value).length === 0) {
-      return null;
+
+  // Computed presentation model
+  const presentation = computed<MortgagePresentationModel>(() => {
+    return calculatePresentationModel();
+  });
+
+  // Quick estimation (for immediate UI feedback)
+  const quickEstimate = computed(() => {
+    if (inputs.termMonths) {
+      return getQuickEstimate(
+        inputs.loan,
+        inputs.interestRate,
+        inputs.termMonths / 12
+      );
     }
-
-    const baseLoan: LoanScenarioInput = {
-      loanAmount: this.inputs.loan,
-      interestRate: this.inputs.interestRate,
-      termMonths: this.inputs.termMonths || 360,
-    };
-
-    const extraPaymentsArray = Object.entries(this.extraPayments.value).map(
-      ([month, amount]) => ({
-        month: Number(month),
-        amount,
-      })
-    );
-
-    const result = await this.mortgageService.analyzeSondertilgung(
-      baseLoan,
-      extraPaymentsArray
-    );
-
-    if (result.success) {
-      return {
-        totalInterestSaved: result.data.impact.totalInterestSaved,
-        termReductionMonths: result.data.impact.termReductionMonths,
-        totalExtraPayments: result.data.impact.totalExtraPayments,
-        effectiveReturnRate: result.data.impact.effectiveReturnRate,
-        isWorthwhile: result.data.impact.isWorthwhile,
-      };
-    }
-
     return null;
-  }
-
-  /**
-   * Get domain analysis (for detailed calculations)
-   */
-  public async getDomainAnalysis(): Promise<LoanAnalysis | null> {
-    const termInput: LoanScenarioInput = {
-      loanAmount: this.inputs.loan,
-      interestRate: this.inputs.interestRate,
-      termMonths: this.inputs.termMonths || 360,
-    };
-
-    const result = await this.mortgageService.analyzeLoan(termInput);
-
-    if (result.success) {
-      return result.data;
-    }
-
-    console.error("Domain analysis failed:", result.error);
-    return null;
-  }
+  });
 
   /**
    * Format currency for German locale
    */
-  public formatEuros(amount: number): string {
+  function formatEuros(amount: number): string {
     return new Intl.NumberFormat("de-DE", {
       style: "currency",
       currency: "EUR",
@@ -360,16 +269,117 @@ export class MortgageAdapter {
   /**
    * Format percentage for German locale
    */
-  public formatPercentage(percentage: number): string {
+  function formatPercentage(percentage: number): string {
     return new Intl.NumberFormat("de-DE", {
       style: "percent",
       minimumFractionDigits: 1,
       maximumFractionDigits: 2,
     }).format(percentage / 100);
   }
-}
 
-/**
- * Create and export a singleton adapter instance
- */
-export const mortgageAdapter = new MortgageAdapter();
+  /**
+   * Update monthly payment (maintains existing UI behavior)
+   */
+  function setMonthlyPayment(newMonthlyPayment: number) {
+    inputs.monthlyPayment = newMonthlyPayment;
+
+    // Auto-calculate term if not locked (matching existing behavior)
+    if (newMonthlyPayment > 0) {
+      inputs.termMonths = calculateTermFromPayment(newMonthlyPayment);
+      inputs.principalRate =
+        calculatePrincipalRateFromPayment(newMonthlyPayment);
+    }
+  }
+
+  /**
+   * Update term in months (maintains existing UI behavior)
+   */
+  function setTermMonths(newTermMonths: number) {
+    inputs.termMonths = newTermMonths;
+
+    // Auto-calculate payment if not locked
+    const quick = getQuickEstimate(
+      inputs.loan,
+      inputs.interestRate,
+      newTermMonths / 12
+    );
+    inputs.monthlyPayment = quick.monthlyPayment;
+  }
+
+  /**
+   * Analyze Sondertilgung impact (async)
+   */
+  async function analyzeSondertilgungImpact() {
+    if (Object.keys(extraPayments.value).length === 0) {
+      return null;
+    }
+
+    const baseLoan: LoanScenarioInput = {
+      loanAmount: inputs.loan,
+      interestRate: inputs.interestRate,
+      termMonths: inputs.termMonths || 360,
+    };
+
+    const extraPaymentsArray = Object.entries(extraPayments.value).map(
+      ([month, amount]) => ({
+        month: Number(month),
+        amount,
+      })
+    );
+
+    const result = await analyzeSondertilgung(baseLoan, extraPaymentsArray);
+
+    if (result.success) {
+      return {
+        totalInterestSaved: result.data.impact.totalInterestSaved,
+        termReductionMonths: result.data.impact.termReductionMonths,
+        newTermMonths: result.data.impact.newTermMonths,
+        monthlyPayment: result.data.impact.newMonthlyPayment,
+        totalSavings: result.data.impact.totalInterestSaved,
+      };
+    }
+
+    console.error("Sondertilgung analysis failed:", result.error);
+    return null;
+  }
+
+  /**
+   * Get domain analysis (for detailed calculations)
+   */
+  async function getDomainAnalysis(): Promise<LoanAnalysis | null> {
+    const termInput: LoanScenarioInput = {
+      loanAmount: inputs.loan,
+      interestRate: inputs.interestRate,
+      termMonths: inputs.termMonths || 360,
+    };
+
+    const result = await analyzeLoan(termInput);
+
+    if (result.success) {
+      return result.data;
+    }
+
+    console.error("Domain analysis failed:", result.error);
+    return null;
+  }
+
+  // Return API
+  return {
+    // Reactive state
+    inputs,
+    extraPayments,
+    sondertilgungMaxPercent,
+
+    // Computed properties
+    presentation,
+    quickEstimate,
+
+    // Methods
+    setMonthlyPayment,
+    setTermMonths,
+    analyzeSondertilgungImpact,
+    getDomainAnalysis,
+    formatEuros,
+    formatPercentage,
+  };
+}

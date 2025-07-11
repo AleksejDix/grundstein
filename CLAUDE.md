@@ -5,21 +5,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Essential Commands
 
 ### Development
+
 - `npm run dev` - Start Vite development server
 - `npm run build` - Build for production (runs type-check + build-only)
 - `npm run preview` - Preview production build
 
 ### Testing
+
 - `npm test` - Run unit tests with Vitest
 - `npm run test:unit` - Run unit tests in jsdom environment
 - `npm run test:e2e` - Run Playwright end-to-end tests
 - `npm run coverage` - Generate test coverage report
 
 ### Code Quality
+
 - `npm run lint` - Run ESLint with auto-fix
 - `npm run type-check` - Run TypeScript type checking
 
 ### Single Test Execution
+
 - `vitest src/domain/types/Money.test.ts` - Run specific test file
 - `vitest --run src/tests/unit/domain/` - Run tests in specific directory
 
@@ -48,6 +52,7 @@ src/
 ```
 
 ### Domain Layer (`src/domain/`)
+
 - **Value Objects**: Branded types (Money, Percentage, LoanAmount, InterestRate) preventing primitive obsession
 - **Entities**: MortgagePortfolio aggregate with business rules
 - **Domain Services**: Portfolio analysis, optimization, cash flow calculations
@@ -55,15 +60,18 @@ src/
 - **Result/Option Types**: Functional error handling without exceptions
 
 ### Application Layer (`src/application/`)
+
 - **MortgageService**: Individual loan analysis and calculations
 - **PortfolioApplicationService**: Portfolio management orchestration
 - **Service Types**: UI-compatible data structures for views
 
 ### Infrastructure Layer (`src/infrastructure/`)
+
 - **PortfolioRepository**: Data persistence abstraction (LocalStorage implementation)
 - **Repository Pattern**: Clean separation of storage concerns
 
 ### Presentation Layer (`src/presentation/`)
+
 - **UI Components**: Reusable editable components (EditableAmount, EditableNumber)
 - **Portfolio Components**: Charts and visualizations for portfolio analysis
 - **Mortgage Components**: Input forms and payment schedules
@@ -71,18 +79,21 @@ src/
 ## Key Features
 
 ### Portfolio Management
+
 - **Multi-Mortgage Portfolios**: Manage multiple loans in organized portfolios
 - **Swiss & German Market Support**: Market-specific validation and calculations
 - **Portfolio Analytics**: Summary statistics, optimization analysis, cash flow projections
 - **Portfolio Optimization**: Refinancing opportunities, consolidation analysis
 
 ### Mortgage Analysis
+
 - **Sondertilgung**: Extra payments with percentage limits (5%, 10%, 20%, 50%, unlimited)
 - **Parameter Locking**: Lock any loan parameter and recalculate others
 - **Market Compliance**: Swiss and German banking regulation compliance
 - **Advanced Calculations**: Amortization schedules, interest sensitivity analysis
 
 ### Technical Excellence
+
 - **Type Safety**: Branded types make illegal states unrepresentable
 - **Business Rules**: Encoded at type level with comprehensive validation
 - **400+ Tests**: Domain validation with property-based testing
@@ -145,3 +156,55 @@ const rate = 3.5; // Could be invalid rate
 - Components should be organized by feature (ui/, portfolio/, mortgage/)
 - Financial calculations must use domain types, never primitives
 - Always use Result/Option types for error handling
+
+## Programming Paradigm Rules
+
+### ✅ REQUIRED: Functional Programming & Composition API Only
+
+- **NO CLASSES**: All business logic must be pure functions
+- **NO OOP PATTERNS**: No interfaces, inheritance, or object-oriented design
+- **IMMUTABLE DATA**: Use immutable operations, return new state
+- **PURE FUNCTIONS**: Functions should have no side effects
+- **VUE COMPOSITION API**: All components must use `<script setup>`
+- **FUNCTIONAL SERVICES**: Export functions directly, not class instances
+
+### Examples:
+
+#### ✅ Good - Functional Style
+
+```typescript
+// Pure functions
+export function calculatePayment(amount: number, rate: number): number {
+  return amount * rate;
+}
+
+// Factory functions for repositories
+export const createRepository = () => {
+  let data: T[] = [];
+  return {
+    save: (item: T) => {
+      data = [...data, item];
+    },
+    findAll: () => [...data],
+  };
+};
+```
+
+#### ❌ Bad - OOP Style
+
+```typescript
+// No classes
+class Service {
+  constructor(private dep: Dependency) {}
+  method() {
+    /* ... */
+  }
+}
+
+// No interfaces
+interface IRepository {
+  save(item: T): void;
+}
+```
+
+For detailed standards, see: `/docs/CODING_STANDARDS.md`

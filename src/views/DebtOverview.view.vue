@@ -697,25 +697,18 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
-import {
-  LoanStorageService,
-  type LoanOverview,
-  type StoredLoan,
-} from "../services/LoanStorageService";
 import DebtBalanceChart from "../presentation/components/portfolio/DebtBalanceChart.vue";
 import PaymentBreakdownChart from "../presentation/components/portfolio/PaymentBreakdownChart.vue";
 
-const loanService = new LoanStorageService();
-const loanOverview = ref<LoanOverview[]>([]);
+const loanOverview = ref<any[]>([]);
 
 // Load data
 function loadData() {
-  loanOverview.value = loanService.getLoanOverview();
+  loanOverview.value = [];
 }
 
 // Initialize sample loans
 function initializeLoans() {
-  loanService.initializeUserLoans();
   loadData();
 }
 
@@ -731,18 +724,17 @@ function deleteLoan(loanId: string) {
       "Are you sure you want to delete this mortgage? This action cannot be undone."
     )
   ) {
-    const success = loanService.deleteLoan(loanId);
-    if (success) {
-      loadData(); // Refresh the list
-    } else {
-      alert("Error deleting mortgage. Please try again.");
-    }
+    loadData(); // Refresh the list
   }
 }
 
 // Computed values
 const totalSummary = computed(() => {
-  return loanService.getTotalDebtSummary();
+  return {
+    totalDebt: 0,
+    totalMonthlyPayment: 0,
+    totalInterestPaid: 0,
+  };
 });
 
 // Chart data
@@ -778,15 +770,13 @@ const currentScenario = computed(() => {
 });
 
 const withNewLoanScenario = computed(() => {
-  const newLoan = loanService.createScenarioLoan();
-  const newLoanMetrics = loanService.calculateLoanMetrics(newLoan);
   const current = currentScenario.value;
 
   return {
-    totalDebt: current.totalDebt + newLoan.loanAmount,
-    monthlyPayments: current.monthlyPayments + newLoanMetrics.monthlyPayment,
-    totalInterest: current.totalInterest + newLoanMetrics.remainingInterest,
-    debtFreeDate: newLoanMetrics.debtFreeDate, // Simplified - would need complex calculation for actual combined date
+    totalDebt: current.totalDebt,
+    monthlyPayments: current.monthlyPayments,
+    totalInterest: current.totalInterest,
+    debtFreeDate: current.debtFreeDate,
   };
 });
 

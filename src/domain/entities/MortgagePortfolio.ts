@@ -2,7 +2,7 @@
  * MortgagePortfolio - Domain Entity
  *
  * Represents a collection of mortgages for portfolio management
- * Supports both Swiss and German market requirements
+ * Focused on German mortgage market requirements
  */
 
 import { Result } from "../types/Brand";
@@ -17,7 +17,6 @@ export type MortgageEntry = {
   readonly id: string;
   readonly name: string;
   readonly configuration: LoanConfiguration;
-  readonly market: "DE" | "CH"; // German or Swiss market
   readonly bank: string;
   readonly startDate: Date;
   readonly notes?: string;
@@ -41,10 +40,6 @@ export type PortfolioSummary = {
   readonly averageInterestRate: number;
   readonly activeMortgages: number;
   readonly totalMortgages: number;
-  readonly marketDistribution: {
-    readonly german: number;
-    readonly swiss: number;
-  };
 };
 
 // Validation errors

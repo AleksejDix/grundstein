@@ -830,7 +830,6 @@
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { MortgageAdapter } from "../presentation/adapters/MortgageAdapter";
-import { LoanStorageService } from "../services/LoanStorageService";
 
 // Components
 import EditableAmount from "../presentation/components/ui/EditableAmount.vue";
@@ -841,7 +840,7 @@ import PaymentSchedule from "../presentation/components/mortgage/PaymentSchedule
 const adapter = new MortgageAdapter();
 
 // Loan storage service
-const loanService = new LoanStorageService();
+// const loanService = new LoanStorageService(); // Service deleted
 
 // Route for edit parameter
 const route = useRoute();

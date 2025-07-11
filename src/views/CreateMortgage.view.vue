@@ -1,314 +1,317 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex items-center">
-            <RouterLink to="/" class="flex items-center space-x-3">
-              <div
-                class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center"
+  <FormLayout>
+    <template #header>
+      <PageHeader
+        title="Create Your Mortgage"
+        subtitle="Configure your mortgage parameters and see detailed calculations"
+      />
+    </template>
+
+    <form @submit.prevent="calculateMortgage">
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Input Section -->
+        <div class="space-y-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">
+            Mortgage Details
+          </h2>
+
+          <!-- Loan Amount -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Loan Amount</label
+            >
+            <div class="relative">
+              <span
+                class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                >€</span
               >
-                <svg
-                  class="w-5 h-5 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M12 2L2 7v10c0 5.55 3.84 10 9 11 1.95-.45 3.73-1.28 5.31-2.38C19.77 17 22 13.55 22 9V7l-10-5z"
-                  />
-                </svg>
-              </div>
-              <span class="text-xl font-bold text-gray-900">Grundstein</span>
-            </RouterLink>
+              <input
+                v-model.number="mortgageForm.amount"
+                type="number"
+                class="w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="300,000"
+                required
+              />
+            </div>
           </div>
-          <div class="flex items-center space-x-6">
-            <RouterLink
-              to="/"
-              class="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-              >Dashboard</RouterLink
+
+          <!-- Interest Rate -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Zinssatz (Annual Interest Rate)</label
             >
-            <RouterLink
-              to="/portfolio"
-              class="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-              >Portfolio</RouterLink
+            <div class="relative">
+              <input
+                v-model.number="mortgageForm.interestRate"
+                type="number"
+                step="0.01"
+                class="w-full pr-8 pl-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="3.5"
+                required
+              />
+              <span
+                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                >%</span
+              >
+            </div>
+          </div>
+
+          <!-- Zinsbindung (Fixed Rate Period) -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Zinsbindung (Fixed Rate Period)</label
             >
-            <RouterLink
-              to="/create-mortgage"
-              class="text-blue-600 font-medium px-3 py-2 text-sm"
-              >Create Mortgage</RouterLink
+            <select
+              v-model.number="mortgageForm.fixedRatePeriod"
+              class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             >
+              <option value="5">5 Jahre</option>
+              <option value="10">10 Jahre</option>
+              <option value="15">15 Jahre</option>
+              <option value="20">20 Jahre</option>
+              <option value="25">25 Jahre</option>
+              <option value="30">30 Jahre</option>
+            </select>
+            <p class="text-xs text-gray-500 mt-1">
+              Typical German mortgages have 10-year fixed rate periods
+            </p>
+          </div>
+
+          <!-- Monthly Payment -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Gewünschte monatliche Rate</label
+            >
+            <div class="relative">
+              <span
+                class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                >€</span
+              >
+              <input
+                v-model.number="mortgageForm.monthlyPayment"
+                type="number"
+                class="w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="400"
+                required
+              />
+            </div>
+            <p class="text-xs text-gray-500 mt-1">
+              How much do you want to pay monthly?
+            </p>
+          </div>
+
+          <!-- Market -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Market</label
+            >
+            <select
+              v-model="mortgageForm.market"
+              class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="DE">Germany (DE)</option>
+              <option value="CH">Switzerland (CH)</option>
+            </select>
+          </div>
+
+          <!-- Bank -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Bank/Lender</label
+            >
+            <input
+              v-model="mortgageForm.bank"
+              type="text"
+              class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., Deutsche Bank"
+              required
+            />
+          </div>
+
+          <!-- Loan Start Date -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Loan Start Date</label
+            >
+            <input
+              v-model="mortgageForm.startDate"
+              type="date"
+              class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+            <p class="text-xs text-gray-500 mt-1">
+              When did you first take out this mortgage?
+            </p>
+          </div>
+
+          <!-- Mortgage Name -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Mortgage Name</label
+            >
+            <input
+              v-model="mortgageForm.name"
+              type="text"
+              class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., Primary Home Mortgage"
+              required
+            />
           </div>
         </div>
-      </div>
-    </nav>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Header -->
-      <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">
-          Create Your Mortgage
-        </h1>
-        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-          Configure your mortgage parameters and see detailed calculations
-        </p>
-      </div>
+        <!-- Results Section -->
+        <div class="space-y-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">
+            Calculation Results
+          </h2>
 
-      <!-- Main Form -->
-      <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
-        <form @submit.prevent="calculateMortgage">
-          <div class="grid md:grid-cols-2 gap-8">
-            <!-- Input Section -->
-            <div class="space-y-6">
-              <h2 class="text-xl font-semibold text-gray-900 mb-6">
-                Mortgage Details
-              </h2>
+          <!-- Loading State -->
+          <div v-if="isCalculating" class="text-center py-8">
+            <div
+              class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"
+            ></div>
+            <p class="text-gray-500 mt-2">Calculating...</p>
+          </div>
 
-              <!-- Loan Amount -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Loan Amount</label
-                >
-                <div class="relative">
-                  <span
-                    class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    >€</span
-                  >
-                  <input
-                    v-model.number="mortgageForm.amount"
-                    type="number"
-                    class="w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="300,000"
-                    required
-                  />
+          <!-- Results -->
+          <div v-else-if="calculationResults" class="space-y-6">
+            <!-- Monthly Payment -->
+            <div class="bg-blue-50 rounded-xl p-6">
+              <h3 class="text-lg font-semibold text-blue-900 mb-2">
+                Monthly Payment
+              </h3>
+              <p class="text-3xl font-bold text-blue-600">
+                {{ formatCurrency(calculationResults.monthlyPayment) }}
+              </p>
+              <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span class="text-gray-600">Principal:</span>
+                  <span class="font-medium ml-2">{{
+                    formatCurrency(calculationResults.principalPayment)
+                  }}</span>
                 </div>
-              </div>
-
-              <!-- Interest Rate -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Annual Interest Rate</label
-                >
-                <div class="relative">
-                  <input
-                    v-model.number="mortgageForm.interestRate"
-                    type="number"
-                    step="0.01"
-                    class="w-full pr-8 pl-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="3.5"
-                    required
-                  />
-                  <span
-                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    >%</span
-                  >
+                <div>
+                  <span class="text-gray-600">Interest:</span>
+                  <span class="font-medium ml-2">{{
+                    formatCurrency(calculationResults.interestPayment)
+                  }}</span>
                 </div>
-              </div>
-
-              <!-- Loan Term -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Loan Term</label
-                >
-                <div class="relative">
-                  <input
-                    v-model.number="mortgageForm.termYears"
-                    type="number"
-                    class="w-full pr-16 pl-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="25"
-                    required
-                  />
-                  <span
-                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    >years</span
-                  >
-                </div>
-              </div>
-
-              <!-- Market -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Market</label
-                >
-                <select
-                  v-model="mortgageForm.market"
-                  class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                >
-                  <option value="DE">Germany (DE)</option>
-                  <option value="CH">Switzerland (CH)</option>
-                </select>
-              </div>
-
-              <!-- Bank -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Bank/Lender</label
-                >
-                <input
-                  v-model="mortgageForm.bank"
-                  type="text"
-                  class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g., Deutsche Bank"
-                  required
-                />
-              </div>
-
-              <!-- Mortgage Name -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Mortgage Name</label
-                >
-                <input
-                  v-model="mortgageForm.name"
-                  type="text"
-                  class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g., Primary Home Mortgage"
-                  required
-                />
-              </div>
-
-              <!-- Action Buttons -->
-              <div class="flex space-x-3 pt-4">
-                <Button
-                  type="submit"
-                  label="Calculate Mortgage"
-                  size="lg"
-                  class="flex-1"
-                />
-                <Button
-                  label="Reset"
-                  variant="secondary"
-                  size="lg"
-                  @click="resetForm"
-                />
               </div>
             </div>
 
-            <!-- Results Section -->
-            <div class="space-y-6">
-              <h2 class="text-xl font-semibold text-gray-900 mb-6">
-                Calculation Results
-              </h2>
-
-              <!-- Loading State -->
-              <div v-if="isCalculating" class="text-center py-8">
-                <div
-                  class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"
-                ></div>
-                <p class="text-gray-500 mt-2">Calculating...</p>
-              </div>
-
-              <!-- Results -->
-              <div v-else-if="calculationResults" class="space-y-6">
-                <!-- Monthly Payment -->
-                <div class="bg-blue-50 rounded-xl p-6">
-                  <h3 class="text-lg font-semibold text-blue-900 mb-2">
-                    Monthly Payment
-                  </h3>
-                  <p class="text-3xl font-bold text-blue-600">
-                    {{ formatCurrency(calculationResults.monthlyPayment) }}
-                  </p>
-                  <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span class="text-gray-600">Principal:</span>
-                      <span class="font-medium ml-2">{{
-                        formatCurrency(calculationResults.principalPayment)
-                      }}</span>
-                    </div>
-                    <div>
-                      <span class="text-gray-600">Interest:</span>
-                      <span class="font-medium ml-2">{{
-                        formatCurrency(calculationResults.interestPayment)
-                      }}</span>
-                    </div>
-                  </div>
+            <!-- Total Cost -->
+            <div class="bg-gray-50 rounded-xl p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                Total Cost
+              </h3>
+              <div class="space-y-2">
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Total Interest:</span>
+                  <span class="font-medium">{{
+                    formatCurrency(calculationResults.totalInterest)
+                  }}</span>
                 </div>
-
-                <!-- Total Cost -->
-                <div class="bg-gray-50 rounded-xl p-6">
-                  <h3 class="text-lg font-semibold text-gray-900 mb-2">
-                    Total Cost
-                  </h3>
-                  <div class="space-y-2">
-                    <div class="flex justify-between">
-                      <span class="text-gray-600">Total Interest:</span>
-                      <span class="font-medium">{{
-                        formatCurrency(calculationResults.totalInterest)
-                      }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-gray-600">Total Amount:</span>
-                      <span class="font-bold">{{
-                        formatCurrency(calculationResults.totalAmount)
-                      }}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Key Metrics -->
-                <div class="grid grid-cols-2 gap-4">
-                  <div class="bg-white border border-gray-200 rounded-lg p-4">
-                    <h4 class="font-medium text-gray-900">Total Months</h4>
-                    <p class="text-xl font-bold text-gray-600">
-                      {{ calculationResults.totalMonths }}
-                    </p>
-                  </div>
-                  <div class="bg-white border border-gray-200 rounded-lg p-4">
-                    <h4 class="font-medium text-gray-900">Interest Rate</h4>
-                    <p class="text-xl font-bold text-gray-600">
-                      {{ mortgageForm.interestRate }}%
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="space-y-3">
-                  <Button
-                    label="Add to Portfolio"
-                    size="lg"
-                    class="w-full"
-                    @click="showPortfolioSelection = true"
-                  />
-                  <Button
-                    label="Save as Draft"
-                    variant="secondary"
-                    size="lg"
-                    class="w-full"
-                    @click="saveDraft"
-                  />
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Total Amount:</span>
+                  <span class="font-bold">{{
+                    formatCurrency(calculationResults.totalAmount)
+                  }}</span>
                 </div>
               </div>
+            </div>
 
-              <!-- Initial State -->
-              <div v-else class="text-center py-12">
-                <div
-                  class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"
-                >
-                  <svg
-                    class="w-8 h-8 text-gray-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <p class="text-gray-500">
-                  Fill in the mortgage details to see calculations
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-white border border-gray-200 rounded-lg p-4">
+                <h4 class="font-medium text-gray-900">Current Balance</h4>
+                <p class="text-xl font-bold text-blue-600">
+                  {{ formatCurrency(calculationResults.currentBalance) }}
+                </p>
+              </div>
+              <div class="bg-white border border-gray-200 rounded-lg p-4">
+                <h4 class="font-medium text-gray-900">Months Elapsed</h4>
+                <p class="text-xl font-bold text-green-600">
+                  {{ calculationResults.elapsedMonths }} /
+                  {{ calculationResults.totalMonths }}
+                </p>
+              </div>
+              <div class="bg-white border border-gray-200 rounded-lg p-4">
+                <h4 class="font-medium text-gray-900">Remaining Months</h4>
+                <p class="text-xl font-bold text-orange-600">
+                  {{ calculationResults.remainingMonths }}
+                </p>
+              </div>
+              <div class="bg-white border border-gray-200 rounded-lg p-4">
+                <h4 class="font-medium text-gray-900">Payoff Date</h4>
+                <p class="text-xl font-bold text-purple-600">
+                  {{ calculationResults.payoffDate }}
                 </p>
               </div>
             </div>
+
+            <!-- Actions -->
+            <div class="space-y-3">
+              <Button
+                label="Add to Portfolio"
+                size="lg"
+                class="w-full"
+                @click="showPortfolioSelection = true"
+              />
+              <Button
+                label="Save as Draft"
+                variant="secondary"
+                size="lg"
+                class="w-full"
+                @click="saveDraft"
+              />
+            </div>
           </div>
-        </form>
+
+          <!-- Initial State -->
+          <div v-else class="text-center py-12">
+            <div
+              class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"
+            >
+              <svg
+                class="w-8 h-8 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                />
+              </svg>
+            </div>
+            <p class="text-gray-500">
+              Fill in the mortgage details to see calculations
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
+    </form>
+
+    <template #footer>
+      <div class="flex space-x-3">
+        <Button
+          label="Calculate Mortgage"
+          size="lg"
+          class="flex-1"
+          @click="calculateMortgage"
+        />
+        <Button
+          label="Reset"
+          variant="secondary"
+          size="lg"
+          @click="resetForm"
+        />
+      </div>
+    </template>
 
     <!-- Portfolio Selection Modal -->
     <Modal
@@ -398,7 +401,7 @@
         />
       </template>
     </Modal>
-  </div>
+  </FormLayout>
 </template>
 
 <script setup lang="ts">
@@ -406,6 +409,9 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { portfolioApplicationService } from "../application/services/PortfolioApplicationService";
 import type { MortgagePortfolio } from "../application/services/PortfolioApplicationService";
+import { routes } from "../router/routes";
+import { FormLayout } from "../layouts";
+import PageHeader from "../components/PageHeader.vue";
 import Modal from "../components/Modal.vue";
 import Button from "../components/Button.vue";
 
@@ -415,10 +421,12 @@ const router = useRouter();
 const mortgageForm = ref({
   amount: 300000,
   interestRate: 3.5,
-  termYears: 25,
+  fixedRatePeriod: 10, // Zinsbindung in years
+  monthlyPayment: 1500, // Desired monthly payment
   market: "DE" as "DE" | "CH",
   bank: "",
   name: "",
+  startDate: new Date().toISOString().split("T")[0], // Default to today
 });
 
 // Calculation state
@@ -430,6 +438,10 @@ const calculationResults = ref<{
   totalInterest: number;
   totalAmount: number;
   totalMonths: number;
+  elapsedMonths: number;
+  remainingMonths: number;
+  currentBalance: number;
+  payoffDate: string;
 } | null>(null);
 
 // Portfolio management
@@ -459,6 +471,38 @@ async function loadPortfolios() {
 }
 
 async function calculateMortgage() {
+  // Basic validation
+  if (!mortgageForm.value.amount || mortgageForm.value.amount <= 0) {
+    alert("Please enter a valid loan amount");
+    return;
+  }
+
+  if (
+    !mortgageForm.value.interestRate ||
+    mortgageForm.value.interestRate <= 0
+  ) {
+    alert("Please enter a valid interest rate");
+    return;
+  }
+
+  if (
+    !mortgageForm.value.monthlyPayment ||
+    mortgageForm.value.monthlyPayment <= 0
+  ) {
+    alert("Please enter a valid monthly payment amount");
+    return;
+  }
+
+  if (!mortgageForm.value.name || mortgageForm.value.name.trim() === "") {
+    alert("Please enter a mortgage name");
+    return;
+  }
+
+  if (!mortgageForm.value.bank || mortgageForm.value.bank.trim() === "") {
+    alert("Please enter a bank/lender name");
+    return;
+  }
+
   isCalculating.value = true;
 
   try {
@@ -466,18 +510,73 @@ async function calculateMortgage() {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     const monthlyRate = mortgageForm.value.interestRate / 100 / 12;
-    const totalMonths = mortgageForm.value.termYears * 12;
-    const monthlyPayment =
-      (mortgageForm.value.amount *
-        monthlyRate *
-        Math.pow(1 + monthlyRate, totalMonths)) /
-      (Math.pow(1 + monthlyRate, totalMonths) - 1);
+
+    // For German mortgages, calculate total months based on monthly payment
+    // If monthly payment is specified, calculate how long it takes to pay off
+    let totalMonths: number;
+    let monthlyPayment: number;
+
+    if (mortgageForm.value.monthlyPayment > 0) {
+      // User specified monthly payment - calculate total months
+      monthlyPayment = mortgageForm.value.monthlyPayment;
+
+      // Calculate total months using payment formula
+      // monthlyPayment = (amount * monthlyRate * (1 + monthlyRate)^n) / ((1 + monthlyRate)^n - 1)
+      // Solve for n (total months)
+      const principal = mortgageForm.value.amount;
+      const rate = monthlyRate;
+      const payment = monthlyPayment;
+
+      if (payment <= principal * rate) {
+        // Payment too low to cover interest
+        throw new Error("Monthly payment too low to cover interest");
+      }
+
+      // Calculate months: n = log(1 + (P*r)/(M-P*r)) / log(1+r)
+      totalMonths =
+        Math.log(1 + (principal * rate) / (payment - principal * rate)) /
+        Math.log(1 + rate);
+      totalMonths = Math.ceil(totalMonths); // Round up to whole months
+    } else {
+      // Fallback to 25 years if no monthly payment specified
+      totalMonths = 25 * 12;
+      monthlyPayment =
+        (mortgageForm.value.amount *
+          monthlyRate *
+          Math.pow(1 + monthlyRate, totalMonths)) /
+        (Math.pow(1 + monthlyRate, totalMonths) - 1);
+    }
 
     const totalAmount = monthlyPayment * totalMonths;
     const totalInterest = totalAmount - mortgageForm.value.amount;
     const principalPayment =
       monthlyPayment - mortgageForm.value.amount * monthlyRate;
     const interestPayment = mortgageForm.value.amount * monthlyRate;
+
+    // Calculate elapsed months from start date
+    const startDate = new Date(mortgageForm.value.startDate);
+    const today = new Date();
+    const elapsedMonths = Math.max(
+      0,
+      (today.getFullYear() - startDate.getFullYear()) * 12 +
+        (today.getMonth() - startDate.getMonth())
+    );
+
+    // Calculate current balance (simplified amortization)
+    let currentBalance = mortgageForm.value.amount;
+    for (
+      let month = 1;
+      month <= Math.min(elapsedMonths, totalMonths);
+      month++
+    ) {
+      const monthlyInterest = currentBalance * monthlyRate;
+      const monthlyPrincipal = monthlyPayment - monthlyInterest;
+      currentBalance = Math.max(0, currentBalance - monthlyPrincipal);
+    }
+
+    const remainingMonths = Math.max(0, totalMonths - elapsedMonths);
+    const payoffDate = new Date(startDate);
+    payoffDate.setMonth(payoffDate.getMonth() + totalMonths);
 
     calculationResults.value = {
       monthlyPayment: Math.round(monthlyPayment * 100) / 100,
@@ -486,6 +585,10 @@ async function calculateMortgage() {
       totalInterest: Math.round(totalInterest * 100) / 100,
       totalAmount: Math.round(totalAmount * 100) / 100,
       totalMonths,
+      elapsedMonths,
+      remainingMonths,
+      currentBalance: Math.round(currentBalance * 100) / 100,
+      payoffDate: payoffDate.toLocaleDateString(),
     };
   } catch (error) {
     console.error("Calculation failed:", error);
@@ -498,10 +601,12 @@ function resetForm() {
   mortgageForm.value = {
     amount: 300000,
     interestRate: 3.5,
-    termYears: 25,
+    fixedRatePeriod: 10,
+    monthlyPayment: 1500,
     market: "DE",
     bank: "",
     name: "",
+    startDate: new Date().toISOString().split("T")[0], // Default to today
   };
   calculationResults.value = null;
 }
@@ -545,7 +650,7 @@ async function createPortfolioAndAddMortgage() {
       showCreatePortfolio.value = false;
 
       // Redirect to portfolio
-      router.push({ name: "portfolio-detail", params: { id: result.data.id } });
+      router.push(routes.portfolios.show(result.data.id));
     }
   } catch (error) {
     console.error("Failed to create portfolio:", error);

@@ -38,7 +38,7 @@
     <LoadingSpinner v-if="isLoading" message="Loading mortgage details..." />
     <ErrorAlert v-else-if="error" :message="error" />
 
-    <template v-else-if="mortgage" #metrics>
+    <template v-if="mortgage" #metrics>
       <MetricCard
         label="Principal"
         :value="formatCurrency(mortgage.principal)"
@@ -68,8 +68,8 @@
       />
 
       <MetricCard
-        label="Term"
-        :value="`${mortgage.termYears} years`"
+        label="Zinsbindung"
+        :value="`${mortgage.fixedRatePeriod} Jahre`"
         icon-path="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
         icon-bg-color="bg-purple-100"
         icon-color="text-purple-600"
@@ -96,16 +96,16 @@
               >
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Term:</span>
+              <span class="text-sm text-gray-600">Zinsbindung:</span>
               <span class="text-sm font-medium"
-                >{{ mortgage.termYears }} years</span
+                >{{ mortgage.fixedRatePeriod }} Jahre</span
               >
             </div>
             <div class="flex justify-between">
-              <span class="text-sm text-gray-600">Total Months:</span>
-              <span class="text-sm font-medium">{{
-                mortgage.termYears * 12
-              }}</span>
+              <span class="text-sm text-gray-600">Monthly Payment:</span>
+              <span class="text-sm font-medium">
+                {{ formatCurrency(mortgage.monthlyPayment) }}
+              </span>
             </div>
             <div class="flex justify-between">
               <span class="text-sm text-gray-600">Market:</span>
@@ -178,7 +178,8 @@ interface Mortgage {
   name: string;
   principal: number;
   interestRate: number;
-  termYears: number;
+  fixedRatePeriod: number;
+  monthlyPayment: number;
   market: "DE" | "CH";
   bank: string;
 }
@@ -226,7 +227,8 @@ async function loadMortgage() {
           name: foundMortgage.name,
           principal: foundMortgage.principal,
           interestRate: foundMortgage.interestRate,
-          termYears: foundMortgage.termYears,
+          fixedRatePeriod: foundMortgage.fixedRatePeriod || 10,
+          monthlyPayment: foundMortgage.monthlyPayment || 0,
           market: foundMortgage.market,
           bank: foundMortgage.bank || "Unknown Bank",
         };
@@ -274,8 +276,14 @@ async function deleteMortgage() {
 function calculateMonthlyPayment(): number {
   if (!mortgage.value) return 0;
 
+  // If monthly payment is specified, use it directly
+  if (mortgage.value.monthlyPayment > 0) {
+    return mortgage.value.monthlyPayment;
+  }
+
+  // Otherwise calculate using standard formula
   const monthlyRate = mortgage.value.interestRate / 100 / 12;
-  const totalMonths = mortgage.value.termYears * 12;
+  const totalMonths = mortgage.value.fixedRatePeriod * 12;
 
   return (
     (mortgage.value.principal *
@@ -289,7 +297,26 @@ function calculateTotalInterest(): number {
   if (!mortgage.value) return 0;
 
   const monthlyPayment = calculateMonthlyPayment();
-  const totalMonths = mortgage.value.termYears * 12;
+  let totalMonths: number;
+
+  if (mortgage.value.monthlyPayment > 0) {
+    // Calculate total months based on monthly payment
+    const monthlyRate = mortgage.value.interestRate / 100 / 12;
+    const principal = mortgage.value.principal;
+    const payment = monthlyPayment;
+
+    if (payment <= principal * monthlyRate) {
+      return 0; // Payment too low
+    }
+
+    totalMonths =
+      Math.log(
+        1 + (principal * monthlyRate) / (payment - principal * monthlyRate)
+      ) / Math.log(1 + monthlyRate);
+    totalMonths = Math.ceil(totalMonths);
+  } else {
+    totalMonths = mortgage.value.fixedRatePeriod * 12;
+  }
 
   return monthlyPayment * totalMonths - mortgage.value.principal;
 }

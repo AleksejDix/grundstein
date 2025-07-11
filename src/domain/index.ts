@@ -21,6 +21,11 @@ export * from "./types/LoanConfiguration";
 export * from "./types/MonthlyPayment";
 export * from "./types/ExtraPayment";
 export * from "./types/SondertilgungPlan";
+export * from "./types/FixedRatePeriod";
+export * from "./types/PropertyValuation";
+export * from "./types/LoanToValueRatio";
+export * from "./types/PaymentHistory";
+export * from "./types/GermanSondertilgungRules";
 
 // Entities
 export * from "./entities/MortgagePortfolio";

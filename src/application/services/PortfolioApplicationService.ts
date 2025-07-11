@@ -25,7 +25,7 @@ import {
   calculatePortfolioCashFlow,
 } from "../../domain/services/PortfolioService";
 import type {
-  IPortfolioRepository,
+  PortfolioRepository,
   RepositoryError,
 } from "../../infrastructure/persistence/PortfolioRepository";
 import { portfolioRepository } from "../../infrastructure/persistence/PortfolioRepository";
@@ -74,207 +74,205 @@ export type PortfolioWithSummary = {
 /**
  * Portfolio Application Service
  */
-export class PortfolioApplicationService {
-  constructor(private repository: IPortfolioRepository = portfolioRepository) {}
+// Helper functions for ID generation
+const generatePortfolioId = (): PortfolioId =>
+  `portfolio_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-  /**
-   * Create a new mortgage portfolio
-   */
-  async createPortfolio(
-    input: CreatePortfolioInput
-  ): Promise<Result<MortgagePortfolio, PortfolioApplicationError>> {
-    // Generate unique ID
-    const portfolioId = this.generatePortfolioId();
+const generateMortgageId = (): string =>
+  `mortgage_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    // Create domain entity
-    const portfolioResult = createMortgagePortfolio(
-      portfolioId,
-      input.name,
-      input.owner
-    );
+/**
+ * Portfolio Application Functions
+ */
 
-    if (!portfolioResult.success) {
-      return portfolioResult;
-    }
+/**
+ * Create a new mortgage portfolio
+ */
+export async function createPortfolio(
+  input: CreatePortfolioInput,
+  repository: PortfolioRepository = portfolioRepository
+): Promise<Result<MortgagePortfolio, PortfolioApplicationError>> {
+  // Generate unique ID
+  const portfolioId = generatePortfolioId();
 
-    // Persist
-    const saveResult = await this.repository.save(portfolioResult.data);
-    if (!saveResult.success) {
-      return { success: false, error: saveResult.error };
-    }
+  // Create domain entity
+  const portfolioResult = createMortgagePortfolio(
+    portfolioId,
+    input.name,
+    input.owner
+  );
 
+  if (!portfolioResult.success) {
     return portfolioResult;
   }
 
-  /**
-   * Get portfolio with summary
-   */
-  async getPortfolioWithSummary(
-    portfolioId: PortfolioId
-  ): Promise<Result<PortfolioWithSummary, PortfolioApplicationError>> {
-    const portfolioResult = await this.repository.findById(portfolioId);
-    if (!portfolioResult.success) {
-      return { success: false, error: portfolioResult.error };
-    }
-
-    const summaryResult = calculatePortfolioSummary(portfolioResult.data);
-    if (!summaryResult.success) {
-      return { success: false, error: summaryResult.error };
-    }
-
-    const optimization = analyzePortfolioOptimization(portfolioResult.data);
-
-    return {
-      success: true,
-      data: {
-        portfolio: portfolioResult.data,
-        summary: summaryResult.data,
-        optimization: {
-          refinancingOpportunities:
-            optimization.refinancingOpportunities.length,
-          consolidationOpportunities:
-            optimization.consolidationOpportunities.length,
-          highRiskMortgages:
-            optimization.riskAnalysis.highInterestMortgages.length,
-        },
-      },
-    };
+  // Persist
+  const saveResult = await repository.save(portfolioResult.data);
+  if (!saveResult.success) {
+    return { success: false, error: saveResult.error };
   }
 
-  /**
-   * Add mortgage to portfolio
-   */
-  async addMortgage(
-    portfolioId: PortfolioId,
-    input: AddMortgageInput
-  ): Promise<Result<MortgagePortfolio, PortfolioApplicationError>> {
-    // Get existing portfolio
-    const portfolioResult = await this.repository.findById(portfolioId);
-    if (!portfolioResult.success) {
-      return { success: false, error: portfolioResult.error };
-    }
-
-    // Create loan configuration from input
-    const loanConfigResult = createLoanConfigurationFromInput(input.loanData);
-    if (!loanConfigResult.success) {
-      return { success: false, error: "InvalidInput" };
-    }
-
-    // Create mortgage entry
-    const mortgageEntry: MortgageEntry = {
-      id: this.generateMortgageId(),
-      name: input.name,
-      configuration: loanConfigResult.data,
-      market: input.market,
-      bank: input.bank,
-      startDate: new Date(input.startDate),
-      notes: input.notes,
-      isActive: true,
-    };
-
-    // Add to portfolio
-    const updatedPortfolioResult = addMortgageToPortfolio(
-      portfolioResult.data,
-      mortgageEntry
-    );
-
-    if (!updatedPortfolioResult.success) {
-      return updatedPortfolioResult;
-    }
-
-    // Persist
-    const saveResult = await this.repository.save(updatedPortfolioResult.data);
-    if (!saveResult.success) {
-      return { success: false, error: saveResult.error };
-    }
-
-    return updatedPortfolioResult;
-  }
-
-  /**
-   * Remove mortgage from portfolio
-   */
-  async removeMortgage(
-    portfolioId: PortfolioId,
-    mortgageId: string
-  ): Promise<Result<MortgagePortfolio, PortfolioApplicationError>> {
-    const portfolioResult = await this.repository.findById(portfolioId);
-    if (!portfolioResult.success) {
-      return { success: false, error: portfolioResult.error };
-    }
-
-    const updatedPortfolioResult = removeMortgageFromPortfolio(
-      portfolioResult.data,
-      mortgageId
-    );
-
-    if (!updatedPortfolioResult.success) {
-      return updatedPortfolioResult;
-    }
-
-    const saveResult = await this.repository.save(updatedPortfolioResult.data);
-    if (!saveResult.success) {
-      return { success: false, error: saveResult.error };
-    }
-
-    return updatedPortfolioResult;
-  }
-
-  /**
-   * Get all portfolios
-   */
-  async getAllPortfolios(): Promise<
-    Result<MortgagePortfolio[], PortfolioApplicationError>
-  > {
-    return await this.repository.findAll();
-  }
-
-  /**
-   * Get portfolio cash flow projection
-   */
-  async getPortfolioCashFlow(
-    portfolioId: PortfolioId,
-    months: number = 360 // 30 years default
-  ): Promise<
-    Result<
-      {
-        monthlyPayments: number[];
-        cumulativeInterest: number[];
-        remainingBalance: number[];
-      },
-      PortfolioApplicationError
-    >
-  > {
-    const portfolioResult = await this.repository.findById(portfolioId);
-    if (!portfolioResult.success) {
-      return { success: false, error: portfolioResult.error };
-    }
-
-    const cashFlow = calculatePortfolioCashFlow(portfolioResult.data, months);
-
-    return { success: true, data: cashFlow };
-  }
-
-  /**
-   * Delete portfolio
-   */
-  async deletePortfolio(
-    portfolioId: PortfolioId
-  ): Promise<Result<void, PortfolioApplicationError>> {
-    const deleteResult = await this.repository.delete(portfolioId);
-    return deleteResult;
-  }
-
-  private generatePortfolioId(): PortfolioId {
-    return `portfolio_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
-
-  private generateMortgageId(): string {
-    return `mortgage_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
+  return portfolioResult;
 }
 
 /**
- * Default service instance
+ * Get portfolio with summary
  */
-export const portfolioApplicationService = new PortfolioApplicationService();
+export async function getPortfolioWithSummary(
+  portfolioId: PortfolioId,
+  repository: PortfolioRepository = portfolioRepository
+): Promise<Result<PortfolioWithSummary, PortfolioApplicationError>> {
+  const portfolioResult = await repository.findById(portfolioId);
+  if (!portfolioResult.success) {
+    return { success: false, error: portfolioResult.error };
+  }
+
+  const summaryResult = calculatePortfolioSummary(portfolioResult.data);
+  if (!summaryResult.success) {
+    return { success: false, error: summaryResult.error };
+  }
+
+  const optimization = analyzePortfolioOptimization(portfolioResult.data);
+
+  return {
+    success: true,
+    data: {
+      portfolio: portfolioResult.data,
+      summary: summaryResult.data,
+      optimization: {
+        refinancingOpportunities: optimization.refinancingOpportunities.length,
+        consolidationOpportunities:
+          optimization.consolidationOpportunities.length,
+        highRiskMortgages:
+          optimization.riskAnalysis.highInterestMortgages.length,
+      },
+    },
+  };
+}
+
+/**
+ * Add mortgage to portfolio
+ */
+export async function addMortgageToPortfolioById(
+  portfolioId: PortfolioId,
+  input: AddMortgageInput,
+  repository: PortfolioRepository = portfolioRepository
+): Promise<Result<MortgagePortfolio, PortfolioApplicationError>> {
+  // Get existing portfolio
+  const portfolioResult = await repository.findById(portfolioId);
+  if (!portfolioResult.success) {
+    return { success: false, error: portfolioResult.error };
+  }
+
+  // Create loan configuration from input
+  const loanConfigResult = createLoanConfigurationFromInput(input.loanData);
+  if (!loanConfigResult.success) {
+    return { success: false, error: "InvalidInput" };
+  }
+
+  // Create mortgage entry
+  const mortgageEntry: MortgageEntry = {
+    id: generateMortgageId(),
+    name: input.name,
+    configuration: loanConfigResult.data,
+    market: input.market,
+    bank: input.bank,
+    startDate: new Date(input.startDate),
+    notes: input.notes,
+    isActive: true,
+  };
+
+  // Add to portfolio
+  const updatedPortfolioResult = addMortgageToPortfolio(
+    portfolioResult.data,
+    mortgageEntry
+  );
+
+  if (!updatedPortfolioResult.success) {
+    return updatedPortfolioResult;
+  }
+
+  // Persist
+  const saveResult = await repository.save(updatedPortfolioResult.data);
+  if (!saveResult.success) {
+    return { success: false, error: saveResult.error };
+  }
+
+  return updatedPortfolioResult;
+}
+
+/**
+ * Remove mortgage from portfolio
+ */
+export async function removeMortgageFromPortfolioById(
+  portfolioId: PortfolioId,
+  mortgageId: string,
+  repository: PortfolioRepository = portfolioRepository
+): Promise<Result<MortgagePortfolio, PortfolioApplicationError>> {
+  const portfolioResult = await repository.findById(portfolioId);
+  if (!portfolioResult.success) {
+    return { success: false, error: portfolioResult.error };
+  }
+
+  const updatedPortfolioResult = removeMortgageFromPortfolio(
+    portfolioResult.data,
+    mortgageId
+  );
+
+  if (!updatedPortfolioResult.success) {
+    return updatedPortfolioResult;
+  }
+
+  const saveResult = await repository.save(updatedPortfolioResult.data);
+  if (!saveResult.success) {
+    return { success: false, error: saveResult.error };
+  }
+
+  return updatedPortfolioResult;
+}
+
+/**
+ * Get all portfolios
+ */
+export async function getAllPortfolios(
+  repository: PortfolioRepository = portfolioRepository
+): Promise<Result<MortgagePortfolio[], PortfolioApplicationError>> {
+  return await repository.findAll();
+}
+
+/**
+ * Get portfolio cash flow projection
+ */
+export async function getPortfolioCashFlow(
+  portfolioId: PortfolioId,
+  months: number = 360, // 30 years default
+  repository: PortfolioRepository = portfolioRepository
+): Promise<
+  Result<
+    {
+      monthlyPayments: number[];
+      cumulativeInterest: number[];
+      remainingBalance: number[];
+    },
+    PortfolioApplicationError
+  >
+> {
+  const portfolioResult = await repository.findById(portfolioId);
+  if (!portfolioResult.success) {
+    return { success: false, error: portfolioResult.error };
+  }
+
+  const cashFlow = calculatePortfolioCashFlow(portfolioResult.data, months);
+
+  return { success: true, data: cashFlow };
+}
+
+/**
+ * Delete portfolio
+ */
+export async function deletePortfolio(
+  portfolioId: PortfolioId,
+  repository: PortfolioRepository = portfolioRepository
+): Promise<Result<void, PortfolioApplicationError>> {
+  return await repository.delete(portfolioId);
+}

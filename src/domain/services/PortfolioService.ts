@@ -51,8 +51,6 @@ export function calculatePortfolioSummary(
     let totalPrincipalAmount = 0;
     let totalMonthlyPaymentAmount = 0;
     let totalInterestWeighted = 0;
-    let germanCount = 0;
-    let swissCount = 0;
 
     for (const mortgage of activeMortgages) {
       const params = getLoanParameters(mortgage.configuration);
@@ -60,12 +58,6 @@ export function calculatePortfolioSummary(
       totalPrincipalAmount += params.amount;
       totalMonthlyPaymentAmount += params.monthlyPayment;
       totalInterestWeighted += params.amount * params.annualRate;
-
-      if (mortgage.market === "DE") {
-        germanCount++;
-      } else {
-        swissCount++;
-      }
     }
 
     // Create Money objects
@@ -90,10 +82,6 @@ export function calculatePortfolioSummary(
         averageInterestRate: Math.round(averageInterestRate * 100) / 100,
         activeMortgages: activeMortgages.length,
         totalMortgages: portfolio.mortgages.length,
-        marketDistribution: {
-          german: germanCount,
-          swiss: swissCount,
-        },
       },
     };
   } catch (error) {
