@@ -24,9 +24,9 @@ const router = createRouter({
       component: () => import("../views/PortfolioDetail.view.vue"),
     },
     {
-      path: "/calculator",
-      name: "calculator",
-      component: () => import("../views/DebtCalculator.view.vue"),
+      path: "/create-mortgage",
+      name: "create-mortgage",
+      component: () => import("../views/CreateMortgage.view.vue"),
     },
     {
       path: "/mortgage/:id?",

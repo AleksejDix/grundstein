@@ -34,9 +34,9 @@
               >Portfolio</RouterLink
             >
             <RouterLink
-              to="/calculator"
+              to="/create-mortgage"
               class="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-              >Calculator</RouterLink
+              >Create Mortgage</RouterLink
             >
           </div>
         </div>
@@ -99,7 +99,7 @@
           <Button
             label="Add Mortgage"
             variant="secondary"
-            @click="showAddMortgage = true"
+            @click="$router.push('/create-mortgage')"
             size="lg"
           />
         </div>
@@ -230,7 +230,10 @@
               </p>
             </div>
             <div class="flex space-x-3">
-              <Button label="Add Mortgage" @click="showAddMortgage = true" />
+              <Button
+                label="Add Mortgage"
+                @click="$router.push('/create-mortgage')"
+              />
               <Button
                 label="Create Portfolio"
                 variant="secondary"
@@ -426,48 +429,25 @@
         />
       </template>
     </Modal>
-
-    <Modal
-      :is-open="showAddMortgage"
-      title="Add New Mortgage"
-      subtitle="Add a mortgage to your portfolio"
-      @close="showAddMortgage = false"
-    >
-      <div class="text-center py-8">
-        <p class="text-gray-600">
-          Mortgage creation form will be implemented here.
-        </p>
-        <p class="text-sm text-gray-500 mt-2">
-          This will use the same unified modal system.
-        </p>
-      </div>
-
-      <template #footer>
-        <Button
-          label="Cancel"
-          variant="secondary"
-          @click="showAddMortgage = false"
-        />
-        <Button label="Add Mortgage" disabled />
-      </template>
-    </Modal>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
 import { portfolioApplicationService } from "../application/services/PortfolioApplicationService";
 import type { PortfolioWithSummary } from "../application/services/PortfolioApplicationService";
 import { toEuros } from "../domain/types/Money";
 import Modal from "../components/Modal.vue";
 import Button from "../components/Button.vue";
 
+const router = useRouter();
+
 // State
 const portfolios = ref<PortfolioWithSummary[]>([]);
 const isLoading = ref(true);
 const error = ref<string | null>(null);
 const showCreatePortfolio = ref(false);
-const showAddMortgage = ref(false);
 const isCreatingPortfolio = ref(false);
 
 const newPortfolio = ref({
