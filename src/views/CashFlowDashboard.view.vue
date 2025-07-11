@@ -281,8 +281,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
-import { portfolioApplicationService } from "../application/services/PortfolioApplicationService";
+import {
+  getAllPortfolios,
+  getPortfolioWithSummary,
+  createPortfolio,
+} from "../application/services/PortfolioApplicationService";
 import type { PortfolioWithSummary } from "../application/services/PortfolioApplicationService";
+import { createLocalStoragePortfolioRepository } from "../infrastructure/persistence/PortfolioRepository";
 import { toEuros } from "../domain/types/Money";
 import { routes } from "../router/routes";
 import { DashboardLayout } from "../layouts";
@@ -363,15 +368,16 @@ async function loadPortfolios() {
   error.value = null;
 
   try {
-    const result = await portfolioApplicationService.getAllPortfolios();
+    const repository = createLocalStoragePortfolioRepository();
+    const result = await getAllPortfolios(repository);
 
     if (result.success) {
       // Load summaries for each portfolio
       const summaryPromises = result.data.map(async (portfolio) => {
-        const summaryResult =
-          await portfolioApplicationService.getPortfolioWithSummary(
-            portfolio.id
-          );
+        const summaryResult = await getPortfolioWithSummary(
+          repository,
+          portfolio.id
+        );
         return summaryResult.success ? summaryResult.data : null;
       });
 
@@ -398,7 +404,8 @@ async function createPortfolio() {
   isCreatingPortfolio.value = true;
 
   try {
-    const result = await portfolioApplicationService.createPortfolio({
+    const repository = createLocalStoragePortfolioRepository();
+    const result = await createPortfolio(repository, {
       name: newPortfolio.value.name.trim(),
       owner: newPortfolio.value.owner.trim(),
     });
