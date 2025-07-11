@@ -1,258 +1,307 @@
 <template>
-  <div class="px-4 container">
-    <div class="grid grid-cols-6 gap-4">
-      <input type="number" v-model.number="monthOffset" />
-      <InputLoan
-        :modelValue="inputs.kredit"
-        @update:model-value="onLoanChange"
+  <aside class="bg-zinc-800 border-r border-r-zinc-900 overflow-y-auto">
+    <div class="grid gap-4 p-4">
+      <InputLoan v-model="inputs.loan">
+        <Lock v-model="locked.loan"></Lock>
+      </InputLoan>
+
+      <InputMonthlyPayment
+        :modelValue="inputs.monthlyPayment"
+        @update:modelValue="setMonthlyPayment"
+      >
+        <Lock v-model="locked.monthlyPayment"></Lock>
+      </InputMonthlyPayment>
+
+      <InputInterestRate v-model="inputs.interestRate">
+        <Lock v-model="locked.interestRate"></Lock>
+      </InputInterestRate>
+
+      <InputRepaymentRate
+        :modelValue="inputs.principalRate"
+        :disabled="locked.principalRate"
+      >
+        <Lock
+          :modelValue="locked.principalRate"
+          @update:modelValue="setLockedPrincipalRate"
+        ></Lock>
+      </InputRepaymentRate>
+
+      <InputTerm
+        :modelValue="inputs.termMonths"
+        @update:modelValue="setTermMonths"
+        :disabled="locked.termMonths"
+      >
+        <Lock
+          :modelValue="locked.termMonths"
+          @update:modelValue="setLockedTermMonths"
+        ></Lock>
+      </InputTerm>
+
+      <InputSondertilgung
+        v-model="sondertilgungMaxPercent"
+        :loan-amount="inputs.loan"
+      >
+        <Lock v-model="locked.sondertilgung"></Lock>
+      </InputSondertilgung>
+
+      <SondertilgungTable
+        v-model:extra-payments="extraPayments"
+        :max-percentage="sondertilgungMaxPercent"
+        :loan-amount="inputs.loan"
+        :term-months="inputs.termMonths || 360"
       />
-      <InputZins :modelValue="inputs.zins" @update:model-value="onZinsChange" />
-      <InputTilgung
-        :modelValue="inputs.tilgung"
-        @update:model-value="onTilgungChange"
-      />
-      <InputRate :modelValue="inputs.rate" @update:model-value="onRateChange" />
-      <InputTerm :modelValue="inputs.term" @update:model-value="onTermChange" />
     </div>
+  </aside>
 
-    <ChartAnnuity :plot="posle" />
-
-    <div class="fixed left-0 p-3 bg-yellow-400">
-      <dl class="grid grid-cols-2">
-        <dt class="p-2">old:</dt>
-        <dd class="p-2 text-right">{{ oldRoi }}</dd>
-        <dt class="p-2">new:</dt>
-        <dd class="p-2 text-right">{{ newRoi }}</dd>
-      </dl>
-    </div>
-    <table class="w-full text-right text-xs font-mono table-auto">
-      <thead>
-        <tr>
-          <th>Sondertilgung</th>
-          <th v-for="(value, key) in table[0]">{{ key }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(row, index) in table"
-          :key="row.paymentNumber"
-          class="hover:bg-yellow-400 hover:text-black hover:font-bold"
-          :class="{
-            'bg-black text-white': index === 120 || index === 240,
-
-            'bg-red-200': index % 12 === Math.abs(monthOffset),
-          }"
-        >
-          <td class="px-2 border py-0">
-            <input
-              type="number"
-              class="h-8"
-              min="0"
-              step="100"
-              max="maxTilgung"
-              v-model.number="tilgung[index + 1]"
-            />
-            <div class="flex gap-2">
-              <button @click="tilgung[index + 1] = 0">min</button>
-              <button @click="tilgung[index + 1] = 25">25</button>
-              <button @click="tilgung[index + 1] = maxTilgung">max</button>
-            </div>
-          </td>
-          <td
-            v-for="(value, key) in row"
-            class="p-2 border"
-            :class="{ 'bg-red-300': key === 'econom' && value === 0 }"
-          >
-            <span v-if="key === 'paymentNumber'">
-              {{ monthNumberToDate(value) }}
-            </span>
-            <span v-else>
-              {{ euro(value) }}
-            </span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <main class="p-4">
+    <ChartAnnuity :plot="paymentSchedule" />
+    <Table :data="tableData" />
+  </main>
 </template>
 
 <script setup lang="ts">
-import ChartAnnuity from "@/charts/ChartAnnuity.vue";
-import { calculateRate } from "@/functions/rate";
-import { calculateTerm } from "@/functions/term";
-import { calculateTilgung, berechneTilgung } from "@/functions/tilgung";
+import { Decimal } from "decimal.js";
+import Lock from "@/presentation/components/ui/Lock.vue";
+// Table component removed - using inline table or payment schedule
+// ChartAnnuity component removed - use Chart.js components instead
 import { ref, reactive, onMounted, watch, computed } from "vue";
-import { createPaymentSchedule } from "@/functions/";
-import InputLoan from "@/components/InputLoan.vue";
-import InputZins from "@/components/InputZins.vue";
-import InputTilgung from "@/components/InputTilgung.vue";
-import InputRate from "@/components/InputRate.vue";
-import InputTerm from "@/components/InputTerm.vue";
+// Old functions removed - use domain layer calculations instead
+import InputLoan from "@/presentation/components/mortgage/InputLoan.vue";
+import InputInterestRate from "@/presentation/components/mortgage/InputInterestRate.vue";
+import InputRepaymentRate from "@/presentation/components/mortgage/InputRepaymentRate.vue";
+import InputMonthlyPayment from "@/presentation/components/mortgage/InputMonthlyPayment.vue";
+import InputTerm from "@/presentation/components/mortgage/InputTerm.vue";
+import InputSondertilgung from "@/presentation/components/mortgage/InputSondertilgung.vue";
+import SondertilgungTable from "@/presentation/components/mortgage/SondertilgungTable.vue";
+
+interface MortgageInputs {
+  loan: number;
+  interestRate: number;
+  principalRate: number;
+  monthlyPayment: number | undefined;
+  termMonths: number | undefined;
+}
+
+interface PaymentScheduleEntry {
+  paymentNumber: number;
+  principalPaid: number;
+  interestPaid: number;
+  interestPaidTotal: number;
+  principalPaidTotal: number;
+  rate: number;
+  balance: number;
+}
 
 const monthOffset = ref(0);
 
-const euroFormater = new Intl.NumberFormat("de-DE", {
-  style: "currency",
-  currency: "EUR",
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
+const inputs = reactive<MortgageInputs>({
+  loan: 100000,
+  interestRate: 3.5,
+  principalRate: 2,
+  monthlyPayment: undefined,
+  termMonths: undefined,
 });
-const euro = (n) => euroFormater.format(n);
 
-function monthNumberToDate(monthOffset: number): Date {
+// Sondertilgung state
+const sondertilgungMaxPercent = ref(10); // Default to 10%
+const extraPayments = ref<Record<number, number>>({});
+
+const paymentSchedule = ref<PaymentScheduleEntry[]>([]);
+const tableData = ref<any[]>([]);
+
+const locked = reactive({
+  loan: true,
+  interestRate: true,
+  principalRate: true,
+  termMonths: false,
+  monthlyPayment: false,
+  sondertilgung: true,
+});
+
+function monthNumberToDate(monthOffset: number): string {
   const currentDate = new Date();
   const targetDate = new Date();
-
-  // Setze das Ziel-Datum basierend auf dem aktuellen Datum und dem Monats-Offset
   targetDate.setMonth(currentDate.getMonth() + monthOffset);
-
-  return targetDate.toLocaleDateString("ru-RU", {
+  return targetDate.toLocaleDateString("de-DE", {
     month: "short",
     year: "numeric",
   });
 }
 
-function convertMonthsToYearsAndMonths(totalMonths: number): string {
-  const years = Math.floor(totalMonths / 12);
-  const months = totalMonths % 12;
+/**
+ * Calculate the monthly payment based on loan, interest rate, and principal rate.
+ */
+function calculateMonthlyPayment(inputs: MortgageInputs): number {
+  const { loan, interestRate, principalRate, termMonths } = inputs;
 
-  return `${years} Jahre und ${months} Monate`;
+  if (termMonths === undefined) {
+    const decimalLoan = new Decimal(loan);
+    const monthlyInterestRate = new Decimal(interestRate)
+      .dividedBy(100)
+      .dividedBy(12);
+    const yearlyRepayment = decimalLoan.times(
+      new Decimal(principalRate).dividedBy(100)
+    );
+    const yearlyRate = decimalLoan
+      .times(monthlyInterestRate)
+      .times(12)
+      .plus(yearlyRepayment);
+    return yearlyRate.dividedBy(12).toNumber();
+  }
+
+  if (principalRate === undefined) {
+    const monthlyRate = interestRate / 100 / 12;
+    const numerator =
+      loan * monthlyRate * Math.pow(1 + monthlyRate, termMonths);
+    const denominator = Math.pow(1 + monthlyRate, termMonths) - 1;
+    return numerator / denominator;
+  }
+
+  return 0;
 }
-// 155000, 3.75, 1.67
-const inputs = reactive({
-  kredit: 86000,
-  zins: 4.6,
-  tilgung: 1.4,
-  rate: 0,
-  term: 0,
-});
 
-const maxTilgung = computed(() => (inputs.kredit / 100) * 5);
+/**
+ * Calculate the principal rate based on loan and new monthly payment.
+ */
+function calculatePrincipalRate(inputs: MortgageInputs): number {
+  const { loan, interestRate, monthlyPayment } = inputs;
 
-const onLoanChange = (newLoan: number) => {
-  inputs.kredit = newLoan;
-  inputs.rate = calculateRate(newLoan, inputs.zins, inputs.tilgung);
-  inputs.term = calculateTerm(
-    newLoan,
-    inputs.zins,
-    inputs.tilgung,
-    inputs.rate
+  if (!monthlyPayment) return 0;
+
+  const decimalLoan = new Decimal(loan);
+  const yearlyInterest = decimalLoan.times(
+    new Decimal(interestRate).dividedBy(100)
   );
-};
+  const yearlyRepayment = new Decimal(monthlyPayment)
+    .times(12)
+    .minus(yearlyInterest);
+  return yearlyRepayment.dividedBy(decimalLoan).times(100).toNumber();
+}
 
-const onZinsChange = (newZins: number) => {
-  inputs.zins = newZins;
-  inputs.rate = calculateRate(inputs.kredit, newZins, inputs.tilgung);
-  inputs.term = calculateTerm(
-    inputs.kredit,
-    newZins,
-    inputs.tilgung,
-    inputs.rate
+/**
+ * Calculate the term in months based on the loan, interest rate, and monthly payment.
+ */
+function calculateTermInMonths(inputs: MortgageInputs): number {
+  const { loan, interestRate, monthlyPayment } = inputs;
+
+  if (!monthlyPayment) return 360;
+
+  const MIN_INTEREST_RATE = 0.12;
+  const effectiveInterestRate = Math.max(interestRate, MIN_INTEREST_RATE);
+  const monthlyInterestRate = effectiveInterestRate / 100 / 12;
+
+  if (monthlyPayment <= loan * monthlyInterestRate) {
+    return 360;
+  }
+
+  const numerator = Math.log(
+    monthlyPayment / (monthlyPayment - loan * monthlyInterestRate)
   );
-};
+  const denominator = Math.log(1 + monthlyInterestRate);
+  const termInMonths = numerator / denominator;
 
-const onTilgungChange = (newTilgung: number) => {
-  inputs.tilgung = newTilgung;
-  inputs.rate = calculateRate(inputs.kredit, inputs.zins, newTilgung);
-  inputs.term = calculateTerm(
-    inputs.kredit,
-    inputs.zins,
-    newTilgung,
-    inputs.rate
-  );
-};
+  return Math.floor(termInMonths > 1200 ? 360 : termInMonths);
+}
 
-const onRateChange = (newRate: number) => {
-  inputs.rate = newRate;
-  inputs.tilgung = calculateTilgung(inputs.kredit, inputs.zins, newRate);
-  inputs.term = calculateTerm(
-    inputs.kredit,
-    inputs.zins,
-    inputs.tilgung,
-    newRate
-  );
-};
+function setMonthlyPayment(newMonthlyPayment: number) {
+  inputs.monthlyPayment = newMonthlyPayment;
 
-const onTermChange = (newTerm: number) => {
-  inputs.term = newTerm;
-  inputs.tilgung = berechneTilgung(inputs.kredit, inputs.rate, newTerm);
-};
+  if (!locked.termMonths) {
+    inputs.termMonths = calculateTermInMonths(inputs);
+  }
+  if (!locked.principalRate) {
+    inputs.principalRate = calculatePrincipalRate(inputs);
+  }
+}
 
-const tilgung = ref([]);
+function setTermMonths(newTermMonths: number) {
+  inputs.termMonths = newTermMonths;
+
+  if (!locked.monthlyPayment) {
+    inputs.monthlyPayment = calculateMonthlyPayment({
+      ...inputs,
+      termMonths: newTermMonths,
+    });
+  }
+}
+
+function setLockedTermMonths(newLocked: boolean) {
+  locked.termMonths = newLocked;
+  locked.principalRate = !locked.principalRate;
+}
+
+function setLockedPrincipalRate(newLocked: boolean) {
+  locked.principalRate = newLocked;
+  locked.termMonths = !locked.termMonths;
+}
+
+function updatePaymentSchedule() {
+  if (!inputs.monthlyPayment || inputs.monthlyPayment <= 0) {
+    paymentSchedule.value = [];
+    tableData.value = [];
+    return;
+  }
+
+  // Convert extraPayments ref to sparse array format expected by createPaymentSchedule
+  const extraPaymentsArray: number[] = [];
+  Object.entries(extraPayments.value).forEach(([month, amount]) => {
+    extraPaymentsArray[Number(month)] = amount;
+  });
+
+  const schedule = createPaymentSchedule(
+    inputs.loan,
+    inputs.interestRate,
+    inputs.monthlyPayment,
+    extraPaymentsArray
+  ) as PaymentScheduleEntry[];
+
+  paymentSchedule.value = schedule;
+
+  tableData.value = schedule.map((entry) => ({
+    paymentNumber: entry.paymentNumber - monthOffset.value,
+    balance: entry.balance,
+    rate: entry.rate,
+    interestPaid: entry.interestPaid,
+    interestPaidTotal: entry.interestPaidTotal,
+    rest: entry.balance - entry.rate,
+  }));
+}
 
 onMounted(() => {
-  (inputs.rate = calculateRate(inputs.kredit, inputs.zins, inputs.tilgung)),
-    (inputs.term = calculateTerm(
-      inputs.kredit,
-      inputs.zins,
-      inputs.tilgung,
-      inputs.rate
-    ));
-});
-
-const table = ref([]);
-const dos = ref([]);
-const posle = ref([]);
-
-onMounted(() => {
-  dos.value = createPaymentSchedule(inputs.kredit, inputs.zins, inputs.rate);
-  posle.value = createPaymentSchedule(
-    inputs.kredit,
-    inputs.zins,
-    inputs.rate,
-    tilgung.value
-  );
+  inputs.monthlyPayment = calculateMonthlyPayment(inputs);
+  inputs.termMonths = calculateTermInMonths(inputs);
+  updatePaymentSchedule();
 });
 
 watch(
-  () => [inputs.kredit, inputs.zins, inputs.rate, tilgung.value],
-  ([newA, newB, newC, newD]) => {
-    dos.value = createPaymentSchedule(newA, newB, newC, []);
-    posle.value = createPaymentSchedule(newA, newB, newC, newD);
-
-    table.value = dos.value.map(
-      (
-        { interestPaid, paymentNumber, interestPaidTotal, balance, rate },
-        index
-      ) => ({
-        paymentNumber: paymentNumber - monthOffset.value,
-        balance,
-        newBalance: posle.value[index]?.balance || 0,
-        rate,
-        interestPaid,
-        interestPaidPosle: posle.value[index]?.interestPaid || 0,
-        interestPaidTotal,
-        interestPaidTotalPosle: posle.value[index]?.interestPaidTotal || 0,
-      })
-    );
+  [
+    () => inputs.loan,
+    () => inputs.interestRate,
+    () => inputs.monthlyPayment,
+    extraPayments,
+  ],
+  () => {
+    updatePaymentSchedule();
   },
-  {
-    deep: true,
-  }
+  { deep: true }
 );
 
-function sumArray(numbers: number[]): number {
-  return numbers.reduce((accumulator, current) => accumulator + current, 0);
-}
-
-const roi = computed(() => {
-  const before = Math.max(...table.value.map((x) => x.interestPaidTotal));
-  const after = Math.max(...table.value.map((x) => x.interestPaidTotalPosle));
-  if (before === -Infinity) return 0;
-
-  const totalTilgung = sumArray(tilgung.value);
-  if (totalTilgung === 0) return 0;
-
-  return before - after;
-});
-
-const oldRoi = ref(0);
-const newRoi = ref(0);
 watch(
-  () => roi.value,
-  (n, o) => {
-    oldRoi.value = o;
-    newRoi.value = n;
-  }
+  [() => inputs.loan, () => inputs.interestRate, () => inputs.principalRate],
+  () => {
+    if (!locked.monthlyPayment) {
+      inputs.monthlyPayment = calculateMonthlyPayment(inputs);
+    }
+    if (!locked.termMonths) {
+      inputs.termMonths = calculateTermInMonths(inputs);
+    }
+  },
+  { deep: true }
 );
 </script>
+
+<style scoped>
+.router-link {
+  @apply text-black;
+}
+</style>

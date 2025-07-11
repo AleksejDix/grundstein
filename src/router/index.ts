@@ -1,28 +1,32 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "../views/Home.view.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
-      name: "home",
-      component: Home,
+      name: "dashboard",
+      component: () => import("../views/MortgageModern.view.vue"),
     },
     {
-      path: "/timevalue",
-      name: "timevalue",
-      component: () => import("../views/TimeValue.view.vue"),
+      path: "/portfolio",
+      name: "portfolio",
+      component: () => import("../views/DebtOverview.view.vue"),
     },
     {
-      path: "/mortgage",
-      name: "mortgage",
+      path: "/calculator",
+      name: "calculator",
+      component: () => import("../views/DebtCalculator.view.vue"),
+    },
+    {
+      path: "/mortgage/:id?",
+      name: "mortgage-details",
       component: () => import("../views/Mortgage.view.vue"),
     },
     {
-      path: "/fields",
-      name: "fields",
-      component: () => import("../views/Fields.view.vue"),
+      path: "/mortgage-calculator",
+      name: "mortgage-calculator",
+      component: () => import("../views/MortgageCalculator.view.vue"),
     },
   ],
 });
