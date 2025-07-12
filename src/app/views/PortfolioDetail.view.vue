@@ -261,13 +261,13 @@
                   <div class="text-sm text-gray-500">{{ mortgage.bank }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ formatCurrency(0) }} {{/* TODO: mortgage.configuration.amount */}}
+                  {{ formatCurrency(0) }} <!-- TODO: mortgage.configuration.amount -->
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ 0 }}% {{/* TODO: mortgage.configuration.annualRate */}}
+                  {{ 0 }}% <!-- TODO: mortgage.configuration.annualRate -->
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ formatCurrency(0) }} {{/* TODO: mortgage.configuration.monthlyPayment */}}
+                  {{ formatCurrency(0) }} <!-- TODO: mortgage.configuration.monthlyPayment -->
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span
