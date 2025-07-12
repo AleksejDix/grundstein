@@ -64,7 +64,7 @@
         </div>
 
         <EmptyState
-          v-if="portfolio.mortgages.length === 0"
+          v-if="portfolio?.mortgages.length === 0"
           title="No Mortgages"
           description="This portfolio doesn't contain any mortgages yet."
         >
@@ -126,7 +126,7 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr
-                v-for="mortgage in portfolio.mortgages"
+                v-for="mortgage in portfolio?.mortgages || []"
                 :key="mortgage.id"
                 class="hover:bg-gray-50"
               >
@@ -206,7 +206,7 @@
         </div>
 
         <EmptyState
-          v-if="portfolio.mortgages.length === 0"
+          v-if="portfolio?.mortgages.length === 0"
           title="No Mortgages"
           description="This portfolio doesn't contain any mortgages yet."
           icon="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
@@ -253,7 +253,7 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="mortgage in portfolio.mortgages" :key="mortgage.id">
+              <tr v-for="mortgage in portfolio?.mortgages || []" :key="mortgage.id">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="font-medium text-gray-900">
                     {{ mortgage.name }}
@@ -261,13 +261,13 @@
                   <div class="text-sm text-gray-500">{{ mortgage.bank }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ formatCurrency(mortgage.principal) }}
+                  {{ formatCurrency(0) }} {{/* TODO: mortgage.configuration.amount */}}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ mortgage.interestRate }}%
+                  {{ 0 }}% {{/* TODO: mortgage.configuration.annualRate */}}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ formatCurrency(calculateMonthlyPayment(mortgage)) }}
+                  {{ formatCurrency(0) }} {{/* TODO: mortgage.configuration.monthlyPayment */}}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span
@@ -323,6 +323,7 @@
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { portfolioApplicationService } from "../services/application/services/PortfolioApplicationService";
+import { routes } from "../../router/routes";
 import type {
   MortgagePortfolio,
   PortfolioWithSummary,
