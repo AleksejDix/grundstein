@@ -52,7 +52,7 @@ describe("MortgageService - Application Integration", () => {
         // Total payment should be loan + interest
         expect(analysis.totals.totalPaid).toBeCloseTo(
           analysis.totals.interestPaid + loanInput.loanAmount,
-          0
+          0,
         );
 
         // Term should match
@@ -142,7 +142,7 @@ describe("MortgageService - Application Integration", () => {
 
       const result = await service.analyzeSondertilgung(
         baseLoan,
-        extraPayments
+        extraPayments,
       );
 
       /*
@@ -236,16 +236,16 @@ describe("MortgageService - Application Integration", () => {
         const scenario1 = comparison.scenarios[0]; // 5.0%
         const scenario2 = comparison.scenarios[1]; // 6.0%
         expect(scenario1.totals.interestPaid).toBeLessThan(
-          scenario2.totals.interestPaid
+          scenario2.totals.interestPaid,
         );
 
         // Longer term should result in lower monthly payment but higher total interest
         const scenario3 = comparison.scenarios[2]; // 15 years
         expect(scenario3.monthlyPayment.total).toBeLessThan(
-          scenario1.monthlyPayment.total
+          scenario1.monthlyPayment.total,
         );
         expect(scenario3.totals.interestPaid).toBeGreaterThan(
-          scenario1.totals.interestPaid
+          scenario1.totals.interestPaid,
         );
 
         // console.log("✅ Scenario comparison passed");
@@ -259,7 +259,7 @@ describe("MortgageService - Application Integration", () => {
         5000, // Monthly income
         3000, // Monthly expenses
         200000, // Desired loan amount
-        5.5 // Interest rate
+        5.5, // Interest rate
       );
 
       expect(result.success).toBe(true);

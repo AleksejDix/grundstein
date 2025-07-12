@@ -1,6 +1,6 @@
 /**
  * Currency value types for multi-market support
- * 
+ *
  * Prevents mixing currencies and ensures type safety
  * Supports German (EUR) and Swiss (CHF) markets
  */
@@ -33,21 +33,34 @@ const MAX_AMOUNT_CENTS = 999_999_999_00; // ~1 billion in cents
  * Create EUR amount
  */
 export function createEUR(euros: number): Result<EUR, CurrencyValidationError> {
-  return validateAndCreateCurrency(euros, "EUR") as Result<EUR, CurrencyValidationError>;
+  return validateAndCreateCurrency(euros, "EUR") as Result<
+    EUR,
+    CurrencyValidationError
+  >;
 }
 
 /**
  * Create CHF amount
  */
-export function createCHF(francs: number): Result<CHF, CurrencyValidationError> {
-  return validateAndCreateCurrency(francs, "CHF") as Result<CHF, CurrencyValidationError>;
+export function createCHF(
+  francs: number,
+): Result<CHF, CurrencyValidationError> {
+  return validateAndCreateCurrency(francs, "CHF") as Result<
+    CHF,
+    CurrencyValidationError
+  >;
 }
 
 /**
  * Create USD amount (for future use)
  */
-export function createUSD(dollars: number): Result<USD, CurrencyValidationError> {
-  return validateAndCreateCurrency(dollars, "USD") as Result<USD, CurrencyValidationError>;
+export function createUSD(
+  dollars: number,
+): Result<USD, CurrencyValidationError> {
+  return validateAndCreateCurrency(dollars, "USD") as Result<
+    USD,
+    CurrencyValidationError
+  >;
 }
 
 /**
@@ -55,7 +68,7 @@ export function createUSD(dollars: number): Result<USD, CurrencyValidationError>
  */
 function validateAndCreateCurrency(
   amount: number,
-  _code: CurrencyCode
+  _code: CurrencyCode,
 ): Result<Currency, CurrencyValidationError> {
   // Validate input
   if (!Number.isFinite(amount)) {
@@ -67,7 +80,7 @@ function validateAndCreateCurrency(
   }
 
   // Check decimal places (max 2 for currency)
-  const decimalPlaces = (amount.toString().split('.')[1] || '').length;
+  const decimalPlaces = (amount.toString().split(".")[1] || "").length;
   if (decimalPlaces > 2) {
     return Result.error("TooManyDecimals");
   }

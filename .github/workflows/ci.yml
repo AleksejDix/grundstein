@@ -11,8 +11,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '20'
-  CACHE_VERSION: 'v1'
+  NODE_VERSION: "20"
+  CACHE_VERSION: "v1"
 
 jobs:
   install:
@@ -28,7 +28,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
 
       - name: 📦 Cache dependencies
         id: cache

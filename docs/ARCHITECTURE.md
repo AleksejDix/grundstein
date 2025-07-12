@@ -7,17 +7,20 @@ Grundstein is a **sophisticated mortgage calculation engine** built with **pure 
 ## Core Architecture Principles
 
 ### 1. **Strict Layer Separation**
+
 - **Domain Layer**: All business logic, calculations, and rules (pure functions)
 - **View Layer**: Only UI state and display concerns (Vue + Pinia)
 - **No Logic in View**: Stores are just shared refs and computed values
 
 ### 2. **Pure Functional Core**
+
 - All business logic as pure functions
 - No classes in domain layer
 - Immutable data structures
 - Result/Option types for error handling
 
 ### 3. **Stores as Shared Refs**
+
 - Pinia stores contain ONLY UI state
 - No business logic in stores
 - No domain types in stores
@@ -78,62 +81,71 @@ sequenceDiagram
 ## What Goes Where
 
 ### Domain Layer (`src/core/domain/`)
+
 ```typescript
 // ✅ CORRECT - Pure business logic
 export function calculateMonthlyPayment(
-  config: LoanConfiguration
+  config: LoanConfiguration,
 ): Result<PaymentBreakdown, CalculationError> {
   // Pure calculation logic
-  const monthlyRate = config.interestRate / 12 / 100
-  const payment = calculatePayment(config.amount, monthlyRate, config.months)
-  return Result.ok({ principal: payment.principal, interest: payment.interest })
+  const monthlyRate = config.interestRate / 12 / 100;
+  const payment = calculatePayment(config.amount, monthlyRate, config.months);
+  return Result.ok({
+    principal: payment.principal,
+    interest: payment.interest,
+  });
 }
 
 // ✅ CORRECT - Business validation
-export function validateLoanAmount(amount: number): Result<LoanAmount, ValidationError> {
-  if (amount < 10000) return Result.error("Minimum loan amount is €10,000")
-  if (amount > 5000000) return Result.error("Maximum loan amount is €5,000,000")
-  return Result.ok(createLoanAmount(amount))
+export function validateLoanAmount(
+  amount: number,
+): Result<LoanAmount, ValidationError> {
+  if (amount < 10000) return Result.error("Minimum loan amount is €10,000");
+  if (amount > 5000000)
+    return Result.error("Maximum loan amount is €5,000,000");
+  return Result.ok(createLoanAmount(amount));
 }
 ```
 
 ### Application Layer (`src/core/application/`)
+
 ```typescript
 // ✅ CORRECT - Orchestration only
 export async function createMortgageWithAnalysis(
   input: CreateMortgageInput,
-  repository: MortgageRepository
+  repository: MortgageRepository,
 ): Promise<Result<MortgageWithAnalysis, Error>> {
   // Validate input using domain function
-  const validationResult = validateMortgageInput(input)
-  if (!validationResult.success) return validationResult
+  const validationResult = validateMortgageInput(input);
+  if (!validationResult.success) return validationResult;
 
   // Create mortgage using domain function
-  const mortgage = createMortgage(validationResult.data)
-  
+  const mortgage = createMortgage(validationResult.data);
+
   // Analyze using domain function
-  const analysis = analyzeMortgage(mortgage)
-  
+  const analysis = analyzeMortgage(mortgage);
+
   // Persist via repository
-  await repository.save(mortgage)
-  
-  return Result.ok({ mortgage, analysis })
+  await repository.save(mortgage);
+
+  return Result.ok({ mortgage, analysis });
 }
 ```
 
 ### View Layer - UI Stores (`src/app/stores/`)
+
 ```typescript
 // ✅ CORRECT - UI state only
-export const useMortgageUIStore = defineStore('mortgage-ui', () => {
+export const useMortgageUIStore = defineStore("mortgage-ui", () => {
   // Shared refs - UI state only
-  const selectedMortgageId = ref<string | null>(null)
-  const viewMode = ref<'grid' | 'list'>('grid')
-  const isSidebarOpen = ref(false)
-  const sortField = ref<'date' | 'amount'>('date')
-  
+  const selectedMortgageId = ref<string | null>(null);
+  const viewMode = ref<"grid" | "list">("grid");
+  const isSidebarOpen = ref(false);
+  const sortField = ref<"date" | "amount">("date");
+
   // Shared computed - UI derivations only
-  const hasSelection = computed(() => selectedMortgageId.value !== null)
-  
+  const hasSelection = computed(() => selectedMortgageId.value !== null);
+
   return {
     selectedMortgageId,
     viewMode,
@@ -141,38 +153,40 @@ export const useMortgageUIStore = defineStore('mortgage-ui', () => {
     sortField,
     hasSelection,
     // Simple setters only
-    selectMortgage: (id: string | null) => selectedMortgageId.value = id,
-    setViewMode: (mode: typeof viewMode.value) => viewMode.value = mode,
-  }
-})
+    selectMortgage: (id: string | null) => (selectedMortgageId.value = id),
+    setViewMode: (mode: typeof viewMode.value) => (viewMode.value = mode),
+  };
+});
 ```
 
 ### Composables (`src/app/composables/`)
+
 ```typescript
 // ✅ CORRECT - Calculation composables
 export function useMortgageCalculator() {
   const inputs = reactive({
-    loanAmount: '',
-    interestRate: '',
-    termYears: ''
-  })
-  
+    loanAmount: "",
+    interestRate: "",
+    termYears: "",
+  });
+
   const result = computed(() => {
-    const amount = parseFloat(inputs.loanAmount)
-    const rate = parseFloat(inputs.interestRate)
-    const years = parseInt(inputs.termYears)
-    
-    if (isNaN(amount) || isNaN(rate) || isNaN(years)) return null
-    
+    const amount = parseFloat(inputs.loanAmount);
+    const rate = parseFloat(inputs.interestRate);
+    const years = parseInt(inputs.termYears);
+
+    if (isNaN(amount) || isNaN(rate) || isNaN(years)) return null;
+
     // Direct call to domain function
-    return MortgageCalculationService.calculate({ amount, rate, years })
-  })
-  
-  return { inputs, result }
+    return MortgageCalculationService.calculate({ amount, rate, years });
+  });
+
+  return { inputs, result };
 }
 ```
 
 ### Components (`src/app/components/`)
+
 ```typescript
 // ✅ CORRECT - Component using all layers properly
 <script setup lang="ts">
@@ -191,7 +205,7 @@ const mortgageAnalysis = computed(() => {
 })
 
 // UI-only formatting
-const displayMortgages = computed(() => 
+const displayMortgages = computed(() =>
   analyzedMortgages.value.map(formatForDisplay)
 )
 </script>
@@ -200,38 +214,40 @@ const displayMortgages = computed(() =>
 ## Anti-Patterns to Avoid
 
 ### ❌ Business Logic in Stores
+
 ```typescript
 // WRONG - Store contains business logic
-export const useBadStore = defineStore('bad', () => {
-  const mortgages = ref<Mortgage[]>([])
-  
+export const useBadStore = defineStore("bad", () => {
+  const mortgages = ref<Mortgage[]>([]);
+
   // ❌ Calculation in store
-  const totalAmount = computed(() => 
-    mortgages.value.reduce((sum, m) => sum + m.amount, 0)
-  )
-  
+  const totalAmount = computed(() =>
+    mortgages.value.reduce((sum, m) => sum + m.amount, 0),
+  );
+
   // ❌ Business logic in store
   const addMortgage = (input: MortgageInput) => {
-    const validated = validateMortgage(input) // ❌ Validation
-    const mortgage = createMortgage(validated) // ❌ Domain logic
-    mortgages.value.push(mortgage)
-  }
-})
+    const validated = validateMortgage(input); // ❌ Validation
+    const mortgage = createMortgage(validated); // ❌ Domain logic
+    mortgages.value.push(mortgage);
+  };
+});
 ```
 
 ### ❌ Async Operations in Stores
+
 ```typescript
 // WRONG - Store pretending to be async
-export const useBadStore = defineStore('bad', () => {
-  const isCalculating = ref(false) // ❌ Calculations are synchronous
-  
+export const useBadStore = defineStore("bad", () => {
+  const isCalculating = ref(false); // ❌ Calculations are synchronous
+
   const calculateAsync = async () => {
-    isCalculating.value = true // ❌ Fake async
-    await new Promise(r => setTimeout(r, 1000)) // ❌ Artificial delay
-    const result = calculate() // ❌ Just call directly
-    isCalculating.value = false
-  }
-})
+    isCalculating.value = true; // ❌ Fake async
+    await new Promise((r) => setTimeout(r, 1000)); // ❌ Artificial delay
+    const result = calculate(); // ❌ Just call directly
+    isCalculating.value = false;
+  };
+});
 ```
 
 ## Domain Model
@@ -291,29 +307,31 @@ src/
 ## Testing Strategy
 
 ### Domain Layer Tests
+
 ```typescript
 // Pure function tests - easy to test
-describe('calculateMonthlyPayment', () => {
-  it('should calculate correct payment', () => {
-    const config = createLoanConfiguration(300000, 3.5, 360)
-    const result = calculateMonthlyPayment(config)
-    expect(result.success).toBe(true)
-    expect(result.data.total).toBe(1347.13)
-  })
-})
+describe("calculateMonthlyPayment", () => {
+  it("should calculate correct payment", () => {
+    const config = createLoanConfiguration(300000, 3.5, 360);
+    const result = calculateMonthlyPayment(config);
+    expect(result.success).toBe(true);
+    expect(result.data.total).toBe(1347.13);
+  });
+});
 ```
 
 ### UI Store Tests
+
 ```typescript
 // UI state tests - no business logic
-describe('mortgageUIStore', () => {
-  it('should update selection', () => {
-    const store = useMortgageUIStore()
-    store.selectMortgage('123')
-    expect(store.selectedMortgageId).toBe('123')
-    expect(store.hasSelection).toBe(true)
-  })
-})
+describe("mortgageUIStore", () => {
+  it("should update selection", () => {
+    const store = useMortgageUIStore();
+    store.selectMortgage("123");
+    expect(store.selectedMortgageId).toBe("123");
+    expect(store.hasSelection).toBe(true);
+  });
+});
 ```
 
 ## Benefits of This Architecture

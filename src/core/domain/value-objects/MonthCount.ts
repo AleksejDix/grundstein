@@ -32,7 +32,7 @@ const MAX_LOAN_TERM_MONTHS = 480; // 480 months (40 years) maximum
  * @returns Result with either valid MonthCount or validation error
  */
 export function createMonthCount(
-  months: number
+  months: number,
 ): Result<MonthCount, MonthCountValidationError> {
   // First validate as PositiveInteger
   const positiveIntegerResult = createPositiveInteger(months);
@@ -82,7 +82,7 @@ export function toYears(monthCount: MonthCount): number {
  * Create MonthCount from years
  */
 export function fromYears(
-  years: number
+  years: number,
 ): Result<MonthCount, MonthCountValidationError> {
   const months = Math.round(years * 12);
   return createMonthCount(months);
@@ -93,7 +93,7 @@ export function fromYears(
  */
 export function addMonths(
   monthCount: MonthCount,
-  additionalMonths: number
+  additionalMonths: number,
 ): Result<MonthCount, MonthCountValidationError> {
   const totalMonths = toNumber(monthCount) + additionalMonths;
   return createMonthCount(totalMonths);
@@ -104,7 +104,7 @@ export function addMonths(
  */
 export function subtractMonths(
   monthCount: MonthCount,
-  monthsToSubtract: number
+  monthsToSubtract: number,
 ): Result<MonthCount, MonthCountValidationError> {
   const remainingMonths = toNumber(monthCount) - monthsToSubtract;
   return createMonthCount(remainingMonths);
@@ -115,7 +115,7 @@ export function subtractMonths(
  */
 export function remainingMonths(
   totalTerm: MonthCount,
-  elapsedMonths: MonthCount
+  elapsedMonths: MonthCount,
 ): Result<MonthCount, MonthCountValidationError> {
   const remaining = toNumber(totalTerm) - toNumber(elapsedMonths);
   return createMonthCount(remaining);

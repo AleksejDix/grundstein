@@ -59,7 +59,7 @@ describe("InterestRate Type", () => {
 
     it("should accept zero interest rate", () => {
       const result = createInterestRate(0);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         expect(toNumber(result.data)).toBe(0);
@@ -244,14 +244,14 @@ describe("InterestRate Type", () => {
       const sameRate = createInterestRate(2.0);
 
       expect(lowRate.success && highRate.success && sameRate.success).toBe(
-        true
+        true,
       );
       if (lowRate.success && highRate.success && sameRate.success) {
         expect(compareInterestRate(lowRate.data, highRate.data)).toBeLessThan(
-          0
+          0,
         );
         expect(
-          compareInterestRate(highRate.data, lowRate.data)
+          compareInterestRate(highRate.data, lowRate.data),
         ).toBeGreaterThan(0);
         expect(compareInterestRate(lowRate.data, sameRate.data)).toBe(0);
 
@@ -333,13 +333,13 @@ describe("InterestRate Type", () => {
 
     it("should have constants in logical order", () => {
       expect(toNumber(TYPICAL_LOW_RATE)).toBeLessThan(
-        toNumber(TYPICAL_CURRENT_RATE)
+        toNumber(TYPICAL_CURRENT_RATE),
       );
       expect(toNumber(TYPICAL_CURRENT_RATE)).toBeLessThan(
-        toNumber(TYPICAL_HIGH_RATE)
+        toNumber(TYPICAL_HIGH_RATE),
       );
       expect(toNumber(TYPICAL_HIGH_RATE)).toBeLessThan(
-        toNumber(STRESS_TEST_RATE)
+        toNumber(STRESS_TEST_RATE),
       );
     });
   });
@@ -362,8 +362,8 @@ describe("InterestRate Property-Based Tests", () => {
             if (result.success) {
               expect(toNumber(result.data)).toBeCloseTo(rate, 10);
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -381,8 +381,8 @@ describe("InterestRate Property-Based Tests", () => {
             if (!result.success) {
               expect(result.error).toBe("PercentageValidationError");
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -400,8 +400,8 @@ describe("InterestRate Property-Based Tests", () => {
             if (!result.success) {
               expect(result.error).toBe("AboveMaximumRate");
             }
-          }
-        )
+          },
+        ),
       );
     });
   });
@@ -425,12 +425,12 @@ describe("InterestRate Property-Based Tests", () => {
               if (backToRateResult.success) {
                 expect(toNumber(backToRateResult.data)).toBeCloseTo(
                   originalRate,
-                  8
+                  8,
                 );
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
   });
@@ -453,8 +453,8 @@ describe("InterestRate Property-Based Tests", () => {
 
               expect(monthlyRate).toBeCloseTo(expectedMonthly, 10);
             }
-          }
-        )
+          },
+        ),
       );
     });
   });
@@ -482,13 +482,13 @@ describe("InterestRate Property-Based Tests", () => {
                 if (step2Result.success && directResult.success) {
                   expect(toNumber(step2Result.data)).toBeCloseTo(
                     toNumber(directResult.data),
-                    8
+                    8,
                   );
                 }
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
   });
@@ -519,17 +519,17 @@ describe("InterestRate Property-Based Tests", () => {
 
             if (rateA.success && rateB.success && rateC.success) {
               expect(compareInterestRate(rateA.data, rateB.data)).toBeLessThan(
-                0
+                0,
               );
               expect(compareInterestRate(rateB.data, rateC.data)).toBeLessThan(
-                0
+                0,
               );
               expect(compareInterestRate(rateA.data, rateC.data)).toBeLessThan(
-                0
+                0,
               );
             }
-          }
-        )
+          },
+        ),
       );
     });
   });

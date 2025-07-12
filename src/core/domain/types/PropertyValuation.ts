@@ -13,7 +13,12 @@
 import type { Branded } from "../primitives/Brand";
 import { Result } from "../primitives/Brand";
 import type { Money } from "../value-objects/Money";
-import { createMoney, toEuros, formatMoney, compareMoney } from "../value-objects/Money";
+import {
+  createMoney,
+  toEuros,
+  formatMoney,
+  compareMoney,
+} from "../value-objects/Money";
 
 // Branded PropertyValuation type
 export type PropertyValuation = Branded<
@@ -91,7 +96,7 @@ export function createPropertyValuation(
   propertyType: PropertyType,
   location: PropertyLocation,
   valuerCertification?: string,
-  notes?: string
+  notes?: string,
 ): Result<PropertyValuation, PropertyValuationValidationError> {
   // Validate current value
   if (currentValue < MIN_PROPERTY_VALUE || currentValue > MAX_PROPERTY_VALUE) {
@@ -190,7 +195,7 @@ export function getValuationDate(valuation: PropertyValuation): Date {
  * Get valuation method
  */
 export function getValuationMethod(
-  valuation: PropertyValuation
+  valuation: PropertyValuation,
 ): ValuationMethod {
   return (valuation as any).valuationMethod;
 }
@@ -206,7 +211,7 @@ export function getPropertyType(valuation: PropertyValuation): PropertyType {
  * Get property location
  */
 export function getPropertyLocation(
-  valuation: PropertyValuation
+  valuation: PropertyValuation,
 ): PropertyLocation {
   return { ...(valuation as any).location }; // Return copy for immutability
 }
@@ -226,7 +231,7 @@ export function calculateValueChange(valuation: PropertyValuation): number {
  * Calculate appreciation/depreciation percentage since purchase
  */
 export function calculateValueChangePercentage(
-  valuation: PropertyValuation
+  valuation: PropertyValuation,
 ): number {
   const currentValue = toEuros(getCurrentValue(valuation));
   const purchasePrice = toEuros(getOriginalPurchasePrice(valuation));
@@ -260,7 +265,7 @@ export function hasDepreciated(valuation: PropertyValuation): boolean {
  * Calculate annual appreciation rate
  */
 export function calculateAnnualAppreciationRate(
-  valuation: PropertyValuation
+  valuation: PropertyValuation,
 ): number {
   const valuationDate = getValuationDate(valuation);
   const now = new Date();
@@ -283,7 +288,7 @@ export function calculateAnnualAppreciationRate(
  */
 export function isCurrentEnoughForMortgage(
   valuation: PropertyValuation,
-  currentDate: Date = new Date()
+  currentDate: Date = new Date(),
 ): boolean {
   const valuationDate = getValuationDate(valuation);
   const monthsOld =
@@ -347,7 +352,7 @@ export function formatPropertyValuation(valuation: PropertyValuation): string {
  */
 export function createConservativeValuation(
   valuation: PropertyValuation,
-  conservatismPercent: number = 10
+  conservatismPercent: number = 10,
 ): Result<PropertyValuation, PropertyValuationValidationError> {
   const currentValue = toEuros(getCurrentValue(valuation));
   const conservativeValue = currentValue * (1 - conservatismPercent / 100);
@@ -362,7 +367,7 @@ export function createConservativeValuation(
     (valuation as any).valuerCertification,
     `Conservative estimate (${conservatismPercent}% reduction applied). ${
       (valuation as any).notes || ""
-    }`
+    }`,
   );
 }
 
@@ -371,7 +376,7 @@ export function createConservativeValuation(
  */
 export function compareByValue(
   a: PropertyValuation,
-  b: PropertyValuation
+  b: PropertyValuation,
 ): number {
   return compareMoney(getCurrentValue(a), getCurrentValue(b));
 }
@@ -381,7 +386,7 @@ export function compareByValue(
  */
 export function compareByDate(
   a: PropertyValuation,
-  b: PropertyValuation
+  b: PropertyValuation,
 ): number {
   const dateA = getValuationDate(a);
   const dateB = getValuationDate(b);
@@ -393,7 +398,7 @@ export function compareByDate(
  * Get German property market location quality description
  */
 export function getLocationQualityDescription(
-  quality: LocationQuality
+  quality: LocationQuality,
 ): string {
   switch (quality) {
     case "Premium":
@@ -441,7 +446,7 @@ export function getMaxValuationAgeMonths(): number {
  */
 export function isSameProperty(
   a: PropertyValuation,
-  b: PropertyValuation
+  b: PropertyValuation,
 ): boolean {
   const locationA = getPropertyLocation(a);
   const locationB = getPropertyLocation(b);

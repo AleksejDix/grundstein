@@ -33,7 +33,7 @@ const MAX_INTEREST_RATE = 25.0; // 25% maximum (extreme high, prevents unrealist
  * @returns Result with either valid InterestRate or validation error
  */
 export function createInterestRate(
-  rate: number
+  rate: number,
 ): Result<InterestRate, InterestRateValidationError> {
   // First validate as Percentage
   const percentageResult = createPercentage(rate);
@@ -83,7 +83,7 @@ export function toDecimal(interestRate: InterestRate): number {
  * Create InterestRate from decimal (e.g., 0.035 -> 3.5%)
  */
 export function fromDecimal(
-  decimal: number
+  decimal: number,
 ): Result<InterestRate, InterestRateValidationError> {
   const percentage = decimal * 100;
   return createInterestRate(percentage);
@@ -100,7 +100,7 @@ export function toMonthlyRate(annualRate: InterestRate): number {
  * Create annual interest rate from monthly rate
  */
 export function fromMonthlyRate(
-  monthlyDecimal: number
+  monthlyDecimal: number,
 ): Result<InterestRate, InterestRateValidationError> {
   const annualDecimal = monthlyDecimal * 12;
   return fromDecimal(annualDecimal);
@@ -111,7 +111,7 @@ export function fromMonthlyRate(
  */
 export function addBasisPoints(
   interestRate: InterestRate,
-  basisPoints: number
+  basisPoints: number,
 ): Result<InterestRate, InterestRateValidationError> {
   const currentRate = toNumber(interestRate);
   const newRate = currentRate + basisPoints / 100;
@@ -137,7 +137,7 @@ export function isEqualInterestRate(a: InterestRate, b: InterestRate): boolean {
  */
 export function formatInterestRate(
   interestRate: InterestRate,
-  decimals: number = 2
+  decimals: number = 2,
 ): string {
   return formatPercentage(toPercentage(interestRate), decimals);
 }
@@ -149,7 +149,7 @@ export function getMinimumInterestRate(): InterestRate {
   const result = createInterestRate(MIN_INTEREST_RATE);
   if (!result.success) {
     throw new Error(
-      "Failed to create minimum interest rate - this should never happen"
+      "Failed to create minimum interest rate - this should never happen",
     );
   }
   return result.data;
@@ -162,7 +162,7 @@ export function getMaximumInterestRate(): InterestRate {
   const result = createInterestRate(MAX_INTEREST_RATE);
   if (!result.success) {
     throw new Error(
-      "Failed to create maximum interest rate - this should never happen"
+      "Failed to create maximum interest rate - this should never happen",
     );
   }
   return result.data;

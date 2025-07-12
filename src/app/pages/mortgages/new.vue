@@ -8,8 +8,10 @@
         >
           ← Back
         </RouterLink>
-        
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Create New Mortgage</h1>
+
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+          Create New Mortgage
+        </h1>
         <p class="text-lg text-gray-600">Add a new mortgage to track</p>
       </div>
 

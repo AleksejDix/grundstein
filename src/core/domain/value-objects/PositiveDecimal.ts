@@ -19,7 +19,7 @@ export type PositiveDecimalValidationError = "InvalidValue" | "NotPositive";
  * @returns Result with either valid PositiveDecimal or validation error
  */
 export function createPositiveDecimal(
-  value: number
+  value: number,
 ): Result<PositiveDecimal, PositiveDecimalValidationError> {
   // Validate input
   if (!Number.isFinite(value)) {
@@ -48,7 +48,7 @@ export function toNumber(positiveDecimal: PositiveDecimal): number {
  */
 export function addPositiveDecimal(
   a: PositiveDecimal,
-  b: PositiveDecimal
+  b: PositiveDecimal,
 ): PositiveDecimal {
   // Addition of two positive decimals is always positive, so no validation needed
   return (toNumber(a) + toNumber(b)) as PositiveDecimal;
@@ -59,7 +59,7 @@ export function addPositiveDecimal(
  */
 export function subtractPositiveDecimal(
   a: PositiveDecimal,
-  b: PositiveDecimal
+  b: PositiveDecimal,
 ): Result<PositiveDecimal, PositiveDecimalValidationError> {
   const result = toNumber(a) - toNumber(b);
 
@@ -78,7 +78,7 @@ export function subtractPositiveDecimal(
  */
 export function multiplyPositiveDecimal(
   a: PositiveDecimal,
-  b: PositiveDecimal
+  b: PositiveDecimal,
 ): PositiveDecimal {
   // Multiplication of two positive decimals is always positive
   return (toNumber(a) * toNumber(b)) as PositiveDecimal;
@@ -89,7 +89,7 @@ export function multiplyPositiveDecimal(
  */
 export function dividePositiveDecimal(
   a: PositiveDecimal,
-  b: PositiveDecimal
+  b: PositiveDecimal,
 ): PositiveDecimal {
   // Division of two positive decimals is always positive
   return (toNumber(a) / toNumber(b)) as PositiveDecimal;
@@ -100,7 +100,7 @@ export function dividePositiveDecimal(
  */
 export function multiplyByFactor(
   decimal: PositiveDecimal,
-  factor: number
+  factor: number,
 ): Result<PositiveDecimal, PositiveDecimalValidationError> {
   if (!Number.isFinite(factor) || factor <= 0) {
     return { success: false, error: "InvalidValue" };
@@ -119,7 +119,7 @@ export function multiplyByFactor(
  */
 export function comparePositiveDecimal(
   a: PositiveDecimal,
-  b: PositiveDecimal
+  b: PositiveDecimal,
 ): number {
   return toNumber(a) - toNumber(b);
 }
@@ -130,7 +130,7 @@ export function comparePositiveDecimal(
 export function isEqualPositiveDecimal(
   a: PositiveDecimal,
   b: PositiveDecimal,
-  epsilon: number = 1e-10
+  epsilon: number = 1e-10,
 ): boolean {
   return Math.abs(toNumber(a) - toNumber(b)) < epsilon;
 }
@@ -140,7 +140,7 @@ export function isEqualPositiveDecimal(
  */
 export function formatPositiveDecimal(
   positiveDecimal: PositiveDecimal,
-  decimals: number = 2
+  decimals: number = 2,
 ): string {
   return new Intl.NumberFormat("de-DE", {
     minimumFractionDigits: decimals,
@@ -153,7 +153,7 @@ export function formatPositiveDecimal(
  */
 export function roundPositiveDecimal(
   decimal: PositiveDecimal,
-  places: number
+  places: number,
 ): PositiveDecimal {
   const factor = Math.pow(10, places);
   const rounded = Math.round(toNumber(decimal) * factor) / factor;

@@ -8,9 +8,11 @@
         >
           ← Back
         </RouterLink>
-        
+
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Mortgage Details</h1>
-        <p class="text-lg text-gray-600">View and manage mortgage information</p>
+        <p class="text-lg text-gray-600">
+          View and manage mortgage information
+        </p>
       </div>
 
       <div class="bg-white rounded-lg shadow p-6">
@@ -26,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
+import { useRoute } from "vue-router";
 
 const route = useRoute();
 </script>

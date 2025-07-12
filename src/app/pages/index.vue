@@ -8,9 +8,10 @@
 
       <div class="bg-white rounded-lg shadow p-8">
         <p class="text-gray-600 text-center">
-          Welcome to the mortgage calculator. Use the navigation to explore different features.
+          Welcome to the mortgage calculator. Use the navigation to explore
+          different features.
         </p>
-        
+
         <div class="mt-8 flex justify-center">
           <RouterLink
             to="/create"

@@ -4,7 +4,7 @@
  * These are the core mathematical functions that power all mortgage calculations.
  * They operate on domain types and return precise financial calculations.
  * All functions are pure (no side effects) and thoroughly tested.
- * 
+ *
  * Uses decimal.js for arbitrary precision arithmetic to avoid floating-point errors.
  */
 
@@ -47,7 +47,9 @@ export function calculateMonthlyPayment(
   loanConfiguration: LoanConfiguration,
 ): Result<MonthlyPayment, LoanCalculationError> {
   try {
-    const loanAmount = new Decimal(loanAmountToNumber(loanConfiguration.amount));
+    const loanAmount = new Decimal(
+      loanAmountToNumber(loanConfiguration.amount),
+    );
     const annualRate = new Decimal(toDecimal(loanConfiguration.annualRate));
     const termInMonths = monthCountToNumber(loanConfiguration.termInMonths);
 
@@ -134,11 +136,16 @@ export function calculateLoanTerm(
     // Apply loan term formula: n = -ln(1 - (L * c / P)) / ln(1 + c)
     const ratio = amount.times(monthlyRate).dividedBy(payment);
     const onePlusRate = monthlyRate.plus(1);
-    const termInMonths = Decimal.ln(Decimal.sub(1, ratio)).negated()
+    const termInMonths = Decimal.ln(Decimal.sub(1, ratio))
+      .negated()
       .dividedBy(Decimal.ln(onePlusRate));
 
     // Validate result
-    if (!termInMonths.isFinite() || termInMonths.isNegative() || termInMonths.isZero()) {
+    if (
+      !termInMonths.isFinite() ||
+      termInMonths.isNegative() ||
+      termInMonths.isZero()
+    ) {
       return { success: false, error: "MathematicalError" };
     }
 
@@ -168,7 +175,13 @@ export function calculateInterestRate(
     const months = monthCountToNumber(termInMonths);
 
     // Validate inputs
-    if (payment.isZero() || payment.isNegative() || months <= 0 || amount.isZero() || amount.isNegative()) {
+    if (
+      payment.isZero() ||
+      payment.isNegative() ||
+      months <= 0 ||
+      amount.isZero() ||
+      amount.isNegative()
+    ) {
       return { success: false, error: "InvalidParameters" };
     }
 
@@ -189,7 +202,7 @@ export function calculateInterestRate(
 
     // Use bisection method for more robust convergence
     let lowerBound = new Decimal(0.0001); // 0.01% annual
-    let upperBound = new Decimal(0.30); // 30% annual
+    let upperBound = new Decimal(0.3); // 30% annual
     const maxIterations = 50;
     const tolerance = new Decimal(0.01); // €0.01 tolerance on payment
 
@@ -206,7 +219,7 @@ export function calculateInterestRate(
     // Check if payment is feasible with the bounds
     const lowerPayment = calculatePaymentForRate(lowerBound);
     const upperPayment = calculatePaymentForRate(upperBound);
-    
+
     if (payment.lessThan(lowerPayment) || payment.greaterThan(upperPayment)) {
       return { success: false, error: "MathematicalError" };
     }
@@ -239,7 +252,6 @@ export function calculateInterestRate(
   }
 }
 
-
 /**
  * Calculate total interest paid over the life of the loan
  */
@@ -252,8 +264,12 @@ export function calculateTotalInterest(
       return { success: false, error: monthlyPaymentResult.error };
     }
 
-    const monthlyPaymentAmount = new Decimal(toEuros(monthlyPaymentResult.data.total));
-    const loanAmount = new Decimal(loanAmountToNumber(loanConfiguration.amount));
+    const monthlyPaymentAmount = new Decimal(
+      toEuros(monthlyPaymentResult.data.total),
+    );
+    const loanAmount = new Decimal(
+      loanAmountToNumber(loanConfiguration.amount),
+    );
     const termInMonths = monthCountToNumber(loanConfiguration.termInMonths);
 
     const totalPayments = monthlyPaymentAmount.times(termInMonths);
@@ -281,7 +297,9 @@ export function calculateRemainingBalance(
       return { success: false, error: "InvalidParameters" };
     }
 
-    const loanAmount = new Decimal(loanAmountToNumber(loanConfiguration.amount));
+    const loanAmount = new Decimal(
+      loanAmountToNumber(loanConfiguration.amount),
+    );
     const annualRate = new Decimal(toDecimal(loanConfiguration.annualRate));
     const termInMonths = monthCountToNumber(loanConfiguration.termInMonths);
 
@@ -296,8 +314,12 @@ export function calculateRemainingBalance(
     if (annualRate.isZero()) {
       // Simple calculation for 0% interest
       const monthlyPrincipal = loanAmount.dividedBy(termInMonths);
-      const remainingBalance = loanAmount.minus(monthlyPrincipal.times(paymentsMade));
-      const balanceResult = createMoney(Decimal.max(0, remainingBalance).toNumber());
+      const remainingBalance = loanAmount.minus(
+        monthlyPrincipal.times(paymentsMade),
+      );
+      const balanceResult = createMoney(
+        Decimal.max(0, remainingBalance).toNumber(),
+      );
       if (!balanceResult.success) {
         return { success: false, error: "MathematicalError" };
       }
@@ -316,10 +338,13 @@ export function calculateRemainingBalance(
     const factor1 = onePlusRate.pow(termInMonths);
     const factor2 = onePlusRate.pow(paymentsMade);
 
-    const remainingBalance = loanAmount.times(factor1.minus(factor2))
+    const remainingBalance = loanAmount
+      .times(factor1.minus(factor2))
       .dividedBy(factor1.minus(1));
 
-    const balanceResult = createMoney(Decimal.max(0, remainingBalance).toNumber());
+    const balanceResult = createMoney(
+      Decimal.max(0, remainingBalance).toNumber(),
+    );
     if (!balanceResult.success) {
       return { success: false, error: "MathematicalError" };
     }
@@ -348,7 +373,9 @@ export function calculateBreakEvenPoint(
       return { success: false, error: newPaymentResult.error };
     }
 
-    const currentPayment = new Decimal(toEuros(currentPaymentResult.data.total));
+    const currentPayment = new Decimal(
+      toEuros(currentPaymentResult.data.total),
+    );
     const newPayment = new Decimal(toEuros(newPaymentResult.data.total));
     const costs = new Decimal(toEuros(refinancingCosts));
 

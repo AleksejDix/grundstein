@@ -26,7 +26,7 @@ const MAX_MONEY_CENTS = 999_999_999_00; // 999,999,999.00 EUR in cents
  * @returns Result with either valid Money or validation error
  */
 export function createMoney(
-  euros: number
+  euros: number,
 ): Result<Money, MoneyValidationError> {
   // Validate input
   if (!Number.isFinite(euros)) {
@@ -76,7 +76,7 @@ function fromCents(cents: number): Money {
  */
 export function addMoney(
   a: Money,
-  b: Money
+  b: Money,
 ): Result<Money, MoneyValidationError> {
   const totalCents = toCents(a) + toCents(b);
 
@@ -95,7 +95,7 @@ export function addMoney(
  */
 export function subtractMoney(
   a: Money,
-  b: Money
+  b: Money,
 ): Result<Money, MoneyValidationError> {
   const resultCents = toCents(a) - toCents(b);
 
@@ -114,7 +114,7 @@ export function subtractMoney(
  */
 export function multiplyMoney(
   money: Money,
-  factor: number
+  factor: number,
 ): Result<Money, MoneyValidationError> {
   if (!Number.isFinite(factor) || factor < 0) {
     return { success: false, error: "InvalidAmount" };

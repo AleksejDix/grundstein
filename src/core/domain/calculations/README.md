@@ -16,18 +16,21 @@ src/core/domain/calculations/
 ## Design Principles
 
 ### 🔢 **Pure Mathematical Functions**
+
 - No side effects or external dependencies
 - Deterministic outputs for given inputs
 - Composable and testable
 - Precise decimal arithmetic using Decimal.js
 
 ### 🏦 **Swiss & German Banking Standards**
+
 - Market-specific calculation rules
 - Regulatory compliance built-in
 - Real-world validation scenarios
 - Professional accuracy standards
 
 ### 🧮 **Financial Mathematics Excellence**
+
 - Compound interest calculations
 - Amortization schedule generation
 - Present value and time value of money
@@ -40,24 +43,28 @@ src/core/domain/calculations/
 Basic mortgage calculations used throughout the system:
 
 ```typescript
-import { calculateMonthlyPayment, calculateLoanAmount } from './LoanCalculations';
+import {
+  calculateMonthlyPayment,
+  calculateLoanAmount,
+} from "./LoanCalculations";
 
 // Calculate monthly payment for a loan
 const payment = calculateMonthlyPayment({
-  amount: loanAmount,        // LoanAmount (€300,000)
-  annualRate: interestRate,  // InterestRate (3.5%)
-  termInMonths: monthCount   // MonthCount (360 months)
+  amount: loanAmount, // LoanAmount (€300,000)
+  annualRate: interestRate, // InterestRate (3.5%)
+  termInMonths: monthCount, // MonthCount (360 months)
 });
 
 // Calculate maximum loan for given payment
 const maxLoan = calculateLoanAmount({
-  monthlyPayment: payment,   // MonthlyPayment (€1,500)
-  annualRate: interestRate,  // InterestRate (3.5%)
-  termInMonths: monthCount   // MonthCount (360 months)
+  monthlyPayment: payment, // MonthlyPayment (€1,500)
+  annualRate: interestRate, // InterestRate (3.5%)
+  termInMonths: monthCount, // MonthCount (360 months)
 });
 ```
 
 **Key Functions:**
+
 - `calculateMonthlyPayment()` - Core PMT calculation
 - `calculateLoanAmount()` - Reverse loan calculation
 - `calculateRemainingBalance()` - Balance at any point
@@ -68,12 +75,12 @@ const maxLoan = calculateLoanAmount({
 Handles Swiss/German extra payment (Sondertilgung) calculations:
 
 ```typescript
-import { calculateSondertilgungImpact } from './SondertilgungCalculations';
+import { calculateSondertilgungImpact } from "./SondertilgungCalculations";
 
 // Calculate impact of extra payments
 const impact = calculateSondertilgungImpact(
   loanConfig,
-  sondertilgungPlan  // Annual extra payments with % limits
+  sondertilgungPlan, // Annual extra payments with % limits
 );
 
 // Results include:
@@ -84,6 +91,7 @@ const impact = calculateSondertilgungImpact(
 ```
 
 **Key Features:**
+
 - Percentage-based annual limits (5%, 10%, 20%, 50%, unlimited)
 - Bank-specific rule enforcement
 - Payment timing optimization
@@ -94,12 +102,12 @@ const impact = calculateSondertilgungImpact(
 The heart of the system - generates complete payment schedules:
 
 ```typescript
-import { generateAmortizationSchedule } from './AmortizationEngine';
+import { generateAmortizationSchedule } from "./AmortizationEngine";
 
 // Generate complete payment schedule
 const schedule = generateAmortizationSchedule(
   loanConfig,
-  sondertilgungPlan  // Optional extra payments
+  sondertilgungPlan, // Optional extra payments
 );
 
 // Each payment contains:
@@ -111,6 +119,7 @@ const schedule = generateAmortizationSchedule(
 ```
 
 **Schedule Analysis:**
+
 - Payment-by-payment breakdown
 - Principal vs interest tracking
 - Balance progression
@@ -121,7 +130,10 @@ const schedule = generateAmortizationSchedule(
 Aggregates and analyzes multiple mortgages as a portfolio:
 
 ```typescript
-import { calculatePortfolioSummary, optimizePortfolio } from './PortfolioCalculations';
+import {
+  calculatePortfolioSummary,
+  optimizePortfolio,
+} from "./PortfolioCalculations";
 
 // Analyze entire portfolio
 const summary = calculatePortfolioSummary(mortgagePortfolio);
@@ -136,12 +148,14 @@ const summary = calculatePortfolioSummary(mortgagePortfolio);
 ## Mathematical Accuracy
 
 ### Precision Standards
+
 - **Decimal.js** for all monetary calculations
 - **No floating-point arithmetic** for financial values
 - **Rounding policies** following banking standards
 - **Precision to the cent** for all calculations
 
 ### Validation & Testing
+
 - **Property-based testing** with fast-check
 - **Mathematical invariant verification**
 - **Edge case coverage** (zero rates, extreme values)
@@ -150,18 +164,19 @@ const summary = calculatePortfolioSummary(mortgagePortfolio);
 ## Usage Patterns
 
 ### Basic Loan Calculation
+
 ```typescript
-import { 
-  createLoanAmount, 
-  createInterestRate, 
+import {
+  createLoanAmount,
+  createInterestRate,
   createMonthCount,
-  calculateMonthlyPayment 
-} from '../domain';
+  calculateMonthlyPayment,
+} from "../domain";
 
 const config = {
-  amount: createLoanAmount(500000).data,      // €500k
-  annualRate: createInterestRate(3.2).data,  // 3.2%
-  termInMonths: createMonthCount(300).data   // 25 years
+  amount: createLoanAmount(500000).data, // €500k
+  annualRate: createInterestRate(3.2).data, // 3.2%
+  termInMonths: createMonthCount(300).data, // 25 years
 };
 
 const payment = calculateMonthlyPayment(config);
@@ -171,12 +186,13 @@ if (payment.success) {
 ```
 
 ### Sondertilgung Analysis
+
 ```typescript
-import { calculateSondertilgungImpact } from './SondertilgungCalculations';
+import { calculateSondertilgungImpact } from "./SondertilgungCalculations";
 
 const extraPayments = createSondertilgungPlan([
-  { year: 1, amount: 10000 },  // €10k extra in year 1
-  { year: 2, amount: 15000 }   // €15k extra in year 2
+  { year: 1, amount: 10000 }, // €10k extra in year 1
+  { year: 2, amount: 15000 }, // €15k extra in year 2
 ]);
 
 const impact = calculateSondertilgungImpact(loanConfig, extraPayments);
@@ -184,13 +200,16 @@ const impact = calculateSondertilgungImpact(loanConfig, extraPayments);
 ```
 
 ### Complete Schedule Generation
+
 ```typescript
-import { generateAmortizationSchedule } from './AmortizationEngine';
+import { generateAmortizationSchedule } from "./AmortizationEngine";
 
 const schedule = generateAmortizationSchedule(loanConfig, sondertilgungPlan);
 if (schedule.success) {
   schedule.data.payments.forEach((payment, index) => {
-    console.log(`Month ${index + 1}: ${toEuros(payment.principalAmount)} principal`);
+    console.log(
+      `Month ${index + 1}: ${toEuros(payment.principalAmount)} principal`,
+    );
   });
 }
 ```
@@ -200,11 +219,11 @@ if (schedule.success) {
 All calculation functions return `Result<T, E>` types:
 
 ```typescript
-type LoanCalculationError = 
-  | 'InvalidLoanConfiguration'
-  | 'MathematicalError'
-  | 'NegativeAmortization'
-  | 'ExcessiveSondertilgung';
+type LoanCalculationError =
+  | "InvalidLoanConfiguration"
+  | "MathematicalError"
+  | "NegativeAmortization"
+  | "ExcessiveSondertilgung";
 
 // Always check for success
 const result = calculateMonthlyPayment(config);
@@ -213,7 +232,7 @@ if (result.success) {
 } else {
   // Handle specific error cases
   switch (result.error) {
-    case 'InvalidLoanConfiguration':
+    case "InvalidLoanConfiguration":
       // Handle configuration error
       break;
     // ...
@@ -231,6 +250,7 @@ if (result.success) {
 ## Testing Strategy
 
 Each calculation module has comprehensive tests:
+
 - **Unit tests** for individual functions
 - **Property-based tests** for mathematical properties
 - **Integration tests** for complex workflows
@@ -239,6 +259,7 @@ Each calculation module has comprehensive tests:
 ## Dependencies
 
 The calculations layer depends only on:
+
 - Domain value objects (Money, Percentage, etc.)
 - Domain types (LoanConfiguration, etc.)
 - Decimal.js for precise arithmetic

@@ -5,7 +5,7 @@
   "timezone": "Europe/Berlin",
   "labels": ["dependencies"],
   "assignees": ["@me"],
-  
+
   "packageRules": [
     {
       "description": "Group Vue ecosystem updates",
@@ -16,7 +16,12 @@
     {
       "description": "Group testing framework updates",
       "groupName": "Testing frameworks",
-      "matchPackagePatterns": ["^vitest", "^@vitest/", "^playwright", "^@playwright/"],
+      "matchPackagePatterns": [
+        "^vitest",
+        "^@vitest/",
+        "^playwright",
+        "^@playwright/"
+      ],
       "schedule": ["before 6am on monday"]
     },
     {
@@ -46,21 +51,21 @@
       "schedule": ["before 6am on monday"]
     }
   ],
-  
+
   "vulnerabilityAlerts": {
     "enabled": true,
     "labels": ["security"],
     "assignees": ["@me"]
   },
-  
+
   "lockFileMaintenance": {
     "enabled": true,
     "schedule": ["before 6am on the first day of the month"]
   },
-  
+
   "prHourlyLimit": 2,
   "prConcurrentLimit": 3,
-  
+
   "commitMessagePrefix": "deps:",
   "semanticCommits": "enabled"
 }

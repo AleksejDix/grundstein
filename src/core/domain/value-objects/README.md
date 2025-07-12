@@ -22,18 +22,21 @@ src/core/domain/value-objects/
 ## Design Principles
 
 ### 🛡️ **Type Safety First**
+
 - **Branded types** prevent mixing incompatible values
 - **Compile-time validation** catches errors early
 - **Make illegal states unrepresentable**
 - **No primitive obsession** - business concepts have dedicated types
 
 ### 🏗️ **Smart Constructors**
+
 - All value objects created through factory functions
 - **Validation at construction time**
 - **Result types** for explicit error handling
 - **Immutable by default** - no mutation after creation
 
 ### 💰 **Financial Precision**
+
 - **Exact decimal arithmetic** using Decimal.js
 - **No floating-point errors** for monetary calculations
 - **Banker's rounding** following financial standards
@@ -46,21 +49,22 @@ src/core/domain/value-objects/
 Represents any monetary amount in EUR with cent precision:
 
 ```typescript
-import { createMoney, toEuros, toCents } from './Money';
+import { createMoney, toEuros, toCents } from "./Money";
 
 // Create validated monetary amounts
-const amount = createMoney(1234.56);  // €1,234.56
+const amount = createMoney(1234.56); // €1,234.56
 if (amount.success) {
-  console.log(toEuros(amount.data));  // "€1,234.56"
-  console.log(toCents(amount.data));  // 123456 (cents)
+  console.log(toEuros(amount.data)); // "€1,234.56"
+  console.log(toCents(amount.data)); // 123456 (cents)
 }
 
 // Validation prevents invalid states
-const negative = createMoney(-100);   // Error: "NegativeAmount"
-const invalid = createMoney(NaN);     // Error: "InvalidAmount"
+const negative = createMoney(-100); // Error: "NegativeAmount"
+const invalid = createMoney(NaN); // Error: "InvalidAmount"
 ```
 
 **Features:**
+
 - Prevents negative amounts
 - Handles cent precision correctly
 - Maximum value: €999,999,999.00
@@ -71,20 +75,21 @@ const invalid = createMoney(NaN);     // Error: "InvalidAmount"
 Extends Money with loan-specific business rules:
 
 ```typescript
-import { createLoanAmount, toEuros } from './LoanAmount';
+import { createLoanAmount, toEuros } from "./LoanAmount";
 
 // Loan amounts have specific constraints
-const loan = createLoanAmount(500000);  // €500,000
+const loan = createLoanAmount(500000); // €500,000
 if (loan.success) {
-  console.log(toEuros(loan.data));     // "€500,000.00"
+  console.log(toEuros(loan.data)); // "€500,000.00"
 }
 
 // Business rule validation
-const tooSmall = createLoanAmount(999);      // Error: "BelowMinimumAmount"
-const tooLarge = createLoanAmount(5000000);  // Error: "AboveMaximumAmount"
+const tooSmall = createLoanAmount(999); // Error: "BelowMinimumAmount"
+const tooLarge = createLoanAmount(5000000); // Error: "AboveMaximumAmount"
 ```
 
 **Business Rules:**
+
 - Minimum: €1,000 (practical loan minimum)
 - Maximum: €3,000,000 (portfolio limit)
 - Inherits all Money validations
@@ -94,21 +99,22 @@ const tooLarge = createLoanAmount(5000000);  // Error: "AboveMaximumAmount"
 Extends Percentage with interest rate specific constraints:
 
 ```typescript
-import { createInterestRate, toPercentage, toDecimal } from './InterestRate';
+import { createInterestRate, toPercentage, toDecimal } from "./InterestRate";
 
 // Interest rates for mortgage calculations
-const rate = createInterestRate(3.25);  // 3.25% APR
+const rate = createInterestRate(3.25); // 3.25% APR
 if (rate.success) {
-  console.log(toPercentage(rate.data));  // "3.25%"
-  console.log(toDecimal(rate.data));     // 0.0325 (for calculations)
+  console.log(toPercentage(rate.data)); // "3.25%"
+  console.log(toDecimal(rate.data)); // 0.0325 (for calculations)
 }
 
 // Market-realistic constraints
-const tooLow = createInterestRate(0.05);   // Error: "BelowMinimumRate"
-const tooHigh = createInterestRate(30);    // Error: "AboveMaximumRate"
+const tooLow = createInterestRate(0.05); // Error: "BelowMinimumRate"
+const tooHigh = createInterestRate(30); // Error: "AboveMaximumRate"
 ```
 
 **Business Rules:**
+
 - Minimum: 0.1% (historically low rates)
 - Maximum: 25% (extreme high, prevents unrealistic inputs)
 - Designed for annual percentage rates (APR)
@@ -118,21 +124,22 @@ const tooHigh = createInterestRate(30);    // Error: "AboveMaximumRate"
 Represents loan terms and payment periods:
 
 ```typescript
-import { createMonthCount, toYears, toNumber } from './MonthCount';
+import { createMonthCount, toYears, toNumber } from "./MonthCount";
 
 // Loan terms in months
-const term = createMonthCount(360);     // 30 years
+const term = createMonthCount(360); // 30 years
 if (term.success) {
-  console.log(toYears(term.data));      // 30 (years)
-  console.log(toNumber(term.data));     // 360 (months)
+  console.log(toYears(term.data)); // 30 (years)
+  console.log(toNumber(term.data)); // 360 (months)
 }
 
 // Mortgage-specific constraints
-const tooShort = createMonthCount(11);    // Error: "BelowMinimumTerm"
-const tooLong = createMonthCount(601);    // Error: "AboveMaximumTerm"
+const tooShort = createMonthCount(11); // Error: "BelowMinimumTerm"
+const tooLong = createMonthCount(601); // Error: "AboveMaximumTerm"
 ```
 
 **Business Rules:**
+
 - Minimum: 12 months (1 year)
 - Maximum: 600 months (50 years)
 - Optimized for mortgage calculations
@@ -142,21 +149,26 @@ const tooLong = createMonthCount(601);    // Error: "AboveMaximumTerm"
 Foundation type for all percentage values:
 
 ```typescript
-import { createPercentage, toPercentageValue, formatPercentage } from './Percentage';
+import {
+  createPercentage,
+  toPercentageValue,
+  formatPercentage,
+} from "./Percentage";
 
 // Generic percentage values
 const percent = createPercentage(15.5);
 if (percent.success) {
-  console.log(formatPercentage(percent.data));    // "15.5%"
-  console.log(toPercentageValue(percent.data));   // 15.5
+  console.log(formatPercentage(percent.data)); // "15.5%"
+  console.log(toPercentageValue(percent.data)); // 15.5
 }
 
 // Validation constraints
-const negative = createPercentage(-5);      // Error: "NegativePercentage"
-const excessive = createPercentage(150);    // Error: "ExcessivePercentage"
+const negative = createPercentage(-5); // Error: "NegativePercentage"
+const excessive = createPercentage(150); // Error: "ExcessivePercentage"
 ```
 
 **Features:**
+
 - Range: 0% to 100%
 - Decimal precision support
 - Formatted display
@@ -169,12 +181,12 @@ const excessive = createPercentage(150);    // Error: "ExcessivePercentage"
 Represents specific months in a payment schedule:
 
 ```typescript
-import { createPaymentMonth, toNumber } from './PaymentMonth';
+import { createPaymentMonth, toNumber } from "./PaymentMonth";
 
 // Payment schedule navigation
-const month = createPaymentMonth(24);   // 24th payment
+const month = createPaymentMonth(24); // 24th payment
 if (month.success) {
-  console.log(`Payment ${toNumber(month.data)}`);  // "Payment 24"
+  console.log(`Payment ${toNumber(month.data)}`); // "Payment 24"
 }
 ```
 
@@ -183,12 +195,12 @@ if (month.success) {
 Specialized percentage for loan-to-value calculations:
 
 ```typescript
-import { createLoanToValueRatio, toPercentage } from './LoanToValueRatio';
+import { createLoanToValueRatio, toPercentage } from "./LoanToValueRatio";
 
 // LTV ratio calculations
-const ltv = createLoanToValueRatio(80);  // 80% LTV
+const ltv = createLoanToValueRatio(80); // 80% LTV
 if (ltv.success) {
-  console.log(toPercentage(ltv.data));   // "80.0%"
+  console.log(toPercentage(ltv.data)); // "80.0%"
 }
 ```
 
@@ -197,7 +209,10 @@ if (ltv.success) {
 General-purpose positive number types:
 
 ```typescript
-import { createPositiveInteger, createPositiveDecimal } from './PositiveInteger';
+import {
+  createPositiveInteger,
+  createPositiveDecimal,
+} from "./PositiveInteger";
 
 // Count values that must be positive
 const count = createPositiveInteger(5);
@@ -212,17 +227,17 @@ const ratio = createPositiveDecimal(1.25);
 // ❌ Without branded types - dangerous
 function calculatePayment(amount: number, rate: number, term: number) {
   // Could accidentally pass parameters in wrong order
-  return calculate(rate, amount, term);  // BUG: wrong order!
+  return calculate(rate, amount, term); // BUG: wrong order!
 }
 
 // ✅ With branded types - safe
 function calculatePayment(
-  amount: LoanAmount, 
-  rate: InterestRate, 
-  term: MonthCount
+  amount: LoanAmount,
+  rate: InterestRate,
+  term: MonthCount,
 ): Result<MonthlyPayment, CalculationError> {
   // Compiler prevents passing wrong types
-  return calculate(amount, rate, term);  // Type-safe!
+  return calculate(amount, rate, term); // Type-safe!
 }
 ```
 
@@ -230,8 +245,8 @@ function calculatePayment(
 
 ```typescript
 // These won't compile - caught at build time
-const amount: LoanAmount = createMoney(500000);     // ❌ Type mismatch
-const rate: Percentage = createInterestRate(3.5);   // ❌ Type mismatch
+const amount: LoanAmount = createMoney(500000); // ❌ Type mismatch
+const rate: Percentage = createInterestRate(3.5); // ❌ Type mismatch
 
 // This compiles and is type-safe
 const amount = createLoanAmount(500000);
@@ -246,9 +261,7 @@ if (amount.success && rate.success) {
 All value objects use Result types for validation:
 
 ```typescript
-type Result<T, E> = 
-  | { success: true; data: T }
-  | { success: false; error: E };
+type Result<T, E> = { success: true; data: T } | { success: false; error: E };
 
 // Always check success before using data
 const amount = createLoanAmount(input);
@@ -258,11 +271,11 @@ if (amount.success) {
 } else {
   // Handle specific error cases
   switch (amount.error) {
-    case 'BelowMinimumAmount':
-      showError('Loan amount too small');
+    case "BelowMinimumAmount":
+      showError("Loan amount too small");
       break;
-    case 'AboveMaximumAmount':
-      showError('Loan amount too large');
+    case "AboveMaximumAmount":
+      showError("Loan amount too large");
       break;
   }
 }
@@ -273,24 +286,25 @@ if (amount.success) {
 Each value object has comprehensive tests:
 
 ### Property-Based Testing
+
 ```typescript
 // Example from Money.test.ts
-import fc from 'fast-check';
+import fc from "fast-check";
 
-test('Money roundtrip through euros conversion', () => {
-  fc.assert(fc.property(
-    fc.float({ min: 0, max: 999999 }),
-    (euros) => {
+test("Money roundtrip through euros conversion", () => {
+  fc.assert(
+    fc.property(fc.float({ min: 0, max: 999999 }), (euros) => {
       const money = createMoney(euros);
       if (money.success) {
         expect(toEuros(money.data)).toBeCloseTo(euros, 2);
       }
-    }
-  ));
+    }),
+  );
 });
 ```
 
 ### Edge Case Coverage
+
 - Boundary values (min/max)
 - Invalid inputs (negative, NaN, Infinity)
 - Precision edge cases
@@ -306,6 +320,7 @@ test('Money roundtrip through euros conversion', () => {
 ## Dependencies
 
 Value objects depend only on:
+
 - `primitives/Brand.ts` for the branding utility
 - `Decimal.js` for precise arithmetic (Money types only)
 - **No business logic or external APIs**

@@ -15,6 +15,7 @@ This document outlines our pure functional architecture where Vue/Pinia serves e
 ## Architecture Layers
 
 ### 1. Domain Layer (Pure Business Logic)
+
 ```
 src/core/domain/
 ├── types/          # Branded types (Money, Percentage, etc.)
@@ -24,6 +25,7 @@ src/core/domain/
 ```
 
 **Contains:**
+
 - All business logic
 - All calculations
 - All validations
@@ -31,6 +33,7 @@ src/core/domain/
 - Pure functions only
 
 ### 2. Application Layer (Orchestration)
+
 ```
 src/core/application/
 ├── services/       # Use case orchestration
@@ -38,11 +41,13 @@ src/core/application/
 ```
 
 **Contains:**
+
 - Use case orchestration
 - Service coordination
 - Error handling
 
 ### 3. View Layer (Presentation Only)
+
 ```
 src/app/
 ├── stores/        # UI state only (Pinia)
@@ -52,6 +57,7 @@ src/app/
 ```
 
 **Contains:**
+
 - UI state (selected items, view modes, open/closed states)
 - Display formatting
 - User input capture
@@ -63,19 +69,19 @@ src/app/
 
 ```typescript
 // stores/mortgageUIStore.ts - CORRECT
-export const useMortgageUIStore = defineStore('mortgage-ui', () => {
+export const useMortgageUIStore = defineStore("mortgage-ui", () => {
   // Shared refs - UI state only
-  const selectedMortgageId = ref<string | null>(null)
-  const viewMode = ref<'grid' | 'list' | 'table'>('grid')
-  const isSidebarOpen = ref(false)
-  const sortField = ref<'date' | 'amount' | 'rate'>('date')
-  const sortOrder = ref<'asc' | 'desc'>('desc')
-  const searchTerm = ref('')
-  
+  const selectedMortgageId = ref<string | null>(null);
+  const viewMode = ref<"grid" | "list" | "table">("grid");
+  const isSidebarOpen = ref(false);
+  const sortField = ref<"date" | "amount" | "rate">("date");
+  const sortOrder = ref<"asc" | "desc">("desc");
+  const searchTerm = ref("");
+
   // Shared computed - UI derivations only
-  const hasSelection = computed(() => selectedMortgageId.value !== null)
-  const isListView = computed(() => viewMode.value === 'list')
-  
+  const hasSelection = computed(() => selectedMortgageId.value !== null);
+  const isListView = computed(() => viewMode.value === "list");
+
   return {
     // State
     selectedMortgageId,
@@ -84,45 +90,45 @@ export const useMortgageUIStore = defineStore('mortgage-ui', () => {
     sortField,
     sortOrder,
     searchTerm,
-    
+
     // Computed
     hasSelection,
     isListView,
-    
+
     // Setters (no logic)
-    selectMortgage: (id: string | null) => selectedMortgageId.value = id,
-    setViewMode: (mode: typeof viewMode.value) => viewMode.value = mode,
-    toggleSidebar: () => isSidebarOpen.value = !isSidebarOpen.value,
-  }
-})
+    selectMortgage: (id: string | null) => (selectedMortgageId.value = id),
+    setViewMode: (mode: typeof viewMode.value) => (viewMode.value = mode),
+    toggleSidebar: () => (isSidebarOpen.value = !isSidebarOpen.value),
+  };
+});
 ```
 
 ### What NOT to Put in Stores
 
 ```typescript
 // stores/badExample.ts - WRONG! Contains business logic
-export const useBadStore = defineStore('bad', () => {
+export const useBadStore = defineStore("bad", () => {
   // ❌ Domain types in store
-  const mortgages = ref<LoanConfiguration[]>([])
-  
+  const mortgages = ref<LoanConfiguration[]>([]);
+
   // ❌ Business calculations in store
-  const totalAmount = computed(() => 
-    mortgages.value.reduce((sum, m) => sum + m.amount, 0)
-  )
-  
+  const totalAmount = computed(() =>
+    mortgages.value.reduce((sum, m) => sum + m.amount, 0),
+  );
+
   // ❌ Business logic in store
   const addMortgage = (input: MortgageInput) => {
-    const validated = validateMortgage(input) // ❌ Validation
-    const mortgage = createMortgage(validated) // ❌ Domain logic
-    mortgages.value.push(mortgage)
-  }
-  
+    const validated = validateMortgage(input); // ❌ Validation
+    const mortgage = createMortgage(validated); // ❌ Domain logic
+    mortgages.value.push(mortgage);
+  };
+
   // ❌ Async operations in store
   const loadMortgages = async () => {
-    const data = await api.getMortgages() // ❌ Should use TanStack Query
-    mortgages.value = data
-  }
-})
+    const data = await api.getMortgages(); // ❌ Should use TanStack Query
+    mortgages.value = data;
+  };
+});
 ```
 
 ## Data Flow (In-Memory Only)
@@ -157,9 +163,9 @@ const mortgageAnalysis = computed(() => {
   const amount = parseFloat(loanAmount.value)
   const rate = parseFloat(interestRate.value)
   const years = parseInt(termYears.value)
-  
+
   if (isNaN(amount) || isNaN(rate) || isNaN(years)) return null
-  
+
   // Call pure domain function
   return calculateMortgage({ amount, rate, years })
 })
@@ -188,41 +194,42 @@ User Input → Component → Domain Function → Component → Display
 ```typescript
 // composables/useMortgageCalculator.ts
 export function useMortgageCalculator() {
-  const uiStore = useMortgageUIStore()
-  
+  const uiStore = useMortgageUIStore();
+
   // Local state for inputs
   const inputs = reactive({
-    loanAmount: '',
-    interestRate: '',
-    termYears: ''
-  })
-  
+    loanAmount: "",
+    interestRate: "",
+    termYears: "",
+  });
+
   // Pure calculation
   const calculate = () => {
     const result = calculateMortgage({
       amount: parseFloat(inputs.loanAmount),
       rate: parseFloat(inputs.interestRate),
-      years: parseInt(inputs.termYears)
-    })
-    
+      years: parseInt(inputs.termYears),
+    });
+
     if (result.success) {
       // Update UI state if needed
-      uiStore.setCalculationMode('results')
+      uiStore.setCalculationMode("results");
     }
-    
-    return result
-  }
-  
+
+    return result;
+  };
+
   return {
     inputs,
-    calculate
-  }
+    calculate,
+  };
 }
 ```
 
 ## Key Rules
 
 ### ✅ DO:
+
 - Use stores for shared UI state only
 - Keep all logic in domain layer
 - Use computed for UI-only derivations
@@ -230,6 +237,7 @@ export function useMortgageCalculator() {
 - Keep calculations pure and stateless
 
 ### ❌ DON'T:
+
 - Put business logic in stores
 - Put domain types in stores
 - Do calculations in stores
@@ -239,6 +247,7 @@ export function useMortgageCalculator() {
 ## Example: Complete Feature
 
 ### 1. Domain Layer
+
 ```typescript
 // domain/calculations/mortgageAnalysis.ts
 export function analyzeMortgage(config: LoanConfiguration): MortgageAnalysis {
@@ -247,45 +256,48 @@ export function analyzeMortgage(config: LoanConfiguration): MortgageAnalysis {
     monthlyPayment: calculateMonthlyPayment(config),
     totalInterest: calculateTotalInterest(config),
     // ... more calculations
-  }
+  };
 }
 ```
 
 ### 2. Composable Layer
+
 ```typescript
 // composables/useMortgage.ts
 export function useMortgage() {
   const inputs = reactive({
-    amount: '',
-    rate: '',
-    years: ''
-  })
-  
-  const result = computed(() => 
-    calculateMortgage(inputs) // Direct domain function call
-  )
-  
-  return { inputs, result }
+    amount: "",
+    rate: "",
+    years: "",
+  });
+
+  const result = computed(
+    () => calculateMortgage(inputs), // Direct domain function call
+  );
+
+  return { inputs, result };
 }
 ```
 
 ### 3. UI Store
+
 ```typescript
 // stores/mortgageUIStore.ts
-export const useMortgageUIStore = defineStore('mortgage-ui', () => {
-  const selectedId = ref<string | null>(null)
-  const isEditMode = ref(false)
-  
+export const useMortgageUIStore = defineStore("mortgage-ui", () => {
+  const selectedId = ref<string | null>(null);
+  const isEditMode = ref(false);
+
   return {
     selectedId,
     isEditMode,
-    select: (id: string) => selectedId.value = id,
-    toggleEdit: () => isEditMode.value = !isEditMode.value,
-  }
-})
+    select: (id: string) => (selectedId.value = id),
+    toggleEdit: () => (isEditMode.value = !isEditMode.value),
+  };
+});
 ```
 
 ### 4. Component
+
 ```typescript
 // components/MortgageDetail.vue
 <script setup lang="ts">
@@ -293,7 +305,7 @@ const uiStore = useMortgageUIStore()
 const { inputs, result } = useMortgage()
 
 // Use domain function directly
-const analysis = computed(() => 
+const analysis = computed(() =>
   result.value ? analyzeMortgage(result.value) : null
 )
 </script>

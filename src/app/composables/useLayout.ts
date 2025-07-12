@@ -13,11 +13,11 @@ const currentBreakpoint = ref("lg");
 export function useLayout() {
   // Breakpoint detection
   const isDesktop = computed(() =>
-    ["lg", "xl", "2xl"].includes(currentBreakpoint.value)
+    ["lg", "xl", "2xl"].includes(currentBreakpoint.value),
   );
   const isTablet = computed(() => currentBreakpoint.value === "md");
   const isMobile = computed(() =>
-    ["sm", "xs"].includes(currentBreakpoint.value)
+    ["sm", "xs"].includes(currentBreakpoint.value),
   );
 
   // Sidebar management
@@ -35,7 +35,7 @@ export function useLayout() {
 
   // Layout utilities
   const getContainerClasses = (
-    type: "default" | "centered" | "full" | "narrow" = "default"
+    type: "default" | "centered" | "full" | "narrow" = "default",
   ) => {
     const base = "mx-auto px-4 sm:px-6 lg:px-8";
 
@@ -53,7 +53,7 @@ export function useLayout() {
 
   const getGridClasses = (
     columns: number = 1,
-    breakpoint: "sm" | "md" | "lg" | "xl" = "md"
+    breakpoint: "sm" | "md" | "lg" | "xl" = "md",
   ) => {
     const baseClasses = "grid gap-6";
 

@@ -1,6 +1,6 @@
 /**
  * Mortgage Entity
- * 
+ *
  * Represents a mortgage loan with identity and lifecycle.
  * This is a functional entity - no classes, pure functions only.
  */
@@ -18,22 +18,23 @@ export type MortgageStatus = "draft" | "active" | "completed" | "refinanced";
 
 // The Mortgage entity
 export type Mortgage = {
-  readonly id: MortgageId;                    // Branded - ensures uniqueness
-  readonly name: string;                      // Plain - no rules needed
-  readonly propertyAddress?: string;          // Plain - just text
-  readonly bankName: string;                  // Plain - just text
-  readonly currency: CurrencyCode;            // Which currency (EUR/CHF)
-  readonly configuration: LoanConfiguration;  // Domain type - complex rules
-  readonly status: MortgageStatus;            // Union type - already safe
-  readonly startDate: Date;                   // Standard type - clear meaning
+  readonly id: MortgageId; // Branded - ensures uniqueness
+  readonly name: string; // Plain - no rules needed
+  readonly propertyAddress?: string; // Plain - just text
+  readonly bankName: string; // Plain - just text
+  readonly currency: CurrencyCode; // Which currency (EUR/CHF)
+  readonly configuration: LoanConfiguration; // Domain type - complex rules
+  readonly status: MortgageStatus; // Union type - already safe
+  readonly startDate: Date; // Standard type - clear meaning
   readonly extraPaymentPlan?: ExtraPaymentPlan; // Domain type - has rules
-  readonly createdAt: Date;                   // Standard type
-  readonly updatedAt: Date;                   // Standard type
-  readonly metadata?: {                       // Plain object - no rules
+  readonly createdAt: Date; // Standard type
+  readonly updatedAt: Date; // Standard type
+  readonly metadata?: {
+    // Plain object - no rules
     readonly accountNumber?: string;
     readonly contactPerson?: string;
     readonly notes?: string;
-    readonly market?: "DE" | "CH" | "AT";   // Which market/country
+    readonly market?: "DE" | "CH" | "AT"; // Which market/country
   };
 };
 
@@ -50,32 +51,30 @@ export function generateMortgageId(): MortgageId {
 }
 
 // Create a new mortgage
-export function createMortgage(
-  params: {
-    id?: MortgageId;
-    name: string;
-    propertyAddress?: string;
-    bankName: string;
-    currency: CurrencyCode;
-    configuration: LoanConfiguration;
-    startDate: Date;
-    extraPaymentPlan?: ExtraPaymentPlan;
-    metadata?: Mortgage["metadata"];
-  }
-): Result<Mortgage, string> {
+export function createMortgage(params: {
+  id?: MortgageId;
+  name: string;
+  propertyAddress?: string;
+  bankName: string;
+  currency: CurrencyCode;
+  configuration: LoanConfiguration;
+  startDate: Date;
+  extraPaymentPlan?: ExtraPaymentPlan;
+  metadata?: Mortgage["metadata"];
+}): Result<Mortgage, string> {
   // Validation
   if (!params.name || params.name.trim().length === 0) {
     return Result.error("Mortgage name cannot be empty");
   }
-  
+
   if (!params.bankName || params.bankName.trim().length === 0) {
     return Result.error("Bank name cannot be empty");
   }
-  
+
   if (params.startDate > new Date()) {
     return Result.error("Start date cannot be in the future");
   }
-  
+
   const now = new Date();
   const mortgage: Mortgage = {
     id: params.id || generateMortgageId(),
@@ -91,7 +90,7 @@ export function createMortgage(
     updatedAt: now,
     metadata: params.metadata,
   };
-  
+
   return Result.ok(mortgage);
 }
 
@@ -105,28 +104,47 @@ export function updateMortgage(
     configuration: LoanConfiguration;
     extraPaymentPlan: ExtraPaymentPlan;
     metadata: Mortgage["metadata"];
-  }>
+  }>,
 ): Result<Mortgage, string> {
   // Validation
-  if (updates.name !== undefined && (!updates.name || updates.name.trim().length === 0)) {
+  if (
+    updates.name !== undefined &&
+    (!updates.name || updates.name.trim().length === 0)
+  ) {
     return Result.error("Mortgage name cannot be empty");
   }
-  
-  if (updates.bankName !== undefined && (!updates.bankName || updates.bankName.trim().length === 0)) {
+
+  if (
+    updates.bankName !== undefined &&
+    (!updates.bankName || updates.bankName.trim().length === 0)
+  ) {
     return Result.error("Bank name cannot be empty");
   }
-  
+
   const updated: Mortgage = {
     ...mortgage,
     name: updates.name !== undefined ? updates.name.trim() : mortgage.name,
-    propertyAddress: updates.propertyAddress !== undefined ? updates.propertyAddress.trim() : mortgage.propertyAddress,
-    bankName: updates.bankName !== undefined ? updates.bankName.trim() : mortgage.bankName,
-    configuration: updates.configuration !== undefined ? updates.configuration : mortgage.configuration,
-    extraPaymentPlan: updates.extraPaymentPlan !== undefined ? updates.extraPaymentPlan : mortgage.extraPaymentPlan,
-    metadata: updates.metadata !== undefined ? updates.metadata : mortgage.metadata,
+    propertyAddress:
+      updates.propertyAddress !== undefined
+        ? updates.propertyAddress.trim()
+        : mortgage.propertyAddress,
+    bankName:
+      updates.bankName !== undefined
+        ? updates.bankName.trim()
+        : mortgage.bankName,
+    configuration:
+      updates.configuration !== undefined
+        ? updates.configuration
+        : mortgage.configuration,
+    extraPaymentPlan:
+      updates.extraPaymentPlan !== undefined
+        ? updates.extraPaymentPlan
+        : mortgage.extraPaymentPlan,
+    metadata:
+      updates.metadata !== undefined ? updates.metadata : mortgage.metadata,
     updatedAt: new Date(),
   };
-  
+
   return Result.ok(updated);
 }
 
@@ -135,7 +153,7 @@ export function activateMortgage(mortgage: Mortgage): Result<Mortgage, string> {
   if (mortgage.status !== "draft") {
     return Result.error("Can only activate mortgages in draft status");
   }
-  
+
   return Result.ok({
     ...mortgage,
     status: "active",
@@ -147,7 +165,7 @@ export function completeMortgage(mortgage: Mortgage): Result<Mortgage, string> {
   if (mortgage.status !== "active") {
     return Result.error("Can only complete active mortgages");
   }
-  
+
   return Result.ok({
     ...mortgage,
     status: "completed",
@@ -155,11 +173,14 @@ export function completeMortgage(mortgage: Mortgage): Result<Mortgage, string> {
   });
 }
 
-export function refinanceMortgage(mortgage: Mortgage, newMortgageId: MortgageId): Result<Mortgage, string> {
+export function refinanceMortgage(
+  mortgage: Mortgage,
+  newMortgageId: MortgageId,
+): Result<Mortgage, string> {
   if (mortgage.status !== "active") {
     return Result.error("Can only refinance active mortgages");
   }
-  
+
   return Result.ok({
     ...mortgage,
     status: "refinanced",
@@ -185,11 +206,16 @@ export function canMakePayments(mortgage: Mortgage): boolean {
 }
 
 export function canAddExtraPayments(mortgage: Mortgage): boolean {
-  return mortgage.status === "active" && mortgage.extraPaymentPlan !== undefined;
+  return (
+    mortgage.status === "active" && mortgage.extraPaymentPlan !== undefined
+  );
 }
 
 // Calculate age of mortgage
-export function getMortgageAgeInMonths(mortgage: Mortgage, asOfDate: Date = new Date()): number {
+export function getMortgageAgeInMonths(
+  mortgage: Mortgage,
+  asOfDate: Date = new Date(),
+): number {
   const diffMs = asOfDate.getTime() - mortgage.startDate.getTime();
   return Math.floor(diffMs / (1000 * 60 * 60 * 24 * 30.44));
 }

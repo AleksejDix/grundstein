@@ -8,7 +8,12 @@
 
 import { Result } from "../primitives/Brand";
 import type { Money } from "../value-objects/Money";
-import { createMoney, addMoney, toEuros, formatMoney } from "../value-objects/Money";
+import {
+  createMoney,
+  addMoney,
+  toEuros,
+  formatMoney,
+} from "../value-objects/Money";
 
 // MonthlyPayment record type
 export type MonthlyPayment = {
@@ -32,7 +37,7 @@ export type MonthlyPaymentValidationError =
  */
 export function createMonthlyPayment(
   principal: number,
-  interest: number
+  interest: number,
 ): Result<MonthlyPayment, MonthlyPaymentValidationError> {
   // Validate individual amounts
   const principalResult = createMoney(principal);
@@ -66,7 +71,7 @@ export function createMonthlyPayment(
  */
 export function createMonthlyPaymentFromMoney(
   principal: Money,
-  interest: Money
+  interest: Money,
 ): Result<MonthlyPayment, MonthlyPaymentValidationError> {
   const totalResult = addMoney(principal, interest);
   if (!totalResult.success) {
@@ -89,7 +94,7 @@ export function createMonthlyPaymentFromMoney(
 export function createMonthlyPaymentWithTotal(
   principal: number,
   interest: number,
-  expectedTotal: number
+  expectedTotal: number,
 ): Result<MonthlyPayment, MonthlyPaymentValidationError> {
   const paymentResult = createMonthlyPayment(principal, interest);
   if (!paymentResult.success) {
@@ -165,7 +170,7 @@ export function getPrincipalPercentage(payment: MonthlyPayment): number {
  */
 export function addMonthlyPayments(
   payment1: MonthlyPayment,
-  payment2: MonthlyPayment
+  payment2: MonthlyPayment,
 ): Result<MonthlyPayment, MonthlyPaymentValidationError> {
   const principalResult = addMoney(payment1.principal, payment2.principal);
   if (!principalResult.success) {
@@ -179,7 +184,7 @@ export function addMonthlyPayments(
 
   return createMonthlyPaymentFromMoney(
     principalResult.data,
-    interestResult.data
+    interestResult.data,
   );
 }
 
@@ -188,7 +193,7 @@ export function addMonthlyPayments(
  */
 export function compareMonthlyPayments(
   a: MonthlyPayment,
-  b: MonthlyPayment
+  b: MonthlyPayment,
 ): number {
   return getTotalAmount(a) - getTotalAmount(b);
 }
@@ -198,7 +203,7 @@ export function compareMonthlyPayments(
  */
 export function isEqualMonthlyPayment(
   a: MonthlyPayment,
-  b: MonthlyPayment
+  b: MonthlyPayment,
 ): boolean {
   return (
     toEuros(a.principal) === toEuros(b.principal) &&

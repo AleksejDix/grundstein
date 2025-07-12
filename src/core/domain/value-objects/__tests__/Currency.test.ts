@@ -22,10 +22,10 @@ import {
 describe("Currency Types", () => {
   describe("EUR Creation", () => {
     it("should create valid EUR amounts", () => {
-      const result = createEUR(100.50);
+      const result = createEUR(100.5);
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(toDisplayAmount(result.data)).toBe(100.50);
+        expect(toDisplayAmount(result.data)).toBe(100.5);
       }
     });
 
@@ -55,18 +55,18 @@ describe("Currency Types", () => {
 
     it("should handle maximum amounts", () => {
       // MAX_AMOUNT_CENTS = 999_999_999_00 = 999,999,999.00 euros
-      const result = createEUR(999999999.00);
+      const result = createEUR(999999999.0);
       expect(result.success).toBe(true);
     });
 
     it("should reject amounts exceeding maximum", () => {
       // First verify max value succeeds
-      const atMax = createEUR(999999999.00);
+      const atMax = createEUR(999999999.0);
       expect(atMax.success).toBe(true);
-      
+
       // The maximum is 999_999_999_00 cents = 999,999,999.00 euros (almost 1 billion)
       // So 1,000,000,000.00 should fail
-      const exceedsMax = createEUR(1000000000.00);
+      const exceedsMax = createEUR(1000000000.0);
       expect(exceedsMax.success).toBe(false);
       if (!exceedsMax.success) {
         expect(exceedsMax.error).toBe("ExceedsMaximum");
@@ -94,10 +94,10 @@ describe("Currency Types", () => {
 
   describe("USD Creation", () => {
     it("should create valid USD amounts", () => {
-      const result = createUSD(1000.00);
+      const result = createUSD(1000.0);
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(toDisplayAmount(result.data)).toBe(1000.00);
+        expect(toDisplayAmount(result.data)).toBe(1000.0);
       }
     });
   });
@@ -154,9 +154,9 @@ describe("Currency Types", () => {
 
   describe("EUR Arithmetic", () => {
     it("should add EUR amounts", () => {
-      const eur1 = createEUR(100.50);
+      const eur1 = createEUR(100.5);
       const eur2 = createEUR(50.25);
-      
+
       expect(eur1.success && eur2.success).toBe(true);
       if (eur1.success && eur2.success) {
         const sum = addEUR(eur1.data, eur2.data);
@@ -165,9 +165,9 @@ describe("Currency Types", () => {
     });
 
     it("should subtract EUR amounts", () => {
-      const eur1 = createEUR(100.50);
+      const eur1 = createEUR(100.5);
       const eur2 = createEUR(30.25);
-      
+
       expect(eur1.success && eur2.success).toBe(true);
       if (eur1.success && eur2.success) {
         const result = subtractEUR(eur1.data, eur2.data);
@@ -181,7 +181,7 @@ describe("Currency Types", () => {
     it("should reject subtraction resulting in negative", () => {
       const eur1 = createEUR(50);
       const eur2 = createEUR(100);
-      
+
       expect(eur1.success && eur2.success).toBe(true);
       if (eur1.success && eur2.success) {
         const result = subtractEUR(eur1.data, eur2.data);
@@ -195,20 +195,20 @@ describe("Currency Types", () => {
 
   describe("CHF Arithmetic", () => {
     it("should add CHF amounts", () => {
-      const chf1 = createCHF(200.00);
-      const chf2 = createCHF(150.50);
-      
+      const chf1 = createCHF(200.0);
+      const chf2 = createCHF(150.5);
+
       expect(chf1.success && chf2.success).toBe(true);
       if (chf1.success && chf2.success) {
         const sum = addCHF(chf1.data, chf2.data);
-        expect(toDisplayAmount(sum)).toBe(350.50);
+        expect(toDisplayAmount(sum)).toBe(350.5);
       }
     });
 
     it("should subtract CHF amounts", () => {
-      const chf1 = createCHF(300.00);
+      const chf1 = createCHF(300.0);
       const chf2 = createCHF(125.75);
-      
+
       expect(chf1.success && chf2.success).toBe(true);
       if (chf1.success && chf2.success) {
         const result = subtractCHF(chf1.data, chf2.data);
@@ -224,7 +224,7 @@ describe("Currency Types", () => {
     it("should convert EUR to CHF", () => {
       const eurResult = createEUR(100);
       const rate = 1.05 as ExchangeRate; // 1 EUR = 1.05 CHF
-      
+
       expect(eurResult.success).toBe(true);
       if (eurResult.success) {
         const chf = convertEURtoCHF(eurResult.data, rate);
@@ -235,7 +235,7 @@ describe("Currency Types", () => {
     it("should convert CHF to EUR", () => {
       const chfResult = createCHF(105);
       const rate = 1.05 as ExchangeRate; // 1 EUR = 1.05 CHF
-      
+
       expect(chfResult.success).toBe(true);
       if (chfResult.success) {
         const eur = convertCHFtoEUR(chfResult.data, rate);
@@ -246,7 +246,7 @@ describe("Currency Types", () => {
     it("should handle conversion with decimal rates", () => {
       const eurResult = createEUR(100);
       const rate = 1.0765 as ExchangeRate;
-      
+
       expect(eurResult.success).toBe(true);
       if (eurResult.success) {
         const chf = convertEURtoCHF(eurResult.data, rate);
@@ -261,12 +261,17 @@ describe("Currency Types", () => {
         fc.property(
           fc.float({ min: 0, max: Math.fround(999999999), maxExcluded: true }),
           (amount) => {
+            // Skip invalid values
+            if (!Number.isFinite(amount) || amount < 0) {
+              return;
+            }
+            
             // Round to 2 decimal places
             const rounded = Math.round(amount * 100) / 100;
             const result = createEUR(rounded);
             expect(result.success).toBe(true);
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -280,20 +285,20 @@ describe("Currency Types", () => {
             if (!Number.isFinite(rateValue) || rateValue <= 0) {
               return;
             }
-            
+
             const rounded = Math.round(amount * 100) / 100;
             const rate = rateValue as ExchangeRate;
-            
+
             const eurResult = createEUR(rounded);
             if (eurResult.success) {
               const chf = convertEURtoCHF(eurResult.data, rate);
               const backToEur = convertCHFtoEUR(chf, rate);
-              
+
               // Should be close to original (may have small rounding differences)
               expect(toDisplayAmount(backToEur)).toBeCloseTo(rounded, 1);
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -305,18 +310,18 @@ describe("Currency Types", () => {
           (a, b) => {
             const roundedA = Math.round(a * 100) / 100;
             const roundedB = Math.round(b * 100) / 100;
-            
+
             const eurA = createEUR(roundedA);
             const eurB = createEUR(roundedB);
-            
+
             if (eurA.success && eurB.success) {
               const sum1 = addEUR(eurA.data, eurB.data);
               const sum2 = addEUR(eurB.data, eurA.data);
-              
+
               expect(toDisplayAmount(sum1)).toBe(toDisplayAmount(sum2));
             }
-          }
-        )
+          },
+        ),
       );
     });
   });

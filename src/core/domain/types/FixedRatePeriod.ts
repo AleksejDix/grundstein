@@ -13,7 +13,10 @@
 import type { Branded } from "../primitives/Brand";
 import { Result } from "../primitives/Brand";
 import type { YearCount } from "../value-objects/YearCount";
-import { createYearCount, toNumber as yearCountToNumber } from "../value-objects/YearCount";
+import {
+  createYearCount,
+  toNumber as yearCountToNumber,
+} from "../value-objects/YearCount";
 import type { InterestRate } from "../value-objects/InterestRate";
 import {
   createInterestRate,
@@ -63,7 +66,7 @@ export function createFixedRatePeriod(
   periodYears: number,
   initialRate: number,
   rateType: FixedRateType = "InitialFixed",
-  startDate: Date = new Date()
+  startDate: Date = new Date(),
 ): Result<FixedRatePeriod, FixedRatePeriodValidationError> {
   // Validate period length
   if (periodYears < MIN_FIXED_PERIOD_YEARS) {
@@ -156,7 +159,7 @@ export function getEndDate(fixedRatePeriod: FixedRatePeriod): Date {
  */
 export function isCurrentlyActive(
   fixedRatePeriod: FixedRatePeriod,
-  currentDate: Date = new Date()
+  currentDate: Date = new Date(),
 ): boolean {
   const startDate = getStartDate(fixedRatePeriod);
   const endDate = getEndDate(fixedRatePeriod);
@@ -169,7 +172,7 @@ export function isCurrentlyActive(
  */
 export function getRemainingYears(
   fixedRatePeriod: FixedRatePeriod,
-  currentDate: Date = new Date()
+  currentDate: Date = new Date(),
 ): number {
   if (!isCurrentlyActive(fixedRatePeriod, currentDate)) {
     return 0;
@@ -194,7 +197,7 @@ export function isTypicalPeriod(fixedRatePeriod: FixedRatePeriod): boolean {
  * Format fixed rate period for display
  */
 export function formatFixedRatePeriod(
-  fixedRatePeriod: FixedRatePeriod
+  fixedRatePeriod: FixedRatePeriod,
 ): string {
   const years = getPeriodYears(fixedRatePeriod);
   const rate = formatInterestRate((fixedRatePeriod as any).initialRate);
@@ -204,8 +207,8 @@ export function formatFixedRatePeriod(
     rateType === "Fixed"
       ? "Festzins"
       : rateType === "InitialFixed"
-      ? "Zinsbindung"
-      : "Zinsobergrenze";
+        ? "Zinsbindung"
+        : "Zinsobergrenze";
 
   return `${years} Jahre ${typeLabel} @ ${rate}`;
 }
@@ -216,7 +219,7 @@ export function formatFixedRatePeriod(
 export function createStandardGermanPeriod(
   years: 5 | 10 | 15 | 20 | 25 | 30,
   rate: number,
-  startDate: Date = new Date()
+  startDate: Date = new Date(),
 ): Result<FixedRatePeriod, FixedRatePeriodValidationError> {
   return createFixedRatePeriod(years, rate, "InitialFixed", startDate);
 }
@@ -226,7 +229,7 @@ export function createStandardGermanPeriod(
  */
 export function getDaysUntilExpiry(
   fixedRatePeriod: FixedRatePeriod,
-  currentDate: Date = new Date()
+  currentDate: Date = new Date(),
 ): number {
   const endDate = getEndDate(fixedRatePeriod);
   const diffMs = endDate.getTime() - currentDate.getTime();
@@ -241,7 +244,7 @@ export function getDaysUntilExpiry(
 export function isExpiringSoon(
   fixedRatePeriod: FixedRatePeriod,
   currentDate: Date = new Date(),
-  monthsThreshold: number = 12
+  monthsThreshold: number = 12,
 ): boolean {
   const daysUntilExpiry = getDaysUntilExpiry(fixedRatePeriod, currentDate);
   const daysThreshold = monthsThreshold * 30; // Approximate
@@ -254,7 +257,7 @@ export function isExpiringSoon(
  */
 export function compareByEndDate(
   a: FixedRatePeriod,
-  b: FixedRatePeriod
+  b: FixedRatePeriod,
 ): number {
   const endDateA = getEndDate(a);
   const endDateB = getEndDate(b);

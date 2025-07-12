@@ -18,9 +18,7 @@ import {
 } from "../LoanCalculations";
 import { createLoanConfiguration } from "../../types/LoanConfiguration";
 import { createMoney, toEuros } from "../../value-objects/Money";
-import {
-  createLoanAmount,
-} from "../../value-objects/LoanAmount";
+import { createLoanAmount } from "../../value-objects/LoanAmount";
 import {
   createInterestRate,
   toDecimal,

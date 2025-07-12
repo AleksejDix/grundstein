@@ -47,7 +47,7 @@ export type YearlyPaymentSummary = {
  * Create a percentage-based yearly limit
  */
 export function createPercentageLimit(
-  percentage: Percentage
+  percentage: Percentage,
 ): SondertilgungLimit {
   return { type: "Percentage", value: percentage };
 }
@@ -65,7 +65,7 @@ export function createUnlimitedLimit(): SondertilgungLimit {
 export function createSondertilgungPlan(
   yearlyLimit: SondertilgungLimit,
   payments: ExtraPayment[],
-  originalLoanAmount: LoanAmount
+  originalLoanAmount: LoanAmount,
 ): Result<SondertilgungPlan, SondertilgungValidationError> {
   // Allow empty payments for unlimited plans (no extra payments configured)
   if (payments.length === 0 && yearlyLimit.type === "Percentage") {
@@ -84,7 +84,7 @@ export function createSondertilgungPlan(
     const yearlyTotals = calculateYearlyTotals(payments);
     const maxYearlyAmount = calculateMaxYearlyAmount(
       originalLoanAmount,
-      yearlyLimit.value
+      yearlyLimit.value,
     );
 
     for (const yearTotal of yearlyTotals.values()) {
@@ -104,7 +104,7 @@ export function createSondertilgungPlan(
  * Calculate total extra payments by year
  */
 function calculateYearlyTotals(
-  payments: readonly ExtraPayment[]
+  payments: readonly ExtraPayment[],
 ): Map<number, number> {
   const yearlyTotals = new Map<number, number>();
 
@@ -122,7 +122,7 @@ function calculateYearlyTotals(
  */
 function calculateMaxYearlyAmount(
   loanAmount: LoanAmount,
-  percentage: Percentage
+  percentage: Percentage,
 ): number {
   return toNumber(loanAmount) * (percentage / 100);
 }
@@ -131,7 +131,7 @@ function calculateMaxYearlyAmount(
  * Get yearly payment summaries for analysis
  */
 export function getYearlyPaymentSummaries(
-  plan: SondertilgungPlan
+  plan: SondertilgungPlan,
 ): YearlyPaymentSummary[] {
   const yearlyData = new Map<
     number,
@@ -180,7 +180,7 @@ export function getYearlyPaymentSummaries(
 export function canAddPayment(
   plan: SondertilgungPlan,
   newPayment: ExtraPayment,
-  originalLoanAmount: LoanAmount
+  originalLoanAmount: LoanAmount,
 ): boolean {
   if (plan.yearlyLimit.type === "Unlimited") {
     return true;
@@ -193,7 +193,7 @@ export function canAddPayment(
   ]);
   const maxYearlyAmount = calculateMaxYearlyAmount(
     originalLoanAmount,
-    plan.yearlyLimit.value
+    plan.yearlyLimit.value,
   );
 
   return (yearlyTotals.get(year) || 0) <= maxYearlyAmount;
@@ -205,7 +205,7 @@ export function canAddPayment(
 export function getRemainingYearlyLimit(
   plan: SondertilgungPlan,
   year: number,
-  originalLoanAmount: LoanAmount
+  originalLoanAmount: LoanAmount,
 ): Money | null {
   if (plan.yearlyLimit.type === "Unlimited") {
     return null; // No limit
@@ -215,7 +215,7 @@ export function getRemainingYearlyLimit(
   const usedAmount = yearlyTotals.get(year) || 0;
   const maxAmount = calculateMaxYearlyAmount(
     originalLoanAmount,
-    plan.yearlyLimit.value
+    plan.yearlyLimit.value,
   );
 
   const remainingAmount = Math.max(0, maxAmount - usedAmount);
@@ -232,7 +232,7 @@ export function getRemainingYearlyLimit(
 export function addPaymentToPlan(
   plan: SondertilgungPlan,
   newPayment: ExtraPayment,
-  originalLoanAmount: LoanAmount
+  originalLoanAmount: LoanAmount,
 ): Result<SondertilgungPlan, SondertilgungValidationError> {
   // Check for duplicate month
   const existingMonths = plan.payments.map((p) => p.month);
@@ -246,7 +246,7 @@ export function addPaymentToPlan(
   }
 
   const updatedPayments = [...plan.payments, newPayment].sort(
-    (a, b) => a.month - b.month
+    (a, b) => a.month - b.month,
   );
 
   return {
@@ -263,7 +263,7 @@ export function addPaymentToPlan(
  */
 export function removePaymentFromPlan(
   plan: SondertilgungPlan,
-  month: PaymentMonth
+  month: PaymentMonth,
 ): SondertilgungPlan {
   const updatedPayments = plan.payments.filter((p) => p.month !== month);
 
@@ -279,7 +279,7 @@ export function removePaymentFromPlan(
 export function getTotalExtraPayments(plan: SondertilgungPlan): Money {
   const totalAmount = plan.payments.reduce(
     (total, payment) => total + toEuros(payment.amount),
-    0
+    0,
   );
   const result = createMoney(totalAmount);
   if (!result.success) {
@@ -309,6 +309,6 @@ export function formatSondertilgungPlan(plan: SondertilgungPlan): string {
   const limitText = formatSondertilgungLimit(plan.yearlyLimit);
 
   return `Sondertilgungsplan: ${totalPayments} Zahlungen, Gesamt: €${totalAmount.toFixed(
-    2
+    2,
   )} (${limitText})`;
 }

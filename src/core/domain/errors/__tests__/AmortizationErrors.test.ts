@@ -16,10 +16,7 @@ import {
 describe("AmortizationErrors", () => {
   describe("createPaymentMonthCreationError", () => {
     it("should create payment month creation error", () => {
-      const error = createPaymentMonthCreationError(
-        500,
-        "createPaymentMonth"
-      );
+      const error = createPaymentMonthCreationError(500, "createPaymentMonth");
 
       expect(error.type).toBe("PaymentMonthCreationError");
       expect(error.message).toContain("Failed to create payment month 500");
@@ -40,7 +37,7 @@ describe("AmortizationErrors", () => {
       const error = createPaymentMonthCreationError(
         500,
         "createPaymentMonth",
-        cause
+        cause,
       );
 
       expect(error.cause).toEqual(cause);
@@ -49,11 +46,7 @@ describe("AmortizationErrors", () => {
 
   describe("createMoneyCreationError", () => {
     it("should create money creation error for negative value", () => {
-      const error = createMoneyCreationError(
-        -100,
-        "negative",
-        "createMoney"
-      );
+      const error = createMoneyCreationError(-100, "negative", "createMoney");
 
       expect(error.type).toBe("MoneyCreationError");
       expect(error.message).toContain("Failed to create money value -100");
@@ -68,7 +61,7 @@ describe("AmortizationErrors", () => {
       const error = createMoneyCreationError(
         1000000000,
         "exceeds_maximum",
-        "createMoney"
+        "createMoney",
       );
 
       expect(error.type).toBe("MoneyCreationError");
@@ -77,11 +70,7 @@ describe("AmortizationErrors", () => {
     });
 
     it("should create money creation error for invalid value", () => {
-      const error = createMoneyCreationError(
-        NaN,
-        "invalid",
-        "createMoney"
-      );
+      const error = createMoneyCreationError(NaN, "invalid", "createMoney");
 
       expect(error.type).toBe("MoneyCreationError");
       expect(error.context.reason).toBe("invalid");
@@ -96,7 +85,7 @@ describe("AmortizationErrors", () => {
         200,
         300000,
         0.00291667,
-        "calculatePayment"
+        "calculatePayment",
       );
 
       expect(error.type).toBe("MonthlyPaymentCalculationError");
@@ -114,10 +103,7 @@ describe("AmortizationErrors", () => {
 
   describe("createPercentageValidationError", () => {
     it("should create percentage validation error", () => {
-      const error = createPercentageValidationError(
-        150,
-        "validatePercentage"
-      );
+      const error = createPercentageValidationError(150, "validatePercentage");
 
       expect(error.type).toBe("PercentageValidationError");
       expect(error.message).toContain("Invalid percentage value 150");
@@ -136,7 +122,7 @@ describe("AmortizationErrors", () => {
         0.00291667,
         1500,
         240,
-        "calculateRemaining"
+        "calculateRemaining",
       );
 
       expect(error.type).toBe("RemainingMonthsCalculationError");
@@ -158,11 +144,13 @@ describe("AmortizationErrors", () => {
         100,
         "Invalid calculation",
         "analyzeSchedule",
-        "totalInterest"
+        "totalInterest",
       );
 
       expect(error.type).toBe("ScheduleAnalysisError");
-      expect(error.message).toContain("Failed to analyze schedule with 100 entries");
+      expect(error.message).toContain(
+        "Failed to analyze schedule with 100 entries",
+      );
       expect(error.message).toContain("Reason: Invalid calculation");
       expect(error.message).toContain("(field: totalInterest)");
       expect(error.operation).toBe("analyzeSchedule");
@@ -175,11 +163,13 @@ describe("AmortizationErrors", () => {
       const error = createScheduleAnalysisError(
         0,
         "No entries in schedule",
-        "generateSchedule"
+        "generateSchedule",
       );
 
       expect(error.type).toBe("ScheduleAnalysisError");
-      expect(error.message).toContain("Failed to analyze schedule with 0 entries");
+      expect(error.message).toContain(
+        "Failed to analyze schedule with 0 entries",
+      );
       expect(error.message).toContain("Reason: No entries in schedule");
       expect(error.message).not.toContain("(field:");
       expect(error.context.field).toBeUndefined();
@@ -197,7 +187,7 @@ describe("AmortizationErrors", () => {
         "Processing failed",
         "processSchedule",
         undefined,
-        cause
+        cause,
       );
 
       expect(error.cause).toEqual(cause);
@@ -209,11 +199,11 @@ describe("AmortizationErrors", () => {
       const error: MoneyCreationError = createMoneyCreationError(
         -50,
         "negative",
-        "createMoney"
+        "createMoney",
       );
 
       const formatted = formatAmortizationError(error);
-      
+
       expect(formatted).toContain("❌ MoneyCreationError in createMoney");
       expect(formatted).toContain("Message: Failed to create money value -50");
       expect(formatted).toContain("Context:");
@@ -224,7 +214,7 @@ describe("AmortizationErrors", () => {
     it("should format error with cause", () => {
       const cause: PaymentMonthCreationError = createPaymentMonthCreationError(
         500,
-        "validate"
+        "validate",
       );
 
       const error: ScheduleAnalysisError = createScheduleAnalysisError(
@@ -232,26 +222,28 @@ describe("AmortizationErrors", () => {
         "Validation failed",
         "analyze",
         "month",
-        cause as AmortizationError
+        cause as AmortizationError,
       );
 
       const formatted = formatAmortizationError(error);
-      
+
       expect(formatted).toContain("❌ ScheduleAnalysisError in analyze");
-      expect(formatted).toContain("Caused by: ❌ PaymentMonthCreationError in validate");
+      expect(formatted).toContain(
+        "Caused by: ❌ PaymentMonthCreationError in validate",
+      );
     });
 
     it("should format error with complex context", () => {
       const error = createMonthlyPaymentCalculationError(
-        1000.50,
+        1000.5,
         250.75,
         300000,
         0.00291667,
-        "calculate"
+        "calculate",
       );
 
       const formatted = formatAmortizationError(error);
-      
+
       expect(formatted).toContain("Context:");
       expect(formatted).toContain('"principal": 1000.5');
       expect(formatted).toContain('"interest": 250.75');
@@ -266,21 +258,23 @@ describe("AmortizationErrors", () => {
         -100,
         "negative",
         "level2",
-        level3
+        level3,
       );
       const level1 = createScheduleAnalysisError(
         0,
         "Top level error",
         "level1",
         undefined,
-        level2 as AmortizationError
+        level2 as AmortizationError,
       );
 
       const formatted = formatAmortizationError(level1);
-      
+
       expect(formatted).toContain("❌ ScheduleAnalysisError in level1");
       expect(formatted).toContain("Caused by: ❌ MoneyCreationError in level2");
-      expect(formatted).toContain("Caused by: ❌ PaymentMonthCreationError in level3");
+      expect(formatted).toContain(
+        "Caused by: ❌ PaymentMonthCreationError in level3",
+      );
     });
   });
 
@@ -303,7 +297,7 @@ describe("AmortizationErrors", () => {
         789.01,
         500000,
         0.00375,
-        "complexCalculation"
+        "complexCalculation",
       );
 
       expect(error.context).toEqual({

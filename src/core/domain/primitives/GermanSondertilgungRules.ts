@@ -12,7 +12,10 @@
 import type { Branded } from "./Brand";
 import { Result } from "./Brand";
 import type { Percentage } from "../value-objects/Percentage";
-import { createPercentage, toPercentageValue } from "../value-objects/Percentage";
+import {
+  createPercentage,
+  toPercentageValue,
+} from "../value-objects/Percentage";
 import type { Money } from "../value-objects/Money";
 import { createMoney, toEuros } from "../value-objects/Money";
 import type { LoanAmount } from "../value-objects/LoanAmount";
@@ -233,7 +236,7 @@ const GERMAN_BANK_RULES: Record<
  */
 export function createGermanSondertilgungRules(
   bankType: GermanBankType,
-  customOverrides?: Partial<GermanSondertilgungRules>
+  customOverrides?: Partial<GermanSondertilgungRules>,
 ): Result<GermanSondertilgungRules, GermanSondertilgungValidationError> {
   const baseRules = GERMAN_BANK_RULES[bankType];
 
@@ -282,7 +285,7 @@ export function validateSondertilgungPayment(
   originalLoanAmount: LoanAmount,
   existingPayments: ExtraPayment[],
   fixedRatePeriod?: FixedRatePeriod,
-  paymentDate: Date = new Date()
+  paymentDate: Date = new Date(),
 ): Result<void, GermanSondertilgungValidationError> {
   const rulesData = rules as any;
 
@@ -322,7 +325,7 @@ export function validateSondertilgungPayment(
     const graceResult = validateGracePeriod(
       rules,
       fixedRatePeriod,
-      paymentDate
+      paymentDate,
     );
     if (!graceResult.success) {
       return graceResult;
@@ -345,7 +348,7 @@ export function calculateSondertilgungFees(
   rules: GermanSondertilgungRules,
   payment: ExtraPayment,
   originalLoanAmount: LoanAmount,
-  existingYearlyPayments: ExtraPayment[]
+  existingYearlyPayments: ExtraPayment[],
 ): Result<Money, GermanSondertilgungValidationError> {
   const rulesData = rules as any;
   const feeStructure = rulesData.feeStructure as FeeStructure;
@@ -376,13 +379,13 @@ export function calculateSondertilgungFees(
         payment,
         existingYearlyPayments,
         originalLoanAmount,
-        rulesData.allowedPercentages
+        rulesData.allowedPercentages,
       );
 
       if (excessResult.success && excessResult.data > 0) {
         if (feeStructure.excessFeePercentage) {
           const excessPercentage = toPercentageValue(
-            feeStructure.excessFeePercentage
+            feeStructure.excessFeePercentage,
           );
           totalFee = excessResult.data * (excessPercentage / 100);
         }
@@ -402,7 +405,7 @@ export function calculateSondertilgungFees(
         payment,
         existingYearlyPayments,
         originalLoanAmount,
-        rulesData.allowedPercentages
+        rulesData.allowedPercentages,
       );
 
       if (
@@ -411,7 +414,7 @@ export function calculateSondertilgungFees(
         feeStructure.excessFeePercentage
       ) {
         const excessPercentage = toPercentageValue(
-          feeStructure.excessFeePercentage
+          feeStructure.excessFeePercentage,
         );
         totalFee += tieredExcessResult.data * (excessPercentage / 100);
       }
@@ -441,7 +444,7 @@ export function calculateSondertilgungFees(
  * Get available Sondertilgung percentages for bank type
  */
 export function getAvailablePercentages(
-  rules: GermanSondertilgungRules
+  rules: GermanSondertilgungRules,
 ): readonly SondertilgungPercentage[] {
   return (rules as any).allowedPercentages;
 }
@@ -450,7 +453,7 @@ export function getAvailablePercentages(
  * Check if bank type supports unlimited Sondertilgung
  */
 export function supportsUnlimitedSondertilgung(
-  bankType: GermanBankType
+  bankType: GermanBankType,
 ): boolean {
   const rules = GERMAN_BANK_RULES[bankType];
   return rules.allowedPercentages?.includes(100) || false;
@@ -463,7 +466,7 @@ export function getRecommendedStrategy(
   rules: GermanSondertilgungRules,
   originalLoanAmount: LoanAmount,
   availableAmount: Money,
-  fixedRatePeriod?: FixedRatePeriod
+  fixedRatePeriod?: FixedRatePeriod,
 ): {
   recommendedPercentage: SondertilgungPercentage;
   optimalTiming: string;
@@ -526,7 +529,7 @@ export function getRecommendedStrategy(
  */
 function calculateYearlyAmount(
   payment: ExtraPayment,
-  existingPayments: ExtraPayment[]
+  existingPayments: ExtraPayment[],
 ): Result<number, GermanSondertilgungValidationError> {
   const paymentYear = Math.ceil((payment as any).month / 12);
 
@@ -545,7 +548,7 @@ function calculateYearlyAmount(
 function validateGracePeriod(
   rules: GermanSondertilgungRules,
   fixedRatePeriod: FixedRatePeriod,
-  paymentDate: Date
+  paymentDate: Date,
 ): Result<void, GermanSondertilgungValidationError> {
   const rulesData = rules as any;
   const gracePeriodMonths = rulesData.timingRestrictions.gracePeriodMonths;
@@ -554,7 +557,7 @@ function validateGracePeriod(
   // In reality, this would be from loan origination date
   const gracePeriodEndDate = new Date();
   gracePeriodEndDate.setMonth(
-    gracePeriodEndDate.getMonth() + gracePeriodMonths
+    gracePeriodEndDate.getMonth() + gracePeriodMonths,
   );
 
   if (paymentDate < gracePeriodEndDate) {
@@ -566,7 +569,7 @@ function validateGracePeriod(
 
 function validateTimingRestrictions(
   rules: GermanSondertilgungRules,
-  paymentDate: Date
+  paymentDate: Date,
 ): Result<void, GermanSondertilgungValidationError> {
   const rulesData = rules as any;
   const restrictions = rulesData.timingRestrictions as TimingRestrictions;
@@ -594,7 +597,7 @@ function validateTimingRestrictions(
       const lastDay = new Date(
         paymentDate.getFullYear(),
         month + 1,
-        0
+        0,
       ).getDate();
       if (day !== lastDay) {
         return { success: false, error: "InvalidPaymentDate" };
@@ -631,7 +634,7 @@ function calculateExcessAmount(
   payment: ExtraPayment,
   existingYearlyPayments: ExtraPayment[],
   originalLoanAmount: LoanAmount,
-  allowedPercentages: readonly SondertilgungPercentage[]
+  allowedPercentages: readonly SondertilgungPercentage[],
 ): Result<number, GermanSondertilgungValidationError> {
   const maxAllowedPercentage = Math.max(...allowedPercentages);
   const loanAmount = loanAmountToNumber(originalLoanAmount);
@@ -639,7 +642,7 @@ function calculateExcessAmount(
 
   const yearlyAmountResult = calculateYearlyAmount(
     payment,
-    existingYearlyPayments
+    existingYearlyPayments,
   );
   if (!yearlyAmountResult.success) {
     return yearlyAmountResult;

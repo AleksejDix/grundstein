@@ -235,7 +235,6 @@ export function calculateSondertilgungImpact(
   sondertilgungPlan: SondertilgungPlan,
 ): Result<SondertilgungImpact, SondertilgungCalculationError> {
   try {
-    
     // Calculate original loan metrics
     const originalInterestResult = calculateTotalInterest(loanConfiguration);
     if (!originalInterestResult.success) {
@@ -250,7 +249,6 @@ export function calculateSondertilgungImpact(
       return { success: false, error: "PaymentPlanInconsistent" };
     }
 
-    
     // Calculate schedule with extra payments
     const scheduleResult = calculatePaymentSchedule(
       loanConfiguration,
@@ -260,7 +258,6 @@ export function calculateSondertilgungImpact(
       console.log("Payment schedule calculation failed:", scheduleResult.error);
       return { success: false, error: scheduleResult.error };
     }
-    
 
     const schedule = scheduleResult.data;
 
@@ -268,8 +265,7 @@ export function calculateSondertilgungImpact(
     const originalInterest = toEuros(originalInterestResult.data);
     const interestSaved = toEuros(schedule.totalInterestSaved);
     const newTotalInterest = originalInterest - interestSaved;
-    
-    
+
     const newInterestResult = createMoney(Math.max(0, newTotalInterest));
     if (!newInterestResult.success) {
       console.log("Failed to create new total interest money");
@@ -282,7 +278,7 @@ export function calculateSondertilgungImpact(
         total + (entry.extraPayment ? toEuros(entry.extraPayment.amount) : 0)
       );
     }, 0);
-    
+
     const totalExtraResult = createMoney(totalExtraPayments);
     if (!totalExtraResult.success) {
       console.log("Failed to create total extra payments money");

@@ -1,6 +1,6 @@
 /**
  * Currency-aware Loan Configuration
- * 
+ *
  * Extends LoanConfiguration to support multiple currencies
  * Ensures type safety between EUR and CHF mortgages
  */
@@ -28,31 +28,41 @@ export type CHFLoanConfiguration = {
 };
 
 // Union type for all supported loan configurations
-export type CurrencyLoanConfiguration = EURLoanConfiguration | CHFLoanConfiguration;
+export type CurrencyLoanConfiguration =
+  | EURLoanConfiguration
+  | CHFLoanConfiguration;
 
 // Type guard functions
-export function isEURLoan(config: CurrencyLoanConfiguration): config is EURLoanConfiguration {
+export function isEURLoan(
+  config: CurrencyLoanConfiguration,
+): config is EURLoanConfiguration {
   return config.currency === "EUR";
 }
 
-export function isCHFLoan(config: CurrencyLoanConfiguration): config is CHFLoanConfiguration {
+export function isCHFLoan(
+  config: CurrencyLoanConfiguration,
+): config is CHFLoanConfiguration {
   return config.currency === "CHF";
 }
 
 // Helper to get currency code from configuration
-export function getLoanCurrency(config: CurrencyLoanConfiguration): CurrencyCode {
+export function getLoanCurrency(
+  config: CurrencyLoanConfiguration,
+): CurrencyCode {
   return config.currency;
 }
 
 // Calculate total interest with proper currency types
 export function calculateTotalInterestEUR(config: EURLoanConfiguration): EUR {
-  const totalPayments = (config.monthlyPayment as number) * (config.termInMonths as number);
+  const totalPayments =
+    (config.monthlyPayment as number) * (config.termInMonths as number);
   const totalInterest = totalPayments - (config.amount as number);
   return totalInterest as EUR;
 }
 
 export function calculateTotalInterestCHF(config: CHFLoanConfiguration): CHF {
-  const totalPayments = (config.monthlyPayment as number) * (config.termInMonths as number);
+  const totalPayments =
+    (config.monthlyPayment as number) * (config.termInMonths as number);
   const totalInterest = totalPayments - (config.amount as number);
   return totalInterest as CHF;
 }
