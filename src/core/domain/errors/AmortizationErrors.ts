@@ -81,6 +81,18 @@ export interface RemainingMonthsCalculationError extends AmortizationErrorBase {
 }
 
 /**
+ * Schedule analysis failed
+ */
+export interface ScheduleAnalysisError extends AmortizationErrorBase {
+  readonly type: "ScheduleAnalysisError";
+  readonly context: {
+    readonly entriesCount: number;
+    readonly reason: string;
+    readonly field?: string;
+  };
+}
+
+/**
  * Union of all specific amortization errors
  */
 export type AmortizationError = 
@@ -88,7 +100,8 @@ export type AmortizationError =
   | MoneyCreationError 
   | MonthlyPaymentCalculationError
   | PercentageValidationError
-  | RemainingMonthsCalculationError;
+  | RemainingMonthsCalculationError
+  | ScheduleAnalysisError;
 
 /**
  * Create a payment month creation error
@@ -208,6 +221,29 @@ export function createRemainingMonthsCalculationError(
 }
 
 /**
+ * Create a schedule analysis error
+ */
+export function createScheduleAnalysisError(
+  entriesCount: number,
+  reason: string,
+  operation: string,
+  field?: string,
+  cause?: AmortizationErrorBase
+): ScheduleAnalysisError {
+  return {
+    type: "ScheduleAnalysisError",
+    message: `Failed to analyze schedule with ${entriesCount} entries. Reason: ${reason}${field ? ` (field: ${field})` : ''}`,
+    operation,
+    context: {
+      entriesCount,
+      reason,
+      field,
+    },
+    cause,
+  };
+}
+
+/**
  * Helper to format error for debugging
  */
 export function formatAmortizationError(error: AmortizationError): string {
@@ -221,7 +257,7 @@ export function formatAmortizationError(error: AmortizationError): string {
   }
 
   if (error.cause) {
-    parts.push(`   Caused by: ${formatAmortizationError(error.cause)}`);
+    parts.push(`   Caused by: ${formatAmortizationError(error.cause as AmortizationError)}`);
   }
 
   return parts.join('\n');

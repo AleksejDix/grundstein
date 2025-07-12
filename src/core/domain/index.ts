@@ -7,6 +7,60 @@
 // Primitives (Brand utility and string literal types)
 export * from "./primitives/Brand";
 
+// Currency types
+export {
+  type EUR,
+  type CHF,
+  type USD,
+  type Currency,
+  type CurrencyCode,
+  type CurrencyValidationError,
+  createEUR,
+  createCHF,
+  createUSD,
+  formatEUR,
+  formatCHF,
+  formatUSD,
+  addEUR,
+  subtractEUR,
+  addCHF,
+  subtractCHF,
+  toDisplayAmount,
+} from "./value-objects/Currency";
+
+// Currency-aware loan configurations
+export {
+  type CurrencyLoanConfiguration,
+  type EURLoanConfiguration,
+  type CHFLoanConfiguration,
+  isEURLoan,
+  isCHFLoan,
+  getLoanCurrency,
+  calculateTotalInterestEUR,
+  calculateTotalInterestCHF,
+} from "./types/CurrencyLoanConfiguration";
+
+// Entities
+export {
+  type Mortgage,
+  type MortgageId,
+  type MortgageStatus,
+  createMortgage,
+  createMortgageId,
+  generateMortgageId,
+  updateMortgage,
+  activateMortgage,
+  completeMortgage,
+  refinanceMortgage,
+  isActive,
+  isCompleted,
+  canMakePayments,
+  canAddExtraPayments,
+  getMortgageAgeInMonths,
+  getMortgageDisplayName,
+  isMortgage,
+} from "./entities/Mortgage";
+
 // GermanSondertilgungRules exports
 export {
   type GermanSondertilgungRules,

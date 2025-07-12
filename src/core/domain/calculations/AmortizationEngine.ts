@@ -22,6 +22,7 @@ import {
   createMonthlyPaymentCalculationError,
   createPercentageValidationError,
   createRemainingMonthsCalculationError,
+  createScheduleAnalysisError,
 } from "../errors/AmortizationErrors";
 import {
   createPaymentMonth,
@@ -54,8 +55,22 @@ import {
  */
 export type AmortizationEngineError =
   | LoanCalculationError
-  | AmortizationError
-  | "ScheduleAnalysisError"; // Legacy - will be replaced
+  | AmortizationError;
+
+/**
+ * Convert loan calculation error to amortization error
+ */
+function loanErrorToAmortizationError(
+  error: LoanCalculationError,
+  operation: string
+): AmortizationError {
+  return createScheduleAnalysisError(
+    0,
+    `Loan calculation failed: ${error}`,
+    operation,
+    "loanCalculation"
+  );
+}
 
 /**
  * Single month entry in the complete amortization schedule
@@ -107,7 +122,7 @@ export type ScheduleMetrics = {
 export function generateAmortizationSchedule(
   loanConfiguration: LoanConfiguration,
   sondertilgungPlan?: SondertilgungPlan,
-): Result<AmortizationSchedule, AmortizationEngineError> {
+): Result<AmortizationSchedule, AmortizationError> {
   try {
     const entries: AmortizationEntry[] = [];
 
@@ -122,7 +137,13 @@ export function generateAmortizationSchedule(
     // Calculate regular monthly payment
     const regularPaymentResult = calculateMonthlyPayment(loanConfiguration);
     if (!regularPaymentResult.success) {
-      return { success: false, error: regularPaymentResult.error };
+      return { 
+        success: false, 
+        error: loanErrorToAmortizationError(
+          regularPaymentResult.error,
+          "generateAmortizationSchedule"
+        ) 
+      };
     }
 
     let currentBalance = loanAmount;
@@ -370,7 +391,14 @@ export function calculateScheduleMetrics(
 ): Result<ScheduleMetrics, AmortizationError> {
   try {
     if (entries.length === 0) {
-      return { success: false, error: "ScheduleAnalysisError" };
+      return { 
+        success: false, 
+        error: createScheduleAnalysisError(
+          0,
+          "No entries in schedule",
+          "analyzeSchedule"
+        )
+      };
     }
 
     const lastEntry = entries[entries.length - 1];
@@ -400,7 +428,13 @@ export function calculateScheduleMetrics(
     // Calculate original total interest (without extra payments)
     const originalRegularPayment = calculateMonthlyPayment(loanConfiguration);
     if (!originalRegularPayment.success) {
-      return { success: false, error: originalRegularPayment.error };
+      return { 
+        success: false, 
+        error: loanErrorToAmortizationError(
+          originalRegularPayment.error,
+          "analyzeSchedule"
+        ) 
+      };
     }
 
     const originalTotalPayments =
@@ -445,27 +479,115 @@ export function calculateScheduleMetrics(
 
     // Validate all results explicitly
     if (!totalInterestResult.success)
-      return { success: false, error: "ScheduleAnalysisError" };
+      return { 
+        success: false, 
+        error: createScheduleAnalysisError(
+          entries.length,
+          "Failed to create money value for total interest",
+          "analyzeSchedule",
+          "totalInterest"
+        )
+      };
     if (!totalPrincipalResult.success)
-      return { success: false, error: "ScheduleAnalysisError" };
+      return { 
+        success: false, 
+        error: createScheduleAnalysisError(
+          entries.length,
+          "Failed to create money value for total principal",
+          "analyzeSchedule",
+          "totalPrincipal"
+        )
+      };
     if (!totalExtraResult.success)
-      return { success: false, error: "ScheduleAnalysisError" };
+      return { 
+        success: false, 
+        error: createScheduleAnalysisError(
+          entries.length,
+          "Failed to create money value for extra payments",
+          "analyzeSchedule",
+          "totalExtraPayments"
+        )
+      };
     if (!totalPaymentsResult.success)
-      return { success: false, error: "ScheduleAnalysisError" };
+      return { 
+        success: false, 
+        error: createScheduleAnalysisError(
+          entries.length,
+          "Failed to create money value for total payments",
+          "analyzeSchedule",
+          "totalPayments"
+        )
+      };
     if (!actualTermResult.success)
-      return { success: false, error: "ScheduleAnalysisError" };
+      return { 
+        success: false, 
+        error: createScheduleAnalysisError(
+          entries.length,
+          "Failed to create month count for actual term",
+          "analyzeSchedule",
+          "actualTerm"
+        )
+      };
     if (!interestSavedResult.success)
-      return { success: false, error: "ScheduleAnalysisError" };
+      return { 
+        success: false, 
+        error: createScheduleAnalysisError(
+          entries.length,
+          "Failed to create money value for interest saved",
+          "analyzeSchedule",
+          "interestSaved"
+        )
+      };
     if (!termReductionResult.success)
-      return { success: false, error: "ScheduleAnalysisError" };
+      return { 
+        success: false, 
+        error: createScheduleAnalysisError(
+          entries.length,
+          "Failed to create month count for term reduction",
+          "analyzeSchedule",
+          "termReduction"
+        )
+      };
     if (!effectiveRateResult.success)
-      return { success: false, error: "ScheduleAnalysisError" };
+      return { 
+        success: false, 
+        error: createScheduleAnalysisError(
+          entries.length,
+          "Failed to create percentage for effective rate",
+          "analyzeSchedule",
+          "effectiveRate"
+        )
+      };
     if (!averagePaymentResult.success)
-      return { success: false, error: "ScheduleAnalysisError" };
+      return { 
+        success: false, 
+        error: createScheduleAnalysisError(
+          entries.length,
+          "Failed to create money value for average payment",
+          "analyzeSchedule",
+          "averagePayment"
+        )
+      };
     if (!largestPaymentResult.success)
-      return { success: false, error: "ScheduleAnalysisError" };
+      return { 
+        success: false, 
+        error: createScheduleAnalysisError(
+          entries.length,
+          "Failed to create money value for largest payment",
+          "analyzeSchedule",
+          "largestPayment"
+        )
+      };
     if (!smallestPaymentResult.success)
-      return { success: false, error: "ScheduleAnalysisError" };
+      return { 
+        success: false, 
+        error: createScheduleAnalysisError(
+          entries.length,
+          "Failed to create money value for smallest payment",
+          "analyzeSchedule",
+          "smallestPayment"
+        )
+      };
 
     return {
       success: true,
@@ -484,8 +606,17 @@ export function calculateScheduleMetrics(
         payoffDate: { year: payoffYear, month: payoffMonth },
       },
     };
-  } catch {
-    return { success: false, error: "ScheduleAnalysisError" };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: createScheduleAnalysisError(
+        0,
+        "Unexpected error during schedule analysis",
+        "analyzeSchedule",
+        undefined,
+        error instanceof Error ? { type: "UnknownError", message: error.message, operation: "analyzeSchedule" } : undefined
+      )
+    };
   }
 }
 
@@ -502,8 +633,17 @@ export function applyExtraPayments(
       baseSchedule.loanConfiguration,
       sondertilgungPlan,
     );
-  } catch {
-    return { success: false, error: "ScheduleGenerationFailed" };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: createScheduleAnalysisError(
+        0,
+        "Failed to apply extra payments to schedule",
+        "applyExtraPayments",
+        undefined,
+        error instanceof Error ? { type: "UnknownError", message: error.message, operation: "applyExtraPayments" } : undefined
+      )
+    };
   }
 }
 
@@ -537,7 +677,16 @@ export function compareSchedules(
       !termReductionResult.success ||
       !roiResult.success
     ) {
-      return { success: false, error: "ScheduleAnalysisError" };
+      return { 
+        success: false, 
+        error: createScheduleAnalysisError(
+          baseSchedule.entries.length,
+          "Failed to create comparison metrics",
+          "compareSchedules",
+          !interestSavingsResult.success ? "interestSavings" : 
+          !termReductionResult.success ? "termReduction" : "returnOnInvestment"
+        )
+      };
     }
 
     return {
@@ -551,8 +700,17 @@ export function compareSchedules(
         isWorthwhile: interestSavings > 0 && returnOnInvestment > 2, // At least 2% return
       },
     };
-  } catch {
-    return { success: false, error: "ScheduleAnalysisError" };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: createScheduleAnalysisError(
+        baseSchedule.entries.length,
+        "Unexpected error during schedule comparison",
+        "compareSchedules",
+        undefined,
+        error instanceof Error ? { type: "UnknownError", message: error.message, operation: "compareSchedules" } : undefined
+      )
+    };
   }
 }
 
@@ -591,12 +749,29 @@ export function getRemainingBalance(
   try {
     const entry = getScheduleEntry(schedule, month);
     if (!entry) {
-      return { success: false, error: "ScheduleAnalysisError" };
+      return { 
+        success: false, 
+        error: createScheduleAnalysisError(
+          schedule.entries.length,
+          `Entry not found for month ${paymentMonthToNumber(month)}`,
+          "getRemainingBalance",
+          "monthEntry"
+        )
+      };
     }
 
     return { success: true, data: entry.endingBalance };
-  } catch {
-    return { success: false, error: "ScheduleAnalysisError" };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: createScheduleAnalysisError(
+        schedule.entries.length,
+        "Unexpected error getting remaining balance",
+        "getRemainingBalance",
+        undefined,
+        error instanceof Error ? { type: "UnknownError", message: error.message, operation: "getRemainingBalance" } : undefined
+      )
+    };
   }
 }
 
