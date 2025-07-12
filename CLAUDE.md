@@ -312,3 +312,7 @@ When asked to make changes:
 5. **Document** any workarounds or TODOs created
 
 Remember: It's better to take time understanding the system than to rush and create cascading errors that take hours to fix.
+
+## Feature Backlog Tracking
+
+- **Feature Backlog**: Added tracking for `FEATURE_BACKLOG.md` to maintain a systematic record of upcoming features and enhancements
