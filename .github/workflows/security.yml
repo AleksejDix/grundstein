@@ -50,6 +50,7 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{matrix.language}}"
+          upload: false  # Skip upload if code scanning is not enabled
 
   dependency-review:
     name: 📦 Dependency Review
