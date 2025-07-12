@@ -53,7 +53,7 @@ describe("Mortgage Entity", () => {
     it("should generate unique mortgage IDs", () => {
       const id1 = generateMortgageId();
       const id2 = generateMortgageId();
-      
+
       expect(id1).not.toBe(id2);
       expect(id1).toContain("mortgage_");
       expect(id2).toContain("mortgage_");
@@ -71,22 +71,27 @@ describe("Mortgage Entity", () => {
       const rate = createInterestRate(3.5);
       const term = createMonthCount(360);
       const payment = createMoney(1347); // Calculated monthly payment for 300k at 3.5% for 30 years
-      
-      if (!amount.success || !rate.success || !term.success || !payment.success) {
+
+      if (
+        !amount.success ||
+        !rate.success ||
+        !term.success ||
+        !payment.success
+      ) {
         throw new Error("Failed to create test data");
       }
-      
+
       const config = createLoanConfiguration(
         amount.data,
         rate.data,
         term.data,
-        payment.data
+        payment.data,
       );
-      
+
       if (!config.success) {
         throw new Error("Failed to create loan configuration");
       }
-      
+
       return config.data;
     })();
 
@@ -249,18 +254,23 @@ describe("Mortgage Entity", () => {
       const rate = createInterestRate(3.5);
       const term = createMonthCount(360);
       const payment = createMoney(1347);
-      
-      if (!amount.success || !rate.success || !term.success || !payment.success) {
+
+      if (
+        !amount.success ||
+        !rate.success ||
+        !term.success ||
+        !payment.success
+      ) {
         throw new Error("Failed to create test data");
       }
-      
+
       const config = createLoanConfiguration(
         amount.data,
         rate.data,
         term.data,
-        payment.data
+        payment.data,
       );
-      
+
       if (!config.success) {
         throw new Error("Failed to create loan configuration");
       }
@@ -290,7 +300,9 @@ describe("Mortgage Entity", () => {
         const updated = result.data;
         expect(updated.name).toBe("Updated Mortgage");
         expect(updated.bankName).toBe("Original Bank"); // unchanged
-        expect(updated.updatedAt.getTime()).toBeGreaterThanOrEqual(testMortgage.updatedAt.getTime());
+        expect(updated.updatedAt.getTime()).toBeGreaterThanOrEqual(
+          testMortgage.updatedAt.getTime(),
+        );
       }
     });
 
@@ -390,18 +402,23 @@ describe("Mortgage Entity", () => {
       const rate = createInterestRate(3.5);
       const term = createMonthCount(360);
       const payment = createMoney(1347);
-      
-      if (!amount.success || !rate.success || !term.success || !payment.success) {
+
+      if (
+        !amount.success ||
+        !rate.success ||
+        !term.success ||
+        !payment.success
+      ) {
         throw new Error("Failed to create test data");
       }
-      
+
       const config = createLoanConfiguration(
         amount.data,
         rate.data,
         term.data,
-        payment.data
+        payment.data,
       );
-      
+
       if (!config.success) {
         throw new Error("Failed to create loan configuration");
       }
@@ -433,7 +450,9 @@ describe("Mortgage Entity", () => {
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.data.status).toBe("active");
-          expect(result.data.updatedAt.getTime()).toBeGreaterThanOrEqual(draftMortgage.updatedAt.getTime());
+          expect(result.data.updatedAt.getTime()).toBeGreaterThanOrEqual(
+            draftMortgage.updatedAt.getTime(),
+          );
         }
       });
 
@@ -441,7 +460,9 @@ describe("Mortgage Entity", () => {
         const result = activateMortgage(activeMortgage);
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error).toBe("Can only activate mortgages in draft status");
+          expect(result.error).toBe(
+            "Can only activate mortgages in draft status",
+          );
         }
       });
     });
@@ -452,7 +473,9 @@ describe("Mortgage Entity", () => {
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.data.status).toBe("completed");
-          expect(result.data.updatedAt.getTime()).toBeGreaterThanOrEqual(activeMortgage.updatedAt.getTime());
+          expect(result.data.updatedAt.getTime()).toBeGreaterThanOrEqual(
+            activeMortgage.updatedAt.getTime(),
+          );
         }
       });
 
@@ -469,19 +492,21 @@ describe("Mortgage Entity", () => {
       it("should refinance active mortgage", () => {
         const newMortgageId = "new-mortgage-123" as MortgageId;
         const result = refinanceMortgage(activeMortgage, newMortgageId);
-        
+
         expect(result.success).toBe(true);
         if (result.success) {
           expect(result.data.status).toBe("refinanced");
           expect(result.data.metadata?.refinancedTo).toBe(newMortgageId);
-          expect(result.data.updatedAt.getTime()).toBeGreaterThanOrEqual(activeMortgage.updatedAt.getTime());
+          expect(result.data.updatedAt.getTime()).toBeGreaterThanOrEqual(
+            activeMortgage.updatedAt.getTime(),
+          );
         }
       });
 
       it("should reject refinancing non-active mortgage", () => {
         const newMortgageId = "new-mortgage-123" as MortgageId;
         const result = refinanceMortgage(draftMortgage, newMortgageId);
-        
+
         expect(result.success).toBe(false);
         if (!result.success) {
           expect(result.error).toBe("Can only refinance active mortgages");
@@ -491,25 +516,35 @@ describe("Mortgage Entity", () => {
   });
 
   describe("query functions", () => {
-    let mortgages: { draft: Mortgage; active: Mortgage; completed: Mortgage; refinanced: Mortgage };
+    let mortgages: {
+      draft: Mortgage;
+      active: Mortgage;
+      completed: Mortgage;
+      refinanced: Mortgage;
+    };
 
     beforeEach(() => {
       const amount = createLoanAmount(300000);
       const rate = createInterestRate(3.5);
       const term = createMonthCount(360);
       const payment = createMoney(1347);
-      
-      if (!amount.success || !rate.success || !term.success || !payment.success) {
+
+      if (
+        !amount.success ||
+        !rate.success ||
+        !term.success ||
+        !payment.success
+      ) {
         throw new Error("Failed to create test data");
       }
-      
+
       const config = createLoanConfiguration(
         amount.data,
         rate.data,
         term.data,
-        payment.data
+        payment.data,
       );
-      
+
       if (!config.success) {
         throw new Error("Failed to create loan configuration");
       }
@@ -536,7 +571,10 @@ describe("Mortgage Entity", () => {
         throw new Error("Failed to complete mortgage");
       }
 
-      const refinancedResult = refinanceMortgage(activeResult.data, "new-123" as MortgageId);
+      const refinancedResult = refinanceMortgage(
+        activeResult.data,
+        "new-123" as MortgageId,
+      );
       if (!refinancedResult.success) {
         throw new Error("Failed to refinance mortgage");
       }
@@ -606,18 +644,23 @@ describe("Mortgage Entity", () => {
       const rate = createInterestRate(3.5);
       const term = createMonthCount(360);
       const payment = createMoney(1347);
-      
-      if (!amount.success || !rate.success || !term.success || !payment.success) {
+
+      if (
+        !amount.success ||
+        !rate.success ||
+        !term.success ||
+        !payment.success
+      ) {
         throw new Error("Failed to create test data");
       }
-      
+
       const config = createLoanConfiguration(
         amount.data,
         rate.data,
         term.data,
-        payment.data
+        payment.data,
       );
-      
+
       if (!config.success) {
         throw new Error("Failed to create loan configuration");
       }
@@ -675,7 +718,10 @@ describe("Mortgage Entity", () => {
       });
 
       it("should use only name when no property address", () => {
-        const mortgageWithoutAddress = { ...testMortgage, propertyAddress: undefined };
+        const mortgageWithoutAddress = {
+          ...testMortgage,
+          propertyAddress: undefined,
+        };
         const displayName = getMortgageDisplayName(mortgageWithoutAddress);
         expect(displayName).toBe("Test Mortgage");
       });
@@ -722,8 +768,12 @@ describe("Mortgage Entity", () => {
     it("should always create valid mortgages with valid inputs", () => {
       fc.assert(
         fc.property(
-          fc.string({ minLength: 1, maxLength: 100 }).filter(s => s.trim().length > 0),
-          fc.string({ minLength: 1, maxLength: 100 }).filter(s => s.trim().length > 0),
+          fc
+            .string({ minLength: 1, maxLength: 100 })
+            .filter((s) => s.trim().length > 0),
+          fc
+            .string({ minLength: 1, maxLength: 100 })
+            .filter((s) => s.trim().length > 0),
           fc.constantFrom("EUR", "CHF", "USD"),
           fc.date({ min: new Date("2000-01-01"), max: new Date() }),
           (name, bankName, currency, startDate) => {
@@ -731,18 +781,23 @@ describe("Mortgage Entity", () => {
             const rate = createInterestRate(3.5);
             const term = createMonthCount(360);
             const payment = createMoney(1347);
-            
-            if (!amount.success || !rate.success || !term.success || !payment.success) {
+
+            if (
+              !amount.success ||
+              !rate.success ||
+              !term.success ||
+              !payment.success
+            ) {
               return;
             }
-            
+
             const config = createLoanConfiguration(
               amount.data,
               rate.data,
               term.data,
-              payment.data
+              payment.data,
             );
-            
+
             if (!config.success) {
               return;
             }
@@ -762,8 +817,8 @@ describe("Mortgage Entity", () => {
               expect(result.data.currency).toBe(currency);
               expect(result.data.status).toBe("draft");
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -777,18 +832,23 @@ describe("Mortgage Entity", () => {
             const rate = createInterestRate(3.5);
             const term = createMonthCount(360);
             const payment = createMoney(1347);
-            
-            if (!amount.success || !rate.success || !term.success || !payment.success) {
+
+            if (
+              !amount.success ||
+              !rate.success ||
+              !term.success ||
+              !payment.success
+            ) {
               return;
             }
-            
+
             const config = createLoanConfiguration(
               amount.data,
               rate.data,
               term.data,
-              payment.data
+              payment.data,
             );
-            
+
             if (!config.success) {
               return;
             }
@@ -811,32 +871,39 @@ describe("Mortgage Entity", () => {
 
             expect(nameResult.success).toBe(false);
             expect(bankResult.success).toBe(false);
-          }
-        )
+          },
+        ),
       );
     });
 
     it("should maintain status transitions correctly", () => {
       fc.assert(
         fc.property(
-          fc.string({ minLength: 1, maxLength: 50 }).filter(s => s.trim().length > 0),
+          fc
+            .string({ minLength: 1, maxLength: 50 })
+            .filter((s) => s.trim().length > 0),
           (name) => {
             const amount = createLoanAmount(300000);
             const rate = createInterestRate(3.5);
             const term = createMonthCount(360);
             const payment = createMoney(1347);
-            
-            if (!amount.success || !rate.success || !term.success || !payment.success) {
+
+            if (
+              !amount.success ||
+              !rate.success ||
+              !term.success ||
+              !payment.success
+            ) {
               return;
             }
-            
+
             const config = createLoanConfiguration(
               amount.data,
               rate.data,
               term.data,
-              payment.data
+              payment.data,
             );
-            
+
             if (!config.success) {
               return;
             }
@@ -871,8 +938,8 @@ describe("Mortgage Entity", () => {
             expect(completed.status).toBe("completed");
             expect(isCompleted(completed)).toBe(true);
             expect(canMakePayments(completed)).toBe(false);
-          }
-        )
+          },
+        ),
       );
     });
   });
