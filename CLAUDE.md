@@ -14,7 +14,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `npm test` - Run unit tests with Vitest
 - `npm run test:unit` - Run unit tests in jsdom environment
-- `npm run test:e2e` - Run Playwright end-to-end tests
 - `npm run coverage` - Generate test coverage report
 
 ### Code Quality
@@ -29,83 +28,73 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Mortgage Portfolio Management Solution** primarily focused on the **German market (DE)** built with **Domain-Driven Design** and **functional programming** principles. The architecture supports multiple markets for future expansion. The codebase follows a clean architecture with comprehensive type safety and professional portfolio management capabilities.
+This is a **Single Mortgage Calculator** focused on the **German market (DE)** built with **Domain-Driven Design** and **functional programming** principles. It's a sophisticated financial calculation engine that helps users understand mortgage payments, amortization schedules, and the impact of extra payments (Sondertilgung).
 
 ## Architecture Overview
 
-### Clean Architecture Layers
+### Clean Architecture Layers (3-Layer)
 
 ```
 src/
-├── domain/              # Domain Layer - Business Logic
-│   ├── types/           # Value Objects (Money, Percentage, etc.)
-│   ├── entities/        # Domain Entities (MortgagePortfolio)
-│   ├── services/        # Domain Services (PortfolioService)
-│   └── calculations/    # Pure Calculation Functions
-├── application/         # Application Layer - Use Cases
-│   └── services/        # Application Services
-├── infrastructure/     # Infrastructure Layer - External Concerns
-│   └── persistence/     # Data Storage (Repository Pattern)
-├── presentation/       # Presentation Layer - UI Components
-│   └── components/      # Organized by Feature (ui/, portfolio/, mortgage/)
-└── views/              # Page Components
+├── core/domain/         # Domain Layer - Pure Business Logic
+│   ├── value-objects/   # Branded types (Money, Percentage, etc.)
+│   ├── types/           # Complex domain types (LoanConfiguration, etc.)
+│   ├── calculations/    # Pure calculation functions
+│   └── primitives/      # Base types and utilities
+├── app/                 # Application & Presentation Layers
+│   ├── services/        # Application services
+│   ├── adapters/        # UI to domain adapters
+│   ├── composables/     # Vue composition functions
+│   └── views/           # Page components (2 views)
+└── stores/              # UI state management (demo data only)
 ```
 
-### Domain Layer (`src/domain/`)
+### Domain Layer (`src/core/domain/`)
 
 - **Value Objects**: Branded types (Money, Percentage, LoanAmount, InterestRate) preventing primitive obsession
-- **Entities**: MortgagePortfolio aggregate with business rules
-- **Domain Services**: Portfolio analysis, optimization, cash flow calculations
-- **Pure Functions**: Loan calculations, amortization, Sondertilgung analysis
-- **Result/Option Types**: Functional error handling without exceptions
+- **Domain Types**: Complex types like LoanConfiguration, MonthlyPayment, SondertilgungPlan
+- **Pure Functions**: Loan calculations, amortization schedules, payment calculations
+- **Result Types**: Functional error handling without exceptions
+- **German Market Rules**: Sondertilgung limits and banking regulations
 
-### Application Layer (`src/application/`)
+### Application Layer (`src/app/services/`)
 
-- **MortgageService**: Individual loan analysis and calculations
-- **PortfolioApplicationService**: Portfolio management orchestration
-- **Service Types**: UI-compatible data structures for views
+- **MortgageService**: Orchestrates domain calculations for UI consumption
+- **Service Adapters**: Transform between UI inputs and domain types
 
-### Infrastructure Layer (`src/infrastructure/`)
+### Presentation Layer (`src/app/`)
 
-- **PortfolioRepository**: Data persistence abstraction (LocalStorage implementation)
-- **Repository Pattern**: Clean separation of storage concerns
-
-### Presentation Layer (`src/presentation/`)
-
-- **UI Components**: Reusable editable components (EditableAmount, EditableNumber)
-- **Portfolio Components**: Charts and visualizations for portfolio analysis
-- **Mortgage Components**: Input forms and payment schedules
+- **Views**: CashFlowDashboard (landing page) and CreateMortgage (calculator)
+- **Composables**: useMortgage for calculator logic, useLayout for UI state
+- **Adapters**: MortgageAdapter transforms UI data to domain types
 
 ## Key Features
 
-### Portfolio Management
+### Single Mortgage Calculator
 
-- **Multi-Mortgage Portfolios**: Manage multiple loans in organized portfolios
-- **German Market Focus**: DE-specific validation and calculations with extensible architecture
-- **Portfolio Analytics**: Summary statistics, optimization analysis, cash flow projections
-- **Portfolio Optimization**: Refinancing opportunities, consolidation analysis
-
-### Mortgage Analysis
-
-- **Sondertilgung**: Extra payments with percentage limits (5%, 10%, 20%, 50%, unlimited)
+- **German Market Focus**: DE-specific validation and calculations
+- **Sondertilgung Analysis**: Extra payment scenarios with percentage limits (5%, 10%, 20%, 50%, unlimited)
+- **Amortization Schedules**: Detailed payment breakdowns over time
 - **Parameter Locking**: Lock any loan parameter and recalculate others
-- **Market Compliance**: German banking regulation compliance (BaFin)
-- **Advanced Calculations**: Amortization schedules, interest sensitivity analysis
+
+### Financial Calculations
+
+- **Monthly Payment Calculation**: Precise payment amounts using financial formulas
+- **Interest Rate Sensitivity**: What-if analysis for rate changes
+- **Total Interest Analysis**: See total cost over loan lifetime
+- **Break-even Calculations**: When extra payments save money
 
 ### Technical Excellence
 
 - **Type Safety**: Branded types make illegal states unrepresentable
 - **Business Rules**: Encoded at type level with comprehensive validation
-- **400+ Tests**: Domain validation with property-based testing
-- **Functional Error Handling**: Result/Option types throughout
+- **Domain Tests**: Property-based testing for mathematical correctness
+- **Functional Error Handling**: Result types throughout
 
 ## Router Structure
 
-- `/` - Dashboard (Portfolio overview)
-- `/portfolio` - Portfolio management view
-- `/calculator` - Mortgage calculator
-- `/mortgage/:id?` - Individual mortgage details
-- `/mortgage-calculator` - Advanced mortgage calculator
+- `/` - Landing page with welcome message
+- `/create` - Mortgage calculator page
 
 ## Domain Types Usage
 
@@ -115,7 +104,7 @@ Always use domain types for financial calculations:
 // ✅ Correct - Using domain types
 const amount = createLoanAmount(300000); // €300k
 const rate = createInterestRate(3.5); // 3.5%
-const portfolio = createMortgagePortfolio(id, name, owner);
+const payment = calculateMonthlyPayment(loanConfig);
 
 // ❌ Wrong - Using primitives
 const amount = 300000; // No validation, no business rules
@@ -124,26 +113,24 @@ const rate = 3.5; // Could be invalid rate
 
 ## Key Files for Understanding
 
-- `src/domain/index.ts` - Domain layer public API
-- `src/domain/entities/MortgagePortfolio.ts` - Portfolio aggregate root
-- `src/domain/services/PortfolioService.ts` - Portfolio business logic
-- `src/application/services/PortfolioApplicationService.ts` - Portfolio orchestration
-- `src/infrastructure/persistence/PortfolioRepository.ts` - Data persistence
+- `src/core/domain/index.ts` - Domain layer public API
+- `src/core/domain/calculations/` - Pure calculation functions
+- `src/app/services/application/services/MortgageService.ts` - Application service
+- `src/app/adapters/MortgageAdapter.ts` - UI to domain adapter
 - `TODO.md` - Project roadmap and progress tracking
 
 ## Testing Strategy
 
-- **Unit Tests**: Each domain type and calculation function
+- **Unit Tests**: Domain types and calculation functions
 - **Property-Based Testing**: Mathematical invariants with fast-check
-- **Integration Tests**: Service layer and repository integration
 - **Real-World Validation**: German market scenarios with real banking rules
+- **No Integration Tests Needed**: Pure calculator with no external dependencies
 
 ## Technology Stack
 
 - **Vue 3** with TypeScript and Composition API
 - **Vite** for fast development and building
 - **Vitest** for unit testing with jsdom
-- **Playwright** for E2E testing
 - **Tailwind CSS** for styling
 - **Chart.js/vue-chartjs** for data visualization
 - **Decimal.js** for precise financial calculations
@@ -152,10 +139,10 @@ const rate = 3.5; // Could be invalid rate
 
 - All business logic must reside in the domain layer
 - Use application services as orchestration layer for UI
-- Persist data through repository pattern
-- Components should be organized by feature (ui/, portfolio/, mortgage/)
+- No data persistence - this is a stateless calculator
 - Financial calculations must use domain types, never primitives
-- Always use Result/Option types for error handling
+- Always use Result types for error handling
+- Pure functions only - no side effects in domain layer
 
 ## Programming Paradigm Rules
 
@@ -312,7 +299,7 @@ For detailed standards, see: `/docs/CODING_STANDARDS.md`
 1. **Missing exports from domain/index.ts** - Always verify exports
 2. **Test files using .data!** - Tests often bypass type safety
 3. **Configuration object access** - `mortgage.configuration.amount` not `mortgage.amount`
-4. **Repository patterns** - Services have default repository parameters
+4. **No data persistence** - This is a stateless calculator, don't add storage
 
 ### 🎯 The Right Approach
 
