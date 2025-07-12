@@ -64,6 +64,16 @@ export default defineConfig({
       },
       {
         test: {
+          name: "components",
+          include: ["src/app/**/*.{test,spec}.{js,ts}"],
+          exclude: ["src/app/**/*.user.{test,spec}.{js,ts}"],
+          environment: "jsdom",
+          setupFiles: ["src/tests/setup.ts"],
+        },
+        plugins: [vue()],
+      },
+      {
+        test: {
           name: "browser",
           include: ["src/app/**/*.user.{test,spec}.{js,ts}"],
           setupFiles: ["vitest-browser-vue"],
