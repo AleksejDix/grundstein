@@ -1,1 +1,26 @@
-npm run pre-push
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Running pre-push checks..."
+
+# Run type check
+echo "📋 Final TypeScript check..."
+npm run type-check
+if [ $? -ne 0 ]; then
+  echo "❌ TypeScript check failed! Cannot push with type errors."
+  echo "💡 Run 'npm run type-check' to see the errors."
+  echo "⚠️  Use 'git push --no-verify' to bypass (NOT RECOMMENDED)"
+  exit 1
+fi
+
+# Run build to ensure it works
+echo "📋 Testing production build..."
+npm run build
+if [ $? -ne 0 ]; then
+  echo "❌ Build failed! Cannot push code that doesn't build."
+  echo "💡 Run 'npm run build' to see the errors."
+  echo "⚠️  Use 'git push --no-verify' to bypass (NOT RECOMMENDED)"
+  exit 1
+fi
+
+echo "✅ All pre-push checks passed!"

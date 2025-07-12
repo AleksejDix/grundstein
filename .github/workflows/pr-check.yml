@@ -1,0 +1,78 @@
+name: PR Quality Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  quality-gate:
+    name: 🚦 Quality Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏗 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Lint Check
+        run: |
+          echo "Running ESLint..."
+          npm run lint
+          if [ $? -ne 0 ]; then
+            echo "❌ ESLint failed! Fix all linting errors before merging."
+            exit 1
+          fi
+          echo "✅ ESLint passed!"
+
+      - name: 🔍 Type Check
+        run: |
+          echo "Running TypeScript type check..."
+          npm run type-check
+          if [ $? -ne 0 ]; then
+            echo "❌ TypeScript check failed! Fix all type errors before merging."
+            exit 1
+          fi
+          echo "✅ TypeScript check passed!"
+
+      - name: 🧪 Test Check
+        run: |
+          echo "Running tests..."
+          npm test
+          if [ $? -ne 0 ]; then
+            echo "❌ Tests failed! Fix all failing tests before merging."
+            exit 1
+          fi
+          echo "✅ All tests passed!"
+
+      - name: 🏗 Build Check
+        run: |
+          echo "Running production build..."
+          npm run build
+          if [ $? -ne 0 ]; then
+            echo "❌ Build failed! Fix build errors before merging."
+            exit 1
+          fi
+          echo "✅ Build succeeded!"
+
+      - name: 📊 Summary
+        if: success()
+        run: |
+          echo "## ✅ All quality checks passed!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ ESLint: No errors" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ TypeScript: No type errors" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Tests: All passing" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Build: Successful" >> $GITHUB_STEP_SUMMARY
+
+      - name: 📊 Failure Summary
+        if: failure()
+        run: |
+          echo "## ❌ Quality checks failed!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Please fix all errors before this PR can be merged." >> $GITHUB_STEP_SUMMARY
