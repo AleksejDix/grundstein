@@ -13,11 +13,11 @@ export {
   type GermanSondertilgungValidationError,
   type SondertilgungPercentage,
   createGermanSondertilgungRules,
-  getAvailablePercentages as germanSondertilgungGetAvailablePercentages,
-  validatePercentage,
-  formatRules,
-  getDefaultRules,
-  isStandardPercentage
+  getAvailablePercentages,
+  validateSondertilgungPayment,
+  calculateSondertilgungFees,
+  supportsUnlimitedSondertilgung,
+  getRecommendedStrategy
 } from "./primitives/GermanSondertilgungRules";
 
 // Value Objects (Branded types with business validation)
@@ -48,11 +48,7 @@ export {
   createLoanAmount,
   toMoney as loanAmountToMoney,
   toNumber as loanAmountToNumber,
-  formatLoanAmount,
-  compareLoanAmounts,
-  isValidLoanAmount,
-  addLoanAmounts,
-  subtractLoanAmounts
+  formatLoanAmount
 } from "./value-objects/LoanAmount";
 
 // InterestRate exports
@@ -63,11 +59,11 @@ export {
   toPercentage as interestRateToPercentage,
   toNumber as interestRateToNumber,
   formatInterestRate,
-  isValidInterestRate,
-  compareInterestRates,
-  getMonthlyRate,
-  getQuarterlyRate,
-  getAnnualRate
+  isValidInterestRateRange,
+  compareInterestRate,
+  toMonthlyRate,
+  fromMonthlyRate,
+  addBasisPoints
 } from "./value-objects/InterestRate";
 
 // MonthCount exports  
@@ -82,7 +78,7 @@ export {
   formatMonthCount,
   toYears,
   fromYears,
-  isValidMonthCount
+  isEqualMonthCount
 } from "./value-objects/MonthCount";
 
 // YearCount exports
@@ -94,7 +90,7 @@ export {
   toNumber as yearCountToNumber,
   toMonths as yearCountToMonths,
   formatYearCount,
-  isValidYearCount
+  isEqualYearCount
 } from "./value-objects/YearCount";
 
 // PaymentMonth exports
@@ -105,13 +101,9 @@ export {
   toPositiveInteger as paymentMonthToPositiveInteger,
   toNumber as paymentMonthToNumber,
   addMonths as paymentMonthAddMonths,
-  subtractMonths as paymentMonthSubtractMonths,
   formatPaymentMonth,
-  toDate,
-  fromDate,
-  isValidPaymentMonth,
-  comparePaymentMonths,
-  isInRange
+  isValidPaymentMonthRange,
+  comparePaymentMonth
 } from "./value-objects/PaymentMonth";
 
 export * from "./value-objects/PositiveInteger";
@@ -122,22 +114,7 @@ export * from "./value-objects/LoanToValueRatio";
 export * from "./types/LoanConfiguration";
 export * from "./types/MonthlyPayment";
 export * from "./types/ExtraPayment";
-// ExtraPaymentRules exports (avoiding conflicts with SondertilgungPlan)
-export {
-  type ExtraPaymentLimit,
-  type SondertilgungLimit,
-  type ExtraPaymentRules,
-  type ExtraPaymentPercentage,
-  type ExtraPaymentValidationError,
-  createPercentageLimit as createExtraPaymentPercentageLimit,
-  createUnlimitedLimit as createExtraPaymentUnlimitedLimit,
-  createFixedAmountLimit,
-  createExtraPaymentRules,
-  validateExtraPayment,
-  isUnlimited,
-  getMaxAmount,
-  formatLimit
-} from "./types/ExtraPaymentRules";
+// Remove ExtraPaymentRules - using SondertilgungPlan directly
 
 // SondertilgungPlan exports
 export {
