@@ -368,14 +368,12 @@ async function loadPortfolios() {
   error.value = null;
 
   try {
-    const repository = createLocalStoragePortfolioRepository();
-    const result = await getAllPortfolios(repository);
+    const result = await getAllPortfolios();
 
     if (result.success) {
       // Load summaries for each portfolio
       const summaryPromises = result.data.map(async (portfolio) => {
         const summaryResult = await getPortfolioWithSummary(
-          repository,
           portfolio.id
         );
         return summaryResult.success ? summaryResult.data : null;
@@ -404,8 +402,7 @@ async function createPortfolio() {
   isCreatingPortfolio.value = true;
 
   try {
-    const repository = createLocalStoragePortfolioRepository();
-    const result = await createPortfolio(repository, {
+    const result = await createPortfolio({
       name: newPortfolio.value.name.trim(),
       owner: newPortfolio.value.owner.trim(),
     });

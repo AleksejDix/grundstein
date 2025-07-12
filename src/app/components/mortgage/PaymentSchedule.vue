@@ -205,8 +205,7 @@ const showOnlyExtraPayments = ref(false);
 const currentPage = ref(1);
 const itemsPerPage = 50;
 
-// Services
-const mortgageService = new MortgageService();
+// Services - no need to instantiate, MortgageService is already an object
 
 // Computed values
 const visibleEntries = computed(() => {
@@ -296,7 +295,7 @@ async function calculateSchedule() {
     }
 
     // Calculate monthly payment using domain service
-    const quickEstimate = mortgageService.getQuickEstimate(
+    const quickEstimate = MortgageService.getQuickEstimate(
       props.loanAmount,
       props.interestRate,
       props.termMonths / 12
