@@ -13,10 +13,6 @@ export default defineConfig({
   test: {
     // Global configuration
     globals: true,
-
-    // Core tests in Node environment
-    include: ["src/core/**/*.{test,spec}.{js,ts}"],
-    environment: "node",
     testTimeout: 5000,
     hookTimeout: 10000,
 
@@ -56,5 +52,30 @@ export default defineConfig({
 
     // Reporter configuration
     reporters: ["verbose"],
+
+    // Projects configuration
+    projects: [
+      {
+        test: {
+          name: "unit",
+          include: ["src/core/**/*.{test,spec}.{js,ts}"],
+          environment: "node",
+        },
+      },
+      {
+        test: {
+          name: "components",
+          include: ["src/app/**/*.{test,spec}.{js,ts,vue}"],
+          environment: "jsdom",
+        },
+      },
+      {
+        test: {
+          name: "browser",
+          include: ["src/**/*.{browser,e2e}.{test,spec}.{js,ts}"],
+          environment: "jsdom",
+        },
+      },
+    ],
   },
 });
