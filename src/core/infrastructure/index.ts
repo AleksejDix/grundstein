@@ -4,4 +4,5 @@
  * Export infrastructure services and repositories
  */
 
-// Portfolio repository removed - focusing on core mortgage functionality
+// Currently empty - infrastructure services will be added as needed
+export {};

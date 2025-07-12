@@ -4,6 +4,8 @@
 
 This document provides a comprehensive dependency graph of the mortgage portfolio management domain model, following Domain-Driven Design principles from "Domain Modeling Made Functional" by Scott Wlaschin.
 
+**Last Updated:** 2025-07-12 - Dependency graph updated to reflect current domain architecture.
+
 ## Architecture Layers
 
 The domain follows a clean architecture with clear separation of concerns:

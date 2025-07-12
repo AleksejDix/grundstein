@@ -20,7 +20,7 @@ app.directive("outline-fixer");
 errorLogger.init();
 
 // Global error handler for Vue
-app.config.errorHandler = (err: unknown, instance, info) => {
+app.config.errorHandler = (err: unknown, instance, _info) => {
   const error = err instanceof Error ? err : new Error(String(err));
   errorLogger.logError(error, {
     context: "VueErrorHandler",
