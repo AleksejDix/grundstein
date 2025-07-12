@@ -2,11 +2,11 @@
 
 ## Overview
 
-Grundstein is a **sophisticated mortgage portfolio management solution** built with **Domain-Driven Design** and **functional programming** principles. Despite having a simple UI, it features enterprise-level domain modeling with comprehensive type safety and financial calculation capabilities.
+Grundstein is a **sophisticated mortgage calculation engine** built with **Domain-Driven Design** and **functional programming** principles. It's a pure calculator that transforms user inputs into precise financial calculations without any data persistence.
 
-## Architecture Pattern: Clean Architecture + DDD
+## Architecture Pattern: Functional Domain-Driven Design
 
-The application follows Clean Architecture with Domain-Driven Design, ensuring business logic independence from UI and infrastructure concerns.
+The application follows a simplified 3-layer architecture focused on pure calculations and type safety.
 
 ```mermaid
 graph TB
@@ -23,35 +23,25 @@ graph TB
     end
 
     subgraph "🏗️ Domain Layer"
-        Entities[Domain Entities]
         ValueObjects[Value Objects]
-        DomainServices[Domain Services]
+        DomainTypes[Domain Types]
         Calculations[Pure Calculations]
-    end
-
-    subgraph "🔧 Infrastructure Layer"
-        Persistence[Data Persistence]
-        External[External Services]
     end
 
     UI --> Adapters
     Views --> Composables
     Composables --> AppServices
     Adapters --> AppServices
-    AppServices --> DomainServices
     AppServices --> Calculations
-    DomainServices --> ValueObjects
-    DomainServices --> Entities
     Calculations --> ValueObjects
-    AppServices --> Persistence
+    Calculations --> DomainTypes
 
     style Domain fill:#e1f5fe
     style Application fill:#f3e5f5
     style Presentation fill:#e8f5e8
-    style Infrastructure fill:#fff3e0
 ```
 
-## Detailed System Architecture
+## Actual System Architecture
 
 ```mermaid
 graph LR
@@ -62,11 +52,11 @@ graph LR
             C1[useMortgage.ts]
             C2[useLayout.ts]
             A1[MortgageAdapter.ts]
+            STORE[mortgageStore.ts]
         end
 
         subgraph "🚀 Application"
             MS[MortgageService.ts]
-            PAS[PortfolioApplicationService.ts]
         end
 
         subgraph "🏗️ Domain Core"
@@ -91,15 +81,11 @@ graph LR
                 CALC3[AmortizationEngine]
             end
         end
-
-        subgraph "🔧 Infrastructure"
-            REPO[PortfolioRepository]
-            LOCAL[LocalStorage]
-        end
     end
 
     V1 --> C1
     V2 --> C1
+    C1 --> STORE
     C1 --> A1
     A1 --> MS
     MS --> CALC1
@@ -111,8 +97,6 @@ graph LR
     CALC2 --> DT1
     CALC2 --> DT3
     CALC3 --> DT2
-    MS --> REPO
-    REPO --> LOCAL
 
     style VO1 fill:#e3f2fd
     style VO2 fill:#e3f2fd
@@ -186,16 +170,17 @@ classDiagram
     SondertilgungPlan --> MonthlyPayment
 ```
 
-## Functional Programming Flow
+## Pure Functional Data Flow
 
 ```mermaid
 flowchart TD
-    subgraph "Pure Functions"
+    subgraph "Stateless Calculation Pipeline"
         INPUT[User Input] --> VALIDATE[Domain Validation]
         VALIDATE --> CREATE[Create Value Objects]
         CREATE --> CALC[Pure Calculations]
         CALC --> RESULT[Calculation Results]
         RESULT --> FORMAT[Format for UI]
+        FORMAT --> DISPLAY[Display Results]
     end
 
     subgraph "Error Handling"
@@ -205,19 +190,20 @@ flowchart TD
         ERROR2 --> USERERROR
     end
 
-    subgraph "No Side Effects"
+    subgraph "No Persistence - Pure Functions"
         CALC -.-> |No State Mutation| CALC
         CREATE -.-> |Immutable Objects| CREATE
         VALIDATE -.-> |Pure Validation| VALIDATE
+        DISPLAY -.-> |No Data Storage| DISPLAY
     end
 
     style INPUT fill:#e8f5e8
-    style RESULT fill:#e8f5e8
+    style DISPLAY fill:#e8f5e8
     style ERROR1 fill:#ffebee
     style ERROR2 fill:#ffebee
 ```
 
-## File Structure
+## Actual File Structure
 
 ```
 src/
@@ -234,30 +220,28 @@ src/
 │   └── views/                     # Vue page components
 │       ├── CashFlowDashboard.view.vue
 │       └── CreateMortgage.view.vue
-├── 🏗️ core/                       # Domain + Infrastructure
-│   ├── domain/                    # Domain Layer (Pure Business Logic)
-│   │   ├── calculations/          # Pure calculation functions
-│   │   │   ├── LoanCalculations.ts
-│   │   │   ├── SondertilgungCalculations.ts
-│   │   │   └── AmortizationEngine.ts
-│   │   ├── primitives/            # Brand utility and base types
-│   │   │   ├── Brand.ts
-│   │   │   └── GermanSondertilgungRules.ts
-│   │   ├── types/                 # Domain aggregate types
-│   │   │   ├── LoanConfiguration.ts
-│   │   │   ├── MonthlyPayment.ts
-│   │   │   ├── SondertilgungPlan.ts
-│   │   │   └── FixedRatePeriod.ts
-│   │   └── value-objects/         # Branded value objects
-│   │       ├── Money.ts
-│   │       ├── Percentage.ts
-│   │       ├── LoanAmount.ts
-│   │       ├── InterestRate.ts
-│   │       └── MonthCount.ts
-│   └── infrastructure/            # Infrastructure Layer
+├── 🏗️ core/domain/                # Domain Layer (Pure Business Logic)
+│   ├── calculations/              # Pure calculation functions
+│   │   ├── LoanCalculations.ts
+│   │   ├── SondertilgungCalculations.ts
+│   │   └── AmortizationEngine.ts
+│   ├── primitives/                # Brand utility and base types
+│   │   ├── Brand.ts
+│   │   └── GermanSondertilgungRules.ts
+│   ├── types/                     # Domain aggregate types
+│   │   ├── LoanConfiguration.ts
+│   │   ├── MonthlyPayment.ts
+│   │   ├── SondertilgungPlan.ts
+│   │   └── FixedRatePeriod.ts
+│   └── value-objects/             # Branded value objects
+│       ├── Money.ts
+│       ├── Percentage.ts
+│       ├── LoanAmount.ts
+│       ├── InterestRate.ts
+│       └── MonthCount.ts
 ├── 🔧 router/                     # Vue Router configuration
-├── 🔧 stores/                     # Pinia state management
-├── 🔧 services/                   # External services
+├── 🔧 stores/                     # Pinia state management (UI state only)
+├── 🔧 services/                   # Data services (in-memory)
 └── 🔧 utils/                      # Utilities (logging, performance)
 ```
 
@@ -286,34 +270,36 @@ sequenceDiagram
     S-->>C: Analysis results
     C-->>V: Formatted data
     V-->>U: Display results
+
+    Note over U,VO: No persistence - results are discarded after display
 ```
 
 ## Key Architectural Principles
 
-### 1. **Domain-Driven Design**
+### 1. **Pure Calculator Architecture**
+
+- No data persistence - stateless calculations only
+- Results computed fresh for each user interaction
+- No storage concerns - minimal infrastructure needs
+
+### 2. **Domain-Driven Design**
 
 - Business logic isolated in domain layer
 - Rich domain model with value objects
 - Ubiquitous language throughout codebase
 
-### 2. **Functional Programming**
+### 3. **Functional Programming**
 
 - Pure functions for all calculations
 - Immutable data structures
 - No classes in business logic
 - Result/Option types for error handling
 
-### 3. **Type Safety**
+### 4. **Type Safety First**
 
 - Branded types prevent primitive obsession
 - Business rules encoded at type level
 - Comprehensive validation with proper error types
-
-### 4. **Clean Architecture**
-
-- Dependency inversion (domain ← application ← UI)
-- Business logic independent of frameworks
-- Infrastructure concerns separated
 
 ### 5. **German Market Focus**
 
@@ -321,50 +307,95 @@ sequenceDiagram
 - BaFin compliance considerations
 - German banking terminology and calculations
 
+## What This App Actually Does
+
+### **Core Functionality**
+
+- **Single Mortgage Calculator** - Input loan parameters, get payment calculations
+- **German Sondertilgung Analysis** - Extra payment scenarios and savings
+- **Amortization Schedules** - Payment breakdowns over time
+- **Interest Rate Sensitivity** - What-if analysis for rate changes
+
+### **User Journey**
+
+1. **Input**: Loan amount, interest rate, term, monthly payment
+2. **Calculate**: Domain engine performs financial calculations
+3. **Display**: Results shown with charts and tables
+4. **Analyze**: Different scenarios and extra payment options
+5. **No Saving**: Results are temporary, no persistence needed
+
 ## Testing Strategy
 
 ```mermaid
 pyramid
-    title Testing Strategy
-    ["E2E Tests" : 5] : "Browser tests for user journeys"
-    ["Integration Tests" : 15] : "Service layer integration"
-    ["Unit Tests (400+)" : 80] : "Domain logic validation"
+    title Testing Strategy (No Integration Tests Needed)
+    ["Component Tests" : 10] : "UI interaction testing"
+    ["Unit Tests (400+)" : 90] : "Domain logic validation"
 ```
 
 - **400+ Unit Tests** - All domain types and calculations
 - **Property-Based Testing** - Mathematical invariants with fast-check
 - **Real-World Validation** - German mortgage scenarios
 - **Type Safety** - Compile-time error prevention
+- **No Integration Tests** - No external systems to integrate with
 
 ## Technology Stack
 
-| Layer            | Technologies                                |
-| ---------------- | ------------------------------------------- |
-| **Frontend**     | Vue 3, TypeScript, Composition API          |
-| **Build**        | Vite, Rolldown (cutting-edge bundler)       |
-| **Testing**      | Vitest, Property-based testing (fast-check) |
-| **Quality**      | Oxlint, TypeScript strict mode, Git hooks   |
-| **Calculations** | Decimal.js for financial precision          |
-| **State**        | Pinia, Local component state                |
+| Layer            | Technologies                                 | Purpose               |
+| ---------------- | -------------------------------------------- | --------------------- |
+| **Frontend**     | Vue 3, TypeScript, Composition API           | User interface        |
+| **State**        | Pinia (UI state only), Local component state | Temporary state       |
+| **Build**        | Vite, Rolldown (cutting-edge bundler)        | Fast development      |
+| **Testing**      | Vitest, Property-based testing (fast-check)  | Quality assurance     |
+| **Quality**      | Oxlint, TypeScript strict mode, Git hooks    | Code quality          |
+| **Calculations** | Decimal.js for financial precision           | Mathematical accuracy |
 
 ## Performance Characteristics
 
 - **Fast Tests**: 400+ tests run in ~3 seconds
+- **Instant Calculations**: No database/API delays
 - **Type Safety**: Compile-time error prevention
 - **Mathematical Precision**: Decimal.js prevents floating-point errors
 - **Memory Efficient**: Immutable data with minimal overhead
-- **Bundle Size**: Optimized with Rolldown bundler
+- **Small Bundle**: No database/persistence libraries needed
+
+## Why No Infrastructure Layer?
+
+### **Design Decision: Stateless Calculator**
+
+- **No User Accounts** - Anonymous usage
+- **No Data Storage** - Results are temporary
+- **No External APIs** - Self-contained calculations
+- **No Persistence** - Fresh calculations each time
+
+### **Benefits of This Approach**
+
+- **Privacy First** - No data collection or storage
+- **Simple Deployment** - Static hosting, no backend needed
+- **Fast Performance** - No database queries
+- **Easy Testing** - No external dependencies
+- **Maintenance** - Fewer moving parts to break
+
+### **When Infrastructure Would Be Needed**
+
+Future features that would require infrastructure:
+
+- User accounts and saved calculations
+- Portfolio management across multiple loans
+- Historical data and trends
+- External API integrations (bank rates, property values)
+- Multi-user collaboration
 
 ## Future Extension Points
 
-The architecture supports future expansion:
+The architecture supports adding infrastructure later if needed:
 
-1. **Multi-Market Support** - Architecture ready for other countries
-2. **Complex Portfolio Management** - Domain model can handle multiple properties
-3. **Advanced Analytics** - Pure calculation functions enable easy feature addition
-4. **External Integrations** - Clean infrastructure layer for APIs
-5. **Real-Time Updates** - Reactive architecture supports live data
+1. **User Accounts** - Add authentication and user-specific data
+2. **Data Persistence** - Save calculations and portfolios
+3. **External APIs** - Real-time interest rates, property valuations
+4. **Advanced Analytics** - Historical trends and market analysis
+5. **Multi-Market Support** - Additional country-specific rules
 
 ---
 
-_This architecture balances sophisticated domain modeling with practical implementation, ensuring both business logic correctness and development productivity._
+_This architecture prioritizes simplicity and mathematical correctness over complex data management, perfectly suited for a sophisticated financial calculator._

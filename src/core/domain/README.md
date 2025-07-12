@@ -1,6 +1,6 @@
 # Domain Layer - Functional Core
 
-This is the **functional core** of our mortgage portfolio management system, implementing **Domain-Driven Design (DDD)** principles with **functional programming** patterns.
+This is the **functional core** of our mortgage calculator, implementing **Domain-Driven Design (DDD)** principles with **functional programming** patterns.
 
 **Last Updated:** 2025-07-12 - Domain layer documentation updated to reflect current implementation.
 
@@ -13,7 +13,6 @@ src/core/domain/
 ├── types/             # Complex domain types (aggregates)
 ├── entities/          # Domain entities with business rules
 ├── primitives/        # Base types and utilities
-└── infrastructure/    # External system abstractions
 ```
 
 ## Design Principles
@@ -71,19 +70,12 @@ const portfolio = createMortgagePortfolio(id, name, owner);
 
 ## Business Domain
 
-### 🏠 **Mortgage Management**
+### 🏠 **Mortgage Calculations**
 
-- Loan calculations with Swiss/German market rules
-- Sondertilgung (extra payments) with regulatory compliance
-- Amortization schedules and payment optimization
+- Loan calculations with German market rules
+- Sondertilgung (extra payments) with percentage limits
+- Amortization schedules and payment breakdowns
 - Interest rate sensitivity analysis
-
-### 📊 **Portfolio Management**
-
-- Multi-mortgage portfolio aggregation
-- Cash flow projections and analysis
-- Risk assessment and optimization opportunities
-- Market-specific compliance (DE/CH regulations)
 
 ### 💰 **Financial Calculations**
 
@@ -119,22 +111,18 @@ if (amount.success && rate.success && term.success) {
 }
 ```
 
-### Portfolio Operations
+### Sondertilgung Operations
 
 ```typescript
 import {
-  createMortgagePortfolio,
-  addMortgageToPortfolio,
-  calculatePortfolioSummary,
+  createSondertilgungPlan,
+  addExtraPayment,
+  calculateSondertilgungImpact,
 } from "../core/domain";
 
-const portfolio = createMortgagePortfolio(
-  "portfolio_123",
-  "Investment Properties",
-  "John Doe",
-);
-
-const summary = calculatePortfolioSummary(portfolio.data);
+const plan = createSondertilgungPlan("FIVE_PERCENT");
+const updatedPlan = addExtraPayment(plan, extraPayment);
+const impact = calculateSondertilgungImpact(loan, plan);
 ```
 
 ## Error Handling
@@ -164,11 +152,11 @@ if (amount.success) {
 
 ## Key Features
 
-### ✅ **Swiss & German Market Support**
+### ✅ **German Market Support**
 
-- Compliance with banking regulations
-- Market-specific calculation rules
-- Currency and formatting standards
+- Compliance with German banking regulations
+- BaFin-compliant calculation rules
+- EUR currency and German formatting standards
 
 ### ✅ **Sondertilgung Management**
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document establishes quality standards and best practices for the Grundstein mortgage portfolio management application. Following these standards ensures maintainability, scalability, and professional-grade code quality.
+This document establishes quality standards and best practices for the Grundstein mortgage calculator application. Following these standards ensures maintainability, scalability, and professional-grade code quality.
 
 **Last Updated:** 2025-07-12 - Updated to reflect current project state and best practices.
 
