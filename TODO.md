@@ -4,12 +4,11 @@
 
 Refactor the mortgage calculator using Domain Modeling Made Functional principles to create a type-safe, composable, and testable codebase.
 
-## 🎉 Current Progress: **408+ passing tests** across 13 robust domain types!
+## 🎉 Current Progress: **400+ passing tests** across 13 robust domain types!
 
 **✅ COMPLETED:**
 
 - **Phase 1**: Foundation Types & Value Objects (COMPLETED - 12 types total)
-
   - Money (30 tests), Percentage (33 tests), PositiveInteger (30 tests), PositiveDecimal (35 tests)
   - LoanAmount (21 tests), InterestRate (31 tests), MonthCount (40 tests), YearCount (27 tests)
   - PaymentMonth (46 tests)
@@ -196,7 +195,7 @@ type LockedParameters = {
 
 type RecalculationStrategy = (
   locked: LockedParameters,
-  changes: Partial<LoanConfiguration>
+  changes: Partial<LoanConfiguration>,
 ) => LoanConfiguration;
 ```
 
@@ -327,7 +326,7 @@ src/
 
 ### ✅ **MASSIVE ACHIEVEMENT:**
 
-We've completed **2 full phases** (Phases 1 & 2) with **13 domain types** and **408+ tests** - significantly ahead of the original plan!
+We've completed **2 full phases** (Phases 1 & 2) with **13 domain types** and **400+ tests** - significantly ahead of the original plan!
 
 ### 🏆 **Key Accomplishments:**
 
@@ -345,7 +344,7 @@ We've completed **2 full phases** (Phases 1 & 2) with **13 domain types** and **
 
 **🧪 Comprehensive Testing:**
 
-- 408+ tests across 13 domain types with 99%+ success rate
+- 400+ tests across 13 domain types with 99%+ success rate
 - Property-based testing with fast-check
 - Edge case validation and business rule enforcement
 - Real mortgage scenario validation

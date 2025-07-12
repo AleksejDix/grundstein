@@ -2,6 +2,8 @@
 
 This document establishes the programming paradigm rules for the Grundstein mortgage portfolio management application.
 
+**Last Updated:** 2025-07-12 - Standards updated to reflect current implementation patterns.
+
 ## Core Principles
 
 ### 1. **Functional Programming Only**
@@ -28,7 +30,7 @@ This document establishes the programming paradigm rules for the Grundstein mort
 export function calculateMonthlyPayment(
   loanAmount: LoanAmount,
   interestRate: InterestRate,
-  termYears: YearCount
+  termYears: YearCount,
 ): Result<MonthlyPayment, CalculationError> {
   // implementation
 }
@@ -55,14 +57,14 @@ function increment() {
 ```typescript
 // ✅ Good - Functions exported directly
 export async function analyzeLoan(
-  input: LoanInput
+  input: LoanInput,
 ): Promise<Result<Analysis, Error>> {
   // implementation
 }
 
 export async function calculateSondertilgung(
   loan: Loan,
-  extraPayment: ExtraPayment
+  extraPayment: ExtraPayment,
 ): Promise<Result<SondertilgungResult, Error>> {
   // implementation
 }
@@ -102,7 +104,7 @@ export function useMortgageCalculation() {
   const interestRate = ref(0);
 
   const monthlyPayment = computed(() =>
-    calculateMonthlyPayment(loanAmount.value, interestRate.value)
+    calculateMonthlyPayment(loanAmount.value, interestRate.value),
   );
 
   return {
@@ -119,7 +121,7 @@ export function useMortgageCalculation() {
 // ✅ Good - Immutable array operations
 export function addPaymentToHistory(
   history: PaymentRecord[],
-  newPayment: PaymentRecord
+  newPayment: PaymentRecord,
 ): PaymentRecord[] {
   return [...history, newPayment];
 }
@@ -127,10 +129,10 @@ export function addPaymentToHistory(
 export function updatePayment(
   history: PaymentRecord[],
   paymentId: string,
-  updates: Partial<PaymentRecord>
+  updates: Partial<PaymentRecord>,
 ): PaymentRecord[] {
   return history.map((payment) =>
-    payment.id === paymentId ? { ...payment, ...updates } : payment
+    payment.id === paymentId ? { ...payment, ...updates } : payment,
   );
 }
 ```

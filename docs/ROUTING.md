@@ -4,6 +4,8 @@
 
 This application follows **RESTful resource-based routing** conventions inspired by Laravel and Ruby on Rails. This approach provides a consistent, predictable URL structure that scales with application complexity.
 
+**Last Updated:** 2025-07-12 - Documentation refreshed to reflect current routing implementation.
+
 ## Routing Conventions
 
 ### Resource Routes
