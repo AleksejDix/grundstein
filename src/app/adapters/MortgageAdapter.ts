@@ -90,10 +90,10 @@ export function useMortgageAdapter() {
   function calculatePresentationModel(): MortgagePresentationModel {
     try {
       // Determine term specification
-      let termInput: LoanScenarioInput;
+      let _termInput: LoanScenarioInput;
 
       if (inputs.termMonths) {
-        termInput = {
+        _termInput = {
           loanAmount: inputs.loan,
           interestRate: inputs.interestRate,
           termMonths: inputs.termMonths,
@@ -102,7 +102,7 @@ export function useMortgageAdapter() {
       } else {
         // Calculate term from principal rate (German style)
         const estimatedTermYears = estimateTermFromPrincipalRate();
-        termInput = {
+        _termInput = {
           loanAmount: inputs.loan,
           interestRate: inputs.interestRate,
           termYears: estimatedTermYears,
@@ -115,7 +115,7 @@ export function useMortgageAdapter() {
       const quick = getQuickEstimate(
         inputs.loan,
         inputs.interestRate,
-        (inputs.termMonths || 360) / 12
+        (inputs.termMonths || 360) / 12,
       );
 
       return {
@@ -170,7 +170,7 @@ export function useMortgageAdapter() {
     const annualPrincipalAmount = inputs.loan * (inputs.principalRate / 100);
     const estimatedYears = Math.min(
       40,
-      Math.max(5, inputs.loan / annualPrincipalAmount)
+      Math.max(5, inputs.loan / annualPrincipalAmount),
     );
     return Math.round(estimatedYears);
   }
@@ -187,7 +187,7 @@ export function useMortgageAdapter() {
   /**
    * Calculate monthly interest payment
    */
-  function calculateMonthlyInterest(monthlyPayment: number): number {
+  function calculateMonthlyInterest(_monthlyPayment: number): number {
     const monthlyInterestRate = inputs.interestRate / 100 / 12;
     return inputs.loan * monthlyInterestRate;
   }
@@ -216,7 +216,7 @@ export function useMortgageAdapter() {
     }
 
     const numerator = Math.log(
-      monthlyPayment / (monthlyPayment - inputs.loan * monthlyRate)
+      monthlyPayment / (monthlyPayment - inputs.loan * monthlyRate),
     );
     const denominator = Math.log(1 + monthlyRate);
     const termInMonths = numerator / denominator;
@@ -250,7 +250,7 @@ export function useMortgageAdapter() {
       return getQuickEstimate(
         inputs.loan,
         inputs.interestRate,
-        inputs.termMonths / 12
+        inputs.termMonths / 12,
       );
     }
     return null;
@@ -301,7 +301,7 @@ export function useMortgageAdapter() {
     const quick = getQuickEstimate(
       inputs.loan,
       inputs.interestRate,
-      newTermMonths / 12
+      newTermMonths / 12,
     );
     inputs.monthlyPayment = quick.monthlyPayment;
   }
@@ -324,7 +324,7 @@ export function useMortgageAdapter() {
       ([month, amount]) => ({
         month: Number(month),
         amount,
-      })
+      }),
     );
 
     const result = await analyzeSondertilgung(baseLoan, extraPaymentsArray);

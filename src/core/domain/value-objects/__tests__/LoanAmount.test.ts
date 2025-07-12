@@ -209,7 +209,7 @@ describe("LoanAmount Property-Based Tests", () => {
           if (result.success) {
             expect(toNumber(result.data)).toBe(amount);
           }
-        })
+        }),
       );
     });
 
@@ -221,7 +221,7 @@ describe("LoanAmount Property-Based Tests", () => {
           if (!result.success) {
             expect(result.error).toBe("BelowMinimum");
           }
-        })
+        }),
       );
     });
 
@@ -235,8 +235,8 @@ describe("LoanAmount Property-Based Tests", () => {
             if (!result.success) {
               expect(result.error).toBe("AboveMaximum");
             }
-          }
-        )
+          },
+        ),
       );
     });
   });
@@ -258,8 +258,8 @@ describe("LoanAmount Property-Based Tests", () => {
                 expect(toNumber(recreatedResult.data)).toBe(originalAmount);
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -269,12 +269,12 @@ describe("LoanAmount Property-Based Tests", () => {
           const loanAmountResult = createLoanAmount(amount);
 
           if (loanAmountResult.success) {
-            const money = toMoney(loanAmountResult.data);
+            const _money = toMoney(loanAmountResult.data);
             const backToNumber = toNumber(loanAmountResult.data);
 
             expect(backToNumber).toBe(amount);
           }
-        })
+        }),
       );
     });
   });
@@ -293,7 +293,7 @@ describe("LoanAmount Property-Based Tests", () => {
             expect(formatted).toMatch(/€/);
             expect(formatted.length).toBeGreaterThan(0);
           }
-        })
+        }),
       );
     });
   });

@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
 import {
-  type Money,
   createMoney,
   toEuros,
   addMoney,
@@ -11,7 +10,6 @@ import {
   isEqualMoney,
   formatMoney,
   ZERO_MONEY,
-  type MoneyValidationError,
 } from "../Money";
 
 describe("Money Type", () => {
@@ -274,8 +272,8 @@ describe("Money Property-Based Tests", () => {
               expect(Math.abs(roundTrip - euros)).toBeLessThan(0.01);
               // Currency is implicitly EUR in this domain
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -293,8 +291,8 @@ describe("Money Property-Based Tests", () => {
             if (!result.success) {
               expect(result.error).toBe("NegativeAmount");
             }
-          }
-        )
+          },
+        ),
       );
     });
   });
@@ -317,8 +315,8 @@ describe("Money Property-Based Tests", () => {
                 expect(isEqualMoney(sum1.data, sum2.data)).toBe(true);
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -343,13 +341,13 @@ describe("Money Property-Based Tests", () => {
 
                 if (leftAssoc.success && rightAssoc.success) {
                   expect(isEqualMoney(leftAssoc.data, rightAssoc.data)).toBe(
-                    true
+                    true,
                   );
                 }
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -367,8 +365,8 @@ describe("Money Property-Based Tests", () => {
                 expect(isEqualMoney(money.data, sum.data)).toBe(true);
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
   });
@@ -394,8 +392,8 @@ describe("Money Property-Based Tests", () => {
                 }
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -413,8 +411,8 @@ describe("Money Property-Based Tests", () => {
                 expect(isEqualMoney(diff.data, ZERO_MONEY)).toBe(true);
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
   });
@@ -434,8 +432,8 @@ describe("Money Property-Based Tests", () => {
                 expect(isEqualMoney(money.data, product.data)).toBe(true);
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -453,8 +451,8 @@ describe("Money Property-Based Tests", () => {
                 expect(isEqualMoney(product.data, ZERO_MONEY)).toBe(true);
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
   });

@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import {
-  type LoanConfiguration,
   createLoanConfiguration,
   createLoanConfigurationFromInput,
   getLoanParameters,
@@ -38,7 +37,7 @@ describe("LoanConfiguration Type", () => {
           amountResult.data,
           rateResult.data,
           termResult.data,
-          paymentResult.data
+          paymentResult.data,
         );
 
         expect(configResult.success).toBe(true);
@@ -70,7 +69,7 @@ describe("LoanConfiguration Type", () => {
         amountResult.success &&
           rateResult.success &&
           termResult.success &&
-          paymentResult.success
+          paymentResult.success,
       ).toBe(true);
 
       if (
@@ -83,7 +82,7 @@ describe("LoanConfiguration Type", () => {
           amountResult.data,
           rateResult.data,
           termResult.data,
-          paymentResult.data
+          paymentResult.data,
         );
 
         expect(configResult.success).toBe(true);
@@ -107,7 +106,7 @@ describe("LoanConfiguration Type", () => {
         amountResult.success &&
           rateResult.success &&
           termResult.success &&
-          paymentResult.success
+          paymentResult.success,
       ).toBe(true);
 
       if (
@@ -120,7 +119,7 @@ describe("LoanConfiguration Type", () => {
           amountResult.data,
           rateResult.data,
           termResult.data,
-          paymentResult.data
+          paymentResult.data,
         );
 
         expect(configResult.success).toBe(true);
@@ -301,7 +300,7 @@ describe("LoanConfiguration Type", () => {
       if (configA.success && configB.success) {
         const comparison = compareLoanConfigurations(
           configA.data,
-          configB.data
+          configB.data,
         );
 
         expect(comparison.amountDifference).toBe(50000); // 350k - 300k
@@ -327,13 +326,13 @@ describe("LoanConfiguration Type", () => {
         const scenario = createLoanScenario(
           "Standard Mortgage",
           configResult.data,
-          "Typical first-time home buyer scenario"
+          "Typical first-time home buyer scenario",
         );
 
         expect(scenario.name).toBe("Standard Mortgage");
         expect(scenario.configuration).toBe(configResult.data);
         expect(scenario.description).toBe(
-          "Typical first-time home buyer scenario"
+          "Typical first-time home buyer scenario",
         );
       }
     });
@@ -363,10 +362,10 @@ describe("LoanConfiguration Type", () => {
 
     it("should have presets in logical order by amount", () => {
       expect(LOAN_PRESETS.TYPICAL_FIRST_HOME.amount).toBeLessThan(
-        LOAN_PRESETS.LUXURY_HOME.amount
+        LOAN_PRESETS.LUXURY_HOME.amount,
       );
       expect(LOAN_PRESETS.TYPICAL_FIRST_HOME.amount).toBeLessThan(
-        LOAN_PRESETS.INVESTMENT_PROPERTY.amount
+        LOAN_PRESETS.INVESTMENT_PROPERTY.amount,
       );
     });
   });

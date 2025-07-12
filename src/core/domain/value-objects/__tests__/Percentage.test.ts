@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
 import {
-  type Percentage,
   createPercentage,
   toPercentageValue,
   toDecimal,
@@ -15,7 +14,6 @@ import {
   ZERO_PERCENT,
   FIFTY_PERCENT,
   HUNDRED_PERCENT,
-  type PercentageValidationError,
 } from "../Percentage";
 
 describe("Percentage Type", () => {
@@ -101,7 +99,7 @@ describe("Percentage Type", () => {
 
         if (backToPercentage.success) {
           expect(
-            Math.abs(toPercentageValue(backToPercentage.data) - originalValue)
+            Math.abs(toPercentageValue(backToPercentage.data) - originalValue),
           ).toBeLessThan(0.01);
         }
       }
@@ -324,7 +322,7 @@ describe("Percentage Property-Based Tests", () => {
           if (result.success) {
             expect(toPercentageValue(result.data)).toBeCloseTo(value, 10);
           }
-        })
+        }),
       );
     });
 
@@ -341,7 +339,7 @@ describe("Percentage Property-Based Tests", () => {
               min: Math.fround(100.001),
               max: Math.fround(1000),
               noNaN: true,
-            })
+            }),
           ),
           (invalidValue) => {
             const result = createPercentage(invalidValue);
@@ -349,8 +347,8 @@ describe("Percentage Property-Based Tests", () => {
             if (!result.success) {
               expect(result.error).toBe("OutOfRange");
             }
-          }
-        )
+          },
+        ),
       );
     });
   });
@@ -367,11 +365,11 @@ describe("Percentage Property-Based Tests", () => {
 
             if (backToPercentage.success) {
               expect(
-                Math.abs(toPercentageValue(backToPercentage.data) - value)
+                Math.abs(toPercentageValue(backToPercentage.data) - value),
               ).toBeLessThan(0.000001);
             }
           }
-        })
+        }),
       );
     });
   });
@@ -394,8 +392,8 @@ describe("Percentage Property-Based Tests", () => {
                 expect(isEqualPercentage(sum1.data, sum2.data)).toBe(true);
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -411,7 +409,7 @@ describe("Percentage Property-Based Tests", () => {
               expect(isEqualPercentage(percentage.data, sum.data)).toBe(true);
             }
           }
-        })
+        }),
       );
     });
   });
@@ -434,13 +432,13 @@ describe("Percentage Property-Based Tests", () => {
 
                 if (diff.success) {
                   expect(isEqualPercentage(percentA.data, diff.data)).toBe(
-                    true
+                    true,
                   );
                 }
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -456,7 +454,7 @@ describe("Percentage Property-Based Tests", () => {
               expect(isEqualPercentage(diff.data, ZERO_PERCENT)).toBe(true);
             }
           }
-        })
+        }),
       );
     });
   });
@@ -472,11 +470,11 @@ describe("Percentage Property-Based Tests", () => {
 
             if (product.success) {
               expect(isEqualPercentage(percentage.data, product.data)).toBe(
-                true
+                true,
               );
             }
           }
-        })
+        }),
       );
     });
 
@@ -492,7 +490,7 @@ describe("Percentage Property-Based Tests", () => {
               expect(isEqualPercentage(product.data, ZERO_PERCENT)).toBe(true);
             }
           }
-        })
+        }),
       );
     });
   });

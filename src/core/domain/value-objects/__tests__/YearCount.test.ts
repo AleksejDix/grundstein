@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
 import {
-  type YearCount,
   createYearCount,
   toPositiveInteger,
   toNumber,
@@ -10,8 +9,6 @@ import {
   addYears,
   subtractYears,
   remainingYears,
-  compareYearCount,
-  isEqualYearCount,
   formatYearCount,
   getMinimumTermYears,
   getMaximumTermYears,
@@ -20,7 +17,6 @@ import {
   MEDIUM_TERM_YEARS,
   LONG_TERM_YEARS,
   MAXIMUM_STANDARD_TERM_YEARS,
-  type YearCountValidationError,
 } from "../YearCount";
 
 describe("YearCount Type", () => {
@@ -270,13 +266,13 @@ describe("YearCount Type", () => {
 
     it("should have constants in logical order", () => {
       expect(toNumber(SHORT_TERM_YEARS)).toBeLessThan(
-        toNumber(MEDIUM_TERM_YEARS)
+        toNumber(MEDIUM_TERM_YEARS),
       );
       expect(toNumber(MEDIUM_TERM_YEARS)).toBeLessThan(
-        toNumber(LONG_TERM_YEARS)
+        toNumber(LONG_TERM_YEARS),
       );
       expect(toNumber(LONG_TERM_YEARS)).toBeLessThan(
-        toNumber(MAXIMUM_STANDARD_TERM_YEARS)
+        toNumber(MAXIMUM_STANDARD_TERM_YEARS),
       );
     });
 
@@ -300,7 +296,7 @@ describe("YearCount Property-Based Tests", () => {
           if (result.success) {
             expect(toNumber(result.data)).toBe(years);
           }
-        })
+        }),
       );
     });
 
@@ -312,7 +308,7 @@ describe("YearCount Property-Based Tests", () => {
           if (!result.success) {
             expect(result.error).toBe("AboveMaximumTerm");
           }
-        })
+        }),
       );
     });
   });
@@ -327,7 +323,7 @@ describe("YearCount Property-Based Tests", () => {
             const months = toMonths(yearResult.data);
             expect(months).toBe(years * 12);
           }
-        })
+        }),
       );
     });
   });
@@ -352,7 +348,7 @@ describe("YearCount Property-Based Tests", () => {
             // Should start with a number
             expect(formatted).toMatch(/^\d+\s/);
           }
-        })
+        }),
       );
     });
 
@@ -370,7 +366,7 @@ describe("YearCount Property-Based Tests", () => {
               expect(formatted).toBe(`${years} Jahre`);
             }
           }
-        })
+        }),
       );
     });
   });
