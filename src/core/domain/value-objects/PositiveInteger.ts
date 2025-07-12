@@ -22,7 +22,7 @@ export type PositiveIntegerValidationError =
  * @returns Result with either valid PositiveInteger or validation error
  */
 export function createPositiveInteger(
-  value: number
+  value: number,
 ): Result<PositiveInteger, PositiveIntegerValidationError> {
   // Validate input
   if (!Number.isFinite(value)) {
@@ -55,7 +55,7 @@ export function toNumber(positiveInt: PositiveInteger): number {
  */
 export function addPositiveInteger(
   a: PositiveInteger,
-  b: PositiveInteger
+  b: PositiveInteger,
 ): PositiveInteger {
   // Addition of two positive integers is always positive, so no validation needed
   return (toNumber(a) + toNumber(b)) as PositiveInteger;
@@ -66,7 +66,7 @@ export function addPositiveInteger(
  */
 export function subtractPositiveInteger(
   a: PositiveInteger,
-  b: PositiveInteger
+  b: PositiveInteger,
 ): Result<PositiveInteger, PositiveIntegerValidationError> {
   const result = toNumber(a) - toNumber(b);
 
@@ -85,7 +85,7 @@ export function subtractPositiveInteger(
  */
 export function multiplyPositiveInteger(
   a: PositiveInteger,
-  b: PositiveInteger
+  b: PositiveInteger,
 ): PositiveInteger {
   // Multiplication of two positive integers is always positive
   return (toNumber(a) * toNumber(b)) as PositiveInteger;
@@ -96,7 +96,7 @@ export function multiplyPositiveInteger(
  */
 export function dividePositiveInteger(
   a: PositiveInteger,
-  b: PositiveInteger
+  b: PositiveInteger,
 ): Result<PositiveInteger, PositiveIntegerValidationError> {
   const result = Math.floor(toNumber(a) / toNumber(b));
 
@@ -115,7 +115,7 @@ export function dividePositiveInteger(
  */
 export function comparePositiveInteger(
   a: PositiveInteger,
-  b: PositiveInteger
+  b: PositiveInteger,
 ): number {
   return toNumber(a) - toNumber(b);
 }
@@ -125,7 +125,7 @@ export function comparePositiveInteger(
  */
 export function isEqualPositiveInteger(
   a: PositiveInteger,
-  b: PositiveInteger
+  b: PositiveInteger,
 ): boolean {
   return toNumber(a) === toNumber(b);
 }

@@ -7,19 +7,23 @@ This document explains how to configure GitHub branch protection rules to ensure
 Navigate to: **Settings → Branches → Add rule**
 
 ### Branch name pattern
+
 - Pattern: `main`
 
 ### Protection Settings
 
 ✅ **Require a pull request before merging**
+
 - ✅ Require approvals: 1
 - ✅ Dismiss stale pull request approvals when new commits are pushed
 - ✅ Require review from CODEOWNERS
 
 ✅ **Require status checks to pass before merging**
+
 - ✅ Require branches to be up to date before merging
 
 **Required status checks:**
+
 - `quality-gate` (from PR Quality Check workflow)
 - `lint` (🔍 Lint & Format Check)
 - `typecheck` (🔍 TypeScript Check)
@@ -50,11 +54,13 @@ Our CI/CD pipeline enforces:
 ## Local Enforcement
 
 Pre-commit hooks prevent commits with:
+
 - Linting errors
 - Type errors
 - Failing tests
 
 Pre-push hooks prevent pushing with:
+
 - Type errors
 - Build failures
 
@@ -65,6 +71,7 @@ Pre-push hooks prevent pushing with:
 ⚠️ **Fix errors properly** instead of bypassing checks
 
 These rules ensure that `main` branch always has:
+
 - ✅ Clean, linted code
 - ✅ Type-safe TypeScript
 - ✅ Passing tests

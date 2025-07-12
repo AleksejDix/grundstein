@@ -1,6 +1,6 @@
 /**
  * Structured Error Types for Amortization Engine
- * 
+ *
  * Replaces generic string errors with rich context for debugging
  */
 
@@ -81,14 +81,27 @@ export interface RemainingMonthsCalculationError extends AmortizationErrorBase {
 }
 
 /**
+ * Schedule analysis failed
+ */
+export interface ScheduleAnalysisError extends AmortizationErrorBase {
+  readonly type: "ScheduleAnalysisError";
+  readonly context: {
+    readonly entriesCount: number;
+    readonly reason: string;
+    readonly field?: string;
+  };
+}
+
+/**
  * Union of all specific amortization errors
  */
-export type AmortizationError = 
+export type AmortizationError =
   | PaymentMonthCreationError
-  | MoneyCreationError 
+  | MoneyCreationError
   | MonthlyPaymentCalculationError
   | PercentageValidationError
-  | RemainingMonthsCalculationError;
+  | RemainingMonthsCalculationError
+  | ScheduleAnalysisError;
 
 /**
  * Create a payment month creation error
@@ -96,7 +109,7 @@ export type AmortizationError =
 export function createPaymentMonthCreationError(
   monthNumber: number,
   operation: string,
-  cause?: AmortizationErrorBase
+  cause?: AmortizationErrorBase,
 ): PaymentMonthCreationError {
   return {
     type: "PaymentMonthCreationError",
@@ -118,10 +131,10 @@ export function createMoneyCreationError(
   value: number,
   reason: "negative" | "exceeds_maximum" | "invalid",
   operation: string,
-  cause?: AmortizationErrorBase
+  cause?: AmortizationErrorBase,
 ): MoneyCreationError {
   const maxAllowed = reason === "exceeds_maximum" ? 999_999_999 : undefined;
-  
+
   return {
     type: "MoneyCreationError",
     message: `Failed to create money value ${value}. Reason: ${reason}`,
@@ -144,7 +157,7 @@ export function createMonthlyPaymentCalculationError(
   loanAmount: number,
   monthlyRate: number,
   operation: string,
-  cause?: AmortizationErrorBase
+  cause?: AmortizationErrorBase,
 ): MonthlyPaymentCalculationError {
   return {
     type: "MonthlyPaymentCalculationError",
@@ -167,7 +180,7 @@ export function createMonthlyPaymentCalculationError(
 export function createPercentageValidationError(
   value: number,
   operation: string,
-  cause?: AmortizationErrorBase
+  cause?: AmortizationErrorBase,
 ): PercentageValidationError {
   return {
     type: "PercentageValidationError",
@@ -191,7 +204,7 @@ export function createRemainingMonthsCalculationError(
   paymentAmount: number,
   estimatedMonths: number,
   operation: string,
-  cause?: AmortizationErrorBase
+  cause?: AmortizationErrorBase,
 ): RemainingMonthsCalculationError {
   return {
     type: "RemainingMonthsCalculationError",
@@ -202,6 +215,29 @@ export function createRemainingMonthsCalculationError(
       monthlyRate,
       paymentAmount,
       estimatedMonths,
+    },
+    cause,
+  };
+}
+
+/**
+ * Create a schedule analysis error
+ */
+export function createScheduleAnalysisError(
+  entriesCount: number,
+  reason: string,
+  operation: string,
+  field?: string,
+  cause?: AmortizationErrorBase,
+): ScheduleAnalysisError {
+  return {
+    type: "ScheduleAnalysisError",
+    message: `Failed to analyze schedule with ${entriesCount} entries. Reason: ${reason}${field ? ` (field: ${field})` : ""}`,
+    operation,
+    context: {
+      entriesCount,
+      reason,
+      field,
     },
     cause,
   };
@@ -221,10 +257,12 @@ export function formatAmortizationError(error: AmortizationError): string {
   }
 
   if (error.cause) {
-    parts.push(`   Caused by: ${formatAmortizationError(error.cause)}`);
+    parts.push(
+      `   Caused by: ${formatAmortizationError(error.cause as AmortizationError)}`,
+    );
   }
 
-  return parts.join('\n');
+  return parts.join("\n");
 }
 
 /**

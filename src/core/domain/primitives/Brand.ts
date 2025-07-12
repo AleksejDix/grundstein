@@ -45,7 +45,7 @@ export const Result = {
 
   flatMap: <T, U, E>(
     result: Result<T, E>,
-    fn: (value: T) => Result<U, E>
+    fn: (value: T) => Result<U, E>,
   ): Result<U, E> =>
     result.success ? fn(result.data) : (result as Result<U, E>),
 
@@ -53,7 +53,7 @@ export const Result = {
     result.success,
 
   isError: <T, E>(
-    result: Result<T, E>
+    result: Result<T, E>,
   ): result is { success: false; error: E } => !result.success,
 };
 

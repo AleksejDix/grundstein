@@ -26,7 +26,11 @@ import {
 } from "../value-objects/MonthCount";
 import { createYearCount, toMonths } from "../value-objects/YearCount";
 import type { Money } from "../value-objects/Money";
-import { createMoney, toEuros as moneyToEuros, formatMoney } from "../value-objects/Money";
+import {
+  createMoney,
+  toEuros as moneyToEuros,
+  formatMoney,
+} from "../value-objects/Money";
 
 // Core loan configuration combining all loan parameters
 export type LoanConfiguration = {
@@ -77,14 +81,14 @@ export function createLoanConfiguration(
   amount: LoanAmount,
   annualRate: InterestRate,
   termInMonths: MonthCount,
-  monthlyPayment: Money
+  monthlyPayment: Money,
 ): Result<LoanConfiguration, LoanConfigurationValidationError> {
   // Basic mathematical validation - ensure parameters are consistent
   const isConsistent = validateParameterConsistency(
     amount,
     annualRate,
     termInMonths,
-    monthlyPayment
+    monthlyPayment,
   );
 
   if (!isConsistent) {
@@ -106,7 +110,7 @@ export function createLoanConfiguration(
  * Create loan configuration from raw input values
  */
 export function createLoanConfigurationFromInput(
-  input: LoanConfigurationInput
+  input: LoanConfigurationInput,
 ): Result<LoanConfiguration, LoanConfigurationValidationError> {
   // Validate required parameters are present
   const requiredParams = [input.amount, input.annualRate, input.monthlyPayment];
@@ -154,7 +158,7 @@ export function createLoanConfigurationFromInput(
     amountResult.data,
     rateResult.data,
     termResult.data,
-    paymentResult.data
+    paymentResult.data,
   );
 }
 
@@ -167,7 +171,7 @@ function validateParameterConsistency(
   amount: LoanAmount,
   annualRate: InterestRate,
   termInMonths: MonthCount,
-  monthlyPayment: Money
+  monthlyPayment: Money,
 ): boolean {
   const principal = loanAmountToMoney(amount);
   const monthlyRate = toMonthlyRate(annualRate);
@@ -185,12 +189,12 @@ function validateParameterConsistency(
   const decimalPrincipal = new Decimal(moneyToEuros(principal));
   const decimalRate = new Decimal(monthlyRate);
   const decimalPayments = new Decimal(numberOfPayments);
-  
+
   const onePlusRate = decimalRate.plus(1);
   const factor = onePlusRate.pow(decimalPayments.toNumber());
   const numerator = decimalPrincipal.times(decimalRate).times(factor);
   const denominator = factor.minus(1);
-  
+
   const expectedPayment = numerator.dividedBy(denominator).toNumber();
 
   // Allow for small rounding differences (€1 tolerance)
@@ -228,7 +232,7 @@ export function formatLoanConfiguration(config: LoanConfiguration): string {
  */
 export function compareLoanConfigurations(
   a: LoanConfiguration,
-  b: LoanConfiguration
+  b: LoanConfiguration,
 ) {
   const paramsA = getLoanParameters(a);
   const paramsB = getLoanParameters(b);
@@ -247,7 +251,7 @@ export function compareLoanConfigurations(
 export function createLoanScenario(
   name: string,
   configuration: LoanConfiguration,
-  description?: string
+  description?: string,
 ): LoanScenario {
   return {
     name,

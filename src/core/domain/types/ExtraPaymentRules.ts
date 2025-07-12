@@ -1,6 +1,6 @@
 /**
  * Extra Payment Rules
- * 
+ *
  * Simple implementation of extra payment limits and validation.
  * Covers common mortgage market percentages: 5%, 10%, 20%, 50%, unlimited.
  */
@@ -23,17 +23,17 @@ export type ExtraPaymentLimit =
  * Create percentage-based extra payment limit
  */
 export const createPercentageLimit = (
-  percentage: ExtraPaymentPercentage
+  percentage: ExtraPaymentPercentage,
 ): ExtraPaymentLimit => ({
   type: "Percentage",
-  value: percentage
+  value: percentage,
 });
 
 /**
  * Create unlimited extra payment allowance
  */
 export const createUnlimitedLimit = (): ExtraPaymentLimit => ({
-  type: "Unlimited"
+  type: "Unlimited",
 });
 
 /**
@@ -42,14 +42,14 @@ export const createUnlimitedLimit = (): ExtraPaymentLimit => ({
 export const validateYearlyLimit = (
   yearlyAmount: number,
   originalLoanAmount: number,
-  limit: ExtraPaymentLimit
+  limit: ExtraPaymentLimit,
 ): Result<void, "ExceedsYearlyLimit"> => {
   if (limit.type === "Unlimited") {
     return Result.ok(undefined);
   }
 
   const yearlyPercentage = (yearlyAmount / originalLoanAmount) * 100;
-  
+
   if (yearlyPercentage > limit.value) {
     return Result.error("ExceedsYearlyLimit");
   }
@@ -62,7 +62,7 @@ export const validateYearlyLimit = (
  */
 export const calculateMaxYearlyAmount = (
   originalLoanAmount: number,
-  limit: ExtraPaymentLimit
+  limit: ExtraPaymentLimit,
 ): number => {
   if (limit.type === "Unlimited") {
     return originalLoanAmount; // Can pay off entire loan
@@ -74,7 +74,9 @@ export const calculateMaxYearlyAmount = (
 /**
  * Get available percentage options for UI
  */
-export const getAvailablePercentages = (): ExtraPaymentPercentage[] => [5, 10, 20, 50, 100];
+export const getAvailablePercentages = (): ExtraPaymentPercentage[] => [
+  5, 10, 20, 50, 100,
+];
 
 /**
  * Format limit for display

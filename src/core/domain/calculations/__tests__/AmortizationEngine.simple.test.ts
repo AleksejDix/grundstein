@@ -31,14 +31,16 @@ describe("AmortizationEngine - Core Functions", () => {
         amount.data,
         rate.data,
         term.data,
-        payment.data
+        payment.data,
       );
 
       expect(loanConfigResult.success).toBe(true);
       if (!loanConfigResult.success) return;
 
       // Calculate the correct monthly payment
-      const correctPaymentResult = calculateMonthlyPayment(loanConfigResult.data);
+      const correctPaymentResult = calculateMonthlyPayment(
+        loanConfigResult.data,
+      );
       expect(correctPaymentResult.success).toBe(true);
       if (!correctPaymentResult.success) return;
 
@@ -47,9 +49,9 @@ describe("AmortizationEngine - Core Functions", () => {
         amount.data,
         rate.data,
         term.data,
-        correctPaymentResult.data.total
+        correctPaymentResult.data.total,
       );
-      
+
       if (!correctLoanConfig.success) {
         // console.log("Failed to create loan config with error:", correctLoanConfig.error);
         // console.log("Payment amount:", toEuros(correctPaymentResult.data.total));
@@ -116,14 +118,16 @@ describe("AmortizationEngine - Core Functions", () => {
         amount.data,
         rate.data,
         term.data,
-        payment.data
+        payment.data,
       );
 
       expect(loanConfigResult.success).toBe(true);
       if (!loanConfigResult.success) return;
 
       // Calculate the correct monthly payment
-      const correctPaymentResult = calculateMonthlyPayment(loanConfigResult.data);
+      const correctPaymentResult = calculateMonthlyPayment(
+        loanConfigResult.data,
+      );
       expect(correctPaymentResult.success).toBe(true);
       if (!correctPaymentResult.success) return;
 
@@ -132,9 +136,9 @@ describe("AmortizationEngine - Core Functions", () => {
         amount.data,
         rate.data,
         term.data,
-        correctPaymentResult.data.total
+        correctPaymentResult.data.total,
       );
-      
+
       if (!correctLoanConfig.success) {
         // console.log("Failed to create loan config with error:", correctLoanConfig.error);
         // console.log("Payment amount:", toEuros(correctPaymentResult.data.total));
@@ -177,14 +181,16 @@ describe("AmortizationEngine - Core Functions", () => {
         amount.data,
         rate.data,
         term.data,
-        payment.data
+        payment.data,
       );
 
       expect(loanConfigResult.success).toBe(true);
       if (!loanConfigResult.success) return;
 
       // Calculate the correct monthly payment
-      const correctPaymentResult = calculateMonthlyPayment(loanConfigResult.data);
+      const correctPaymentResult = calculateMonthlyPayment(
+        loanConfigResult.data,
+      );
       expect(correctPaymentResult.success).toBe(true);
       if (!correctPaymentResult.success) return;
 
@@ -193,9 +199,9 @@ describe("AmortizationEngine - Core Functions", () => {
         amount.data,
         rate.data,
         term.data,
-        correctPaymentResult.data.total
+        correctPaymentResult.data.total,
       );
-      
+
       if (!correctLoanConfig.success) {
         // console.log("Failed to create loan config with error:", correctLoanConfig.error);
         // console.log("Payment amount:", toEuros(correctPaymentResult.data.total));
@@ -211,7 +217,7 @@ describe("AmortizationEngine - Core Functions", () => {
         // Verify decreasing balance
         for (let i = 1; i < schedule.entries.length; i++) {
           const previousBalance = toEuros(
-            schedule.entries[i - 1].endingBalance
+            schedule.entries[i - 1].endingBalance,
           );
           const currentBalance = toEuros(schedule.entries[i].endingBalance);
 

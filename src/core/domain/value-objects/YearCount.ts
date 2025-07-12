@@ -32,7 +32,7 @@ const MAX_LOAN_TERM_YEARS = 40; // 40 years maximum
  * @returns Result with either valid YearCount or validation error
  */
 export function createYearCount(
-  years: number
+  years: number,
 ): Result<YearCount, YearCountValidationError> {
   // First validate as PositiveInteger
   const positiveIntegerResult = createPositiveInteger(years);
@@ -82,7 +82,7 @@ export function toMonths(yearCount: YearCount): number {
  * Create YearCount from months (with rounding)
  */
 export function fromMonths(
-  months: number
+  months: number,
 ): Result<YearCount, YearCountValidationError> {
   const years = Math.round(months / 12);
   return createYearCount(years);
@@ -93,7 +93,7 @@ export function fromMonths(
  */
 export function addYears(
   yearCount: YearCount,
-  additionalYears: number
+  additionalYears: number,
 ): Result<YearCount, YearCountValidationError> {
   const totalYears = toNumber(yearCount) + additionalYears;
   return createYearCount(totalYears);
@@ -104,7 +104,7 @@ export function addYears(
  */
 export function subtractYears(
   yearCount: YearCount,
-  yearsToSubtract: number
+  yearsToSubtract: number,
 ): Result<YearCount, YearCountValidationError> {
   const remainingYears = toNumber(yearCount) - yearsToSubtract;
   return createYearCount(remainingYears);
@@ -115,7 +115,7 @@ export function subtractYears(
  */
 export function remainingYears(
   totalTerm: YearCount,
-  elapsedYears: YearCount
+  elapsedYears: YearCount,
 ): Result<YearCount, YearCountValidationError> {
   const remaining = toNumber(totalTerm) - toNumber(elapsedYears);
   return createYearCount(remaining);
@@ -155,7 +155,7 @@ export function getMinimumTermYears(): YearCount {
   const result = createYearCount(MIN_LOAN_TERM_YEARS);
   if (!result.success) {
     throw new Error(
-      "Failed to create minimum term years - this should never happen"
+      "Failed to create minimum term years - this should never happen",
     );
   }
   return result.data;
@@ -168,7 +168,7 @@ export function getMaximumTermYears(): YearCount {
   const result = createYearCount(MAX_LOAN_TERM_YEARS);
   if (!result.success) {
     throw new Error(
-      "Failed to create maximum term years - this should never happen"
+      "Failed to create maximum term years - this should never happen",
     );
   }
   return result.data;

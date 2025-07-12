@@ -258,14 +258,14 @@ describe("MonthCount Type", () => {
       const sameTerm = createMonthCount(120);
 
       expect(shortTerm.success && longTerm.success && sameTerm.success).toBe(
-        true
+        true,
       );
       if (shortTerm.success && longTerm.success && sameTerm.success) {
         expect(compareMonthCount(shortTerm.data, longTerm.data)).toBeLessThan(
-          0
+          0,
         );
         expect(
-          compareMonthCount(longTerm.data, shortTerm.data)
+          compareMonthCount(longTerm.data, shortTerm.data),
         ).toBeGreaterThan(0);
         expect(compareMonthCount(shortTerm.data, sameTerm.data)).toBe(0);
 
@@ -410,7 +410,7 @@ describe("MonthCount Property-Based Tests", () => {
           if (result.success) {
             expect(toNumber(result.data)).toBe(months);
           }
-        })
+        }),
       );
     });
 
@@ -422,7 +422,7 @@ describe("MonthCount Property-Based Tests", () => {
           if (!result.success) {
             expect(result.error).toBe("AboveMaximumTerm");
           }
-        })
+        }),
       );
     });
   });
@@ -437,7 +437,7 @@ describe("MonthCount Property-Based Tests", () => {
             expect(toNumber(monthsResult.data)).toBe(years * 12);
             expect(toYears(monthsResult.data)).toBe(years);
           }
-        })
+        }),
       );
     });
 
@@ -454,7 +454,7 @@ describe("MonthCount Property-Based Tests", () => {
               expect(toNumber(backToMonthsResult.data)).toBe(originalMonths);
             }
           }
-        })
+        }),
       );
     });
   });
@@ -477,8 +477,8 @@ describe("MonthCount Property-Based Tests", () => {
                 expect(toNumber(resultAB.data)).toBe(toNumber(resultBA.data));
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -501,8 +501,8 @@ describe("MonthCount Property-Based Tests", () => {
                 }
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
   });
@@ -524,8 +524,8 @@ describe("MonthCount Property-Based Tests", () => {
               expect(compareMonthCount(termB.data, termC.data)).toBeLessThan(0);
               expect(compareMonthCount(termA.data, termC.data)).toBeLessThan(0);
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -538,7 +538,7 @@ describe("MonthCount Property-Based Tests", () => {
             expect(compareMonthCount(term.data, term.data)).toBe(0);
             expect(isEqualMonthCount(term.data, term.data)).toBe(true);
           }
-        })
+        }),
       );
     });
   });
@@ -558,11 +558,11 @@ describe("MonthCount Property-Based Tests", () => {
 
             // Should contain either "Monat", "Monate", "Jahr", or "Jahre"
             const hasGermanTerms = /\b(Monat|Monate|Jahr|Jahre)\b/.test(
-              formatted
+              formatted,
             );
             expect(hasGermanTerms).toBe(true);
           }
-        })
+        }),
       );
     });
   });

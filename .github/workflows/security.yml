@@ -7,7 +7,7 @@ on:
     branches: [main]
   schedule:
     # Run weekly security scan on Sundays at 2 AM UTC
-    - cron: '0 2 * * 0'
+    - cron: "0 2 * * 0"
 
 permissions:
   actions: read
@@ -19,11 +19,11 @@ jobs:
     name: 🔍 CodeQL Analysis
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    
+
     strategy:
       fail-fast: false
       matrix:
-        language: ['javascript-typescript']
+        language: ["javascript-typescript"]
 
     steps:
       - name: 🏗 Checkout repository
@@ -38,7 +38,7 @@ jobs:
       - name: 🏗 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: 📦 Install dependencies
         run: npm ci
@@ -50,17 +50,17 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{matrix.language}}"
-          upload: false  # Skip upload if code scanning is not enabled
+          upload: false # Skip upload if code scanning is not enabled
 
   dependency-review:
     name: 📦 Dependency Review
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    
+
     steps:
       - name: 🏗 Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: 📦 Dependency Review
         uses: actions/dependency-review-action@v4
         with:
@@ -70,7 +70,7 @@ jobs:
   security-audit:
     name: 🔒 Security Audit
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 🏗 Checkout repository
         uses: actions/checkout@v4
@@ -78,7 +78,7 @@ jobs:
       - name: 🏗 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: 📦 Install dependencies
         run: npm ci
@@ -94,7 +94,7 @@ jobs:
   license-check:
     name: 📄 License Compliance
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 🏗 Checkout repository
         uses: actions/checkout@v4
@@ -102,21 +102,21 @@ jobs:
       - name: 🏗 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: 📦 Install dependencies
         run: npm ci
 
       - name: 📄 Check licenses
         run: |
-          npx license-checker --onlyAllow 'MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;0BSD;CC0-1.0;Unlicense;WTFPL;UNLICENSED;Python-2.0' \
+          npx license-checker --onlyAllow 'MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;0BSD;CC0-1.0;Unlicense;WTFPL;Python-2.0;BlueOak-1.0.0;MPL-2.0' \
             --excludePackages 'hippo@0.0.0' \
             --summary
 
   secrets-scan:
     name: 🔐 Secrets Scanning
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 🏗 Checkout repository
         uses: actions/checkout@v4

@@ -258,7 +258,6 @@ export async function analyzeSondertilgung(
   extraPayments: Array<{ month: number; amount: number }>,
 ): Promise<Result<SondertilgungAnalysis, MortgageServiceError>> {
   try {
-    
     // Analyze base loan
     const baseLoanResult = await analyzeLoan(baseLoan);
     if (!baseLoanResult.success) {
@@ -286,13 +285,11 @@ export async function analyzeSondertilgung(
       extraPaymentObjects.push(extraPaymentResult.data);
     }
 
-
     // Create simple Sondertilgung plan (assuming unlimited for now)
     const sondertilgungPlan: SondertilgungPlan = {
       yearlyLimit: { type: "Unlimited" },
       payments: extraPaymentObjects,
     };
-
 
     // Calculate impact
     const impactResult = calculateSondertilgungImpact(
@@ -303,7 +300,6 @@ export async function analyzeSondertilgung(
     if (!impactResult.success) {
       return { success: false, error: "CalculationFailed" };
     }
-    
 
     // Create analysis with placeholder data (would be more detailed in full implementation)
     const totalExtraPayments = extraPayments.reduce(

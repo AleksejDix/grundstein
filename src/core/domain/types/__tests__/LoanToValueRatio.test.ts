@@ -75,7 +75,7 @@ describe("LoanToValueRatio", () => {
       testDate,
       "BankAppraisal",
       "Eigenheim",
-      validLocation
+      validLocation,
     );
     expect(propertyResult.success).toBe(true);
     testProperty = propertyResult.success ? propertyResult.data : null;
@@ -92,7 +92,7 @@ describe("LoanToValueRatio", () => {
         testLoanAmount,
         testProperty,
         undefined,
-        testDate
+        testDate,
       );
 
       expect(result.success).toBe(true);
@@ -112,7 +112,7 @@ describe("LoanToValueRatio", () => {
           testLoanAmount, // €400k current
           testProperty, // €500k property
           originalLoanResult.data, // €450k original
-          testDate
+          testDate,
         );
 
         expect(result.success).toBe(true);
@@ -131,7 +131,7 @@ describe("LoanToValueRatio", () => {
         testDate,
         "SelfAssessment", // Not acceptable for mortgage
         "Eigenheim",
-        validLocation
+        validLocation,
       );
       expect(unacceptablePropertyResult.success).toBe(true);
 
@@ -140,7 +140,7 @@ describe("LoanToValueRatio", () => {
           testLoanAmount,
           unacceptablePropertyResult.data,
           undefined,
-          testDate
+          testDate,
         );
 
         expect(result.success).toBe(false);
@@ -157,7 +157,7 @@ describe("LoanToValueRatio", () => {
         testDate,
         "BankAppraisal",
         "Eigenheim",
-        validLocation
+        validLocation,
       );
       expect(lowValuePropertyResult.success).toBe(true);
 
@@ -166,7 +166,7 @@ describe("LoanToValueRatio", () => {
           testLoanAmount,
           lowValuePropertyResult.data,
           undefined,
-          testDate
+          testDate,
         );
 
         expect(result.success).toBe(false);
@@ -185,7 +185,7 @@ describe("LoanToValueRatio", () => {
           highLoanResult.data,
           testProperty,
           undefined,
-          testDate
+          testDate,
         );
 
         expect(result.success).toBe(false);
@@ -217,7 +217,7 @@ describe("LoanToValueRatio", () => {
             loanResult.data,
             testProperty,
             undefined,
-            testDate
+            testDate,
           );
 
           expect(result.success).toBe(true);
@@ -235,7 +235,7 @@ describe("LoanToValueRatio", () => {
         testLoanAmount,
         testProperty,
         undefined,
-        testDate
+        testDate,
       );
 
       expect(result.success).toBe(true);
@@ -251,7 +251,7 @@ describe("LoanToValueRatio", () => {
         testDate,
         "BankAppraisal",
         "Eigenheim",
-        premiumLocation
+        premiumLocation,
       );
       expect(premiumPropertyResult.success).toBe(true);
 
@@ -263,7 +263,7 @@ describe("LoanToValueRatio", () => {
           highLoanResult.data,
           premiumPropertyResult.data,
           undefined,
-          testDate
+          testDate,
         );
 
         expect(result.success).toBe(true);
@@ -280,7 +280,7 @@ describe("LoanToValueRatio", () => {
         testDate,
         "BankAppraisal",
         "Gewerbeimmobilie", // Commercial property
-        validLocation
+        validLocation,
       );
       expect(investmentPropertyResult.success).toBe(true);
 
@@ -292,7 +292,7 @@ describe("LoanToValueRatio", () => {
           highLoanResult.data,
           investmentPropertyResult.data,
           undefined,
-          testDate
+          testDate,
         );
 
         expect(result.success).toBe(true);
@@ -311,7 +311,7 @@ describe("LoanToValueRatio", () => {
           lowLoanResult.data,
           testProperty,
           undefined,
-          testDate
+          testDate,
         );
 
         expect(result.success).toBe(true);
@@ -329,7 +329,7 @@ describe("LoanToValueRatio", () => {
         testLoanAmount,
         testProperty,
         undefined,
-        testDate
+        testDate,
       );
 
       expect(result.success).toBe(true);
@@ -359,7 +359,7 @@ describe("LoanToValueRatio", () => {
             loanResult.data,
             testProperty,
             undefined,
-            testDate
+            testDate,
           );
 
           expect(result.success).toBe(true);
@@ -380,7 +380,7 @@ describe("LoanToValueRatio", () => {
           mediumLoanResult.data,
           testProperty,
           undefined,
-          testDate
+          testDate,
         );
         expect(mediumResult.success).toBe(true);
         if (mediumResult.success) {
@@ -399,7 +399,7 @@ describe("LoanToValueRatio", () => {
           testDate,
           "BankAppraisal",
           "Eigenheim",
-          premiumLocation // Premium location allows 90%
+          premiumLocation, // Premium location allows 90%
         );
         expect(premiumPropertyResult.success).toBe(true);
 
@@ -408,7 +408,7 @@ describe("LoanToValueRatio", () => {
             highLoanResult.data,
             premiumPropertyResult.data,
             undefined,
-            testDate
+            testDate,
           );
           expect(highResult.success).toBe(true);
           if (highResult.success) {
@@ -423,7 +423,7 @@ describe("LoanToValueRatio", () => {
         testLoanAmount,
         testProperty,
         undefined,
-        testDate
+        testDate,
       );
 
       expect(result.success).toBe(true);
@@ -431,14 +431,14 @@ describe("LoanToValueRatio", () => {
         // From 80% to 70% LTV
         const amountToPayDown = calculateAmountToReachTargetLTV(
           result.data,
-          70
+          70,
         );
         expect(amountToPayDown).toBe(50000); // Need to pay down €50k to reach 70%
 
         // From 80% to 60% LTV
         const amountToReach60 = calculateAmountToReachTargetLTV(
           result.data,
-          60
+          60,
         );
         expect(amountToReach60).toBe(100000); // Need to pay down €100k to reach 60%
       }
@@ -453,14 +453,14 @@ describe("LoanToValueRatio", () => {
           lowLoanResult.data,
           testProperty,
           undefined,
-          testDate
+          testDate,
         );
 
         expect(result.success).toBe(true);
         if (result.success) {
           const additionalCapacity = calculateMaxAdditionalBorrowing(
             result.data,
-            80
+            80,
           );
           expect(additionalCapacity).toBe(100000); // Can borrow €100k more to reach 80%
         }
@@ -478,7 +478,7 @@ describe("LoanToValueRatio", () => {
           safeLoanResult.data,
           testProperty,
           undefined,
-          testDate
+          testDate,
         );
 
         expect(result.success).toBe(true);
@@ -493,7 +493,7 @@ describe("LoanToValueRatio", () => {
         testLoanAmount,
         testProperty,
         undefined,
-        testDate
+        testDate,
       ); // 80% LTV
 
       expect(result.success).toBe(true);
@@ -507,7 +507,7 @@ describe("LoanToValueRatio", () => {
         testLoanAmount,
         testProperty,
         undefined,
-        testDate
+        testDate,
       );
       expect(result.success).toBe(true);
 
@@ -518,7 +518,7 @@ describe("LoanToValueRatio", () => {
         if (newLoanResult.success) {
           const updatedResult = updateWithNewLoanAmount(
             result.data,
-            newLoanResult.data
+            newLoanResult.data,
           );
 
           expect(updatedResult.success).toBe(true);
@@ -536,7 +536,7 @@ describe("LoanToValueRatio", () => {
         testLoanAmount,
         testProperty,
         undefined,
-        testDate
+        testDate,
       );
       expect(result.success).toBe(true);
 
@@ -547,14 +547,14 @@ describe("LoanToValueRatio", () => {
           testDate,
           "BankAppraisal",
           "Eigenheim",
-          validLocation
+          validLocation,
         );
         expect(newPropertyResult.success).toBe(true);
 
         if (newPropertyResult.success) {
           const updatedResult = updateWithNewPropertyValuation(
             result.data,
-            newPropertyResult.data
+            newPropertyResult.data,
           );
 
           expect(updatedResult.success).toBe(true);
@@ -573,7 +573,7 @@ describe("LoanToValueRatio", () => {
         testLoanAmount,
         testProperty,
         undefined,
-        testDate
+        testDate,
       );
 
       expect(result.success).toBe(true);
@@ -614,13 +614,13 @@ describe("LoanToValueRatio", () => {
           lowLoanResult.data,
           testProperty,
           undefined,
-          testDate
+          testDate,
         );
         const highLTVResult = createLoanToValueRatio(
           highLoanResult.data,
           testProperty,
           undefined,
-          testDate
+          testDate,
         );
 
         expect(lowLTVResult.success).toBe(true);
@@ -629,7 +629,7 @@ describe("LoanToValueRatio", () => {
         if (lowLTVResult.success && highLTVResult.success) {
           const comparison = compareByCurrentLTV(
             lowLTVResult.data,
-            highLTVResult.data
+            highLTVResult.data,
           );
           expect(comparison).toBeLessThan(0); // Low LTV should be less than high LTV
         }
@@ -642,7 +642,7 @@ describe("LoanToValueRatio", () => {
         testLoanAmount,
         testProperty,
         undefined,
-        recentDate
+        recentDate,
       );
 
       expect(result.success).toBe(true);
@@ -657,7 +657,7 @@ describe("LoanToValueRatio", () => {
           testLoanAmount,
           testProperty,
           undefined,
-          oldDate
+          oldDate,
         );
         expect(oldResult.success).toBe(true);
         if (oldResult.success) {
@@ -691,7 +691,7 @@ describe("LoanToValueRatio", () => {
           testDate,
           "BankAppraisal",
           "Eigenheim",
-          premiumLocation // Premium location might allow high LTV
+          premiumLocation, // Premium location might allow high LTV
         );
         expect(premiumPropertyResult.success).toBe(true);
 
@@ -700,7 +700,7 @@ describe("LoanToValueRatio", () => {
             fullLoanResult.data,
             premiumPropertyResult.data,
             undefined,
-            testDate
+            testDate,
           );
 
           expect(result.success).toBe(true);
@@ -720,7 +720,7 @@ describe("LoanToValueRatio", () => {
         testLoanAmount,
         testProperty,
         testLoanAmount,
-        testDate
+        testDate,
       );
 
       expect(result.success).toBe(true);
@@ -735,7 +735,7 @@ describe("LoanToValueRatio", () => {
         testLoanAmount,
         testProperty,
         undefined,
-        testDate
+        testDate,
       );
 
       expect(result.success).toBe(true);
@@ -743,14 +743,14 @@ describe("LoanToValueRatio", () => {
         // Target LTV higher than current
         const amountForHigherLTV = calculateAmountToReachTargetLTV(
           result.data,
-          90
+          90,
         );
         expect(amountForHigherLTV).toBe(0); // Can't increase LTV by paying down
 
         // Additional borrowing with current LTV as target
         const additionalAtCurrent = calculateMaxAdditionalBorrowing(
           result.data,
-          80
+          80,
         );
         expect(additionalAtCurrent).toBe(0); // Already at 80%
       }

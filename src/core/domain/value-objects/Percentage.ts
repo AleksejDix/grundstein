@@ -23,7 +23,7 @@ const MAX_PERCENTAGE = 100;
  * @returns Result with either valid Percentage or validation error
  */
 export function createPercentage(
-  value: number
+  value: number,
 ): Result<Percentage, PercentageValidationError> {
   // Validate input
   if (!Number.isFinite(value)) {
@@ -58,7 +58,7 @@ export function toDecimal(percentage: Percentage): number {
  * Create percentage from decimal (0-1)
  */
 export function fromDecimal(
-  decimal: number
+  decimal: number,
 ): Result<Percentage, PercentageValidationError> {
   return createPercentage(decimal * 100);
 }
@@ -68,7 +68,7 @@ export function fromDecimal(
  */
 export function addPercentage(
   a: Percentage,
-  b: Percentage
+  b: Percentage,
 ): Result<Percentage, PercentageValidationError> {
   const sum = toPercentageValue(a) + toPercentageValue(b);
 
@@ -84,7 +84,7 @@ export function addPercentage(
  */
 export function subtractPercentage(
   a: Percentage,
-  b: Percentage
+  b: Percentage,
 ): Result<Percentage, PercentageValidationError> {
   const difference = toPercentageValue(a) - toPercentageValue(b);
 
@@ -100,7 +100,7 @@ export function subtractPercentage(
  */
 export function multiplyPercentage(
   percentage: Percentage,
-  factor: number
+  factor: number,
 ): Result<Percentage, PercentageValidationError> {
   if (!Number.isFinite(factor) || factor < 0) {
     return { success: false, error: "InvalidValue" };
@@ -134,7 +134,7 @@ export function isEqualPercentage(a: Percentage, b: Percentage): boolean {
  */
 export function formatPercentage(
   percentage: Percentage,
-  decimals: number = 2
+  decimals: number = 2,
 ): string {
   return new Intl.NumberFormat("de-DE", {
     style: "percent",

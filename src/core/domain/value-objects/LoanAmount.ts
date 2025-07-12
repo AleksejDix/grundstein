@@ -28,7 +28,7 @@ const MAX_LOAN_AMOUNT_EUR = 10000000; // €10,000,000 maximum
  * @returns Result with either valid LoanAmount or validation error
  */
 export function createLoanAmount(
-  amount: number
+  amount: number,
 ): Result<LoanAmount, LoanAmountValidationError> {
   // First validate as Money
   const moneyResult = createMoney(amount);
@@ -81,7 +81,7 @@ export function getMinimumLoanAmount(): LoanAmount {
   const result = createLoanAmount(MIN_LOAN_AMOUNT_EUR);
   if (!result.success) {
     throw new Error(
-      "Failed to create minimum loan amount - this should never happen"
+      "Failed to create minimum loan amount - this should never happen",
     );
   }
   return result.data;
@@ -94,7 +94,7 @@ export function getMaximumLoanAmount(): LoanAmount {
   const result = createLoanAmount(MAX_LOAN_AMOUNT_EUR);
   if (!result.success) {
     throw new Error(
-      "Failed to create maximum loan amount - this should never happen"
+      "Failed to create maximum loan amount - this should never happen",
     );
   }
   return result.data;

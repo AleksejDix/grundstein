@@ -8,7 +8,12 @@
 
 import { Result } from "../primitives/Brand";
 import type { Money } from "../value-objects/Money";
-import { createMoney, addMoney, toEuros, formatMoney } from "../value-objects/Money";
+import {
+  createMoney,
+  addMoney,
+  toEuros,
+  formatMoney,
+} from "../value-objects/Money";
 import type { PaymentMonth } from "../value-objects/PaymentMonth";
 import {
   toNumber as paymentMonthToNumber,
@@ -38,7 +43,7 @@ const MAX_EXTRA_PAYMENT = 1000000; // Maximum €1M extra payment
  */
 export function createExtraPayment(
   month: PaymentMonth,
-  amount: number
+  amount: number,
 ): Result<ExtraPayment, ExtraPaymentValidationError> {
   // Validate amount
   const amountResult = createMoney(amount);
@@ -66,7 +71,7 @@ export function createExtraPayment(
  */
 export function createExtraPaymentFromMoney(
   month: PaymentMonth,
-  amount: Money
+  amount: Money,
 ): Result<ExtraPayment, ExtraPaymentValidationError> {
   // Check business rules for extra payment amounts
   const amountInEuros = toEuros(amount);
@@ -116,7 +121,7 @@ export function getMonthAsNumber(extraPayment: ExtraPayment): number {
  */
 export function compareExtraPaymentsByMonth(
   a: ExtraPayment,
-  b: ExtraPayment
+  b: ExtraPayment,
 ): number {
   return getMonthAsNumber(a) - getMonthAsNumber(b);
 }
@@ -126,7 +131,7 @@ export function compareExtraPaymentsByMonth(
  */
 export function compareExtraPaymentsByAmount(
   a: ExtraPayment,
-  b: ExtraPayment
+  b: ExtraPayment,
 ): number {
   return getAmountAsEuros(a) - getAmountAsEuros(b);
 }
@@ -153,7 +158,7 @@ export function isEqualExtraPayment(a: ExtraPayment, b: ExtraPayment): boolean {
  */
 export function combineExtraPayments(
   payment1: ExtraPayment,
-  payment2: ExtraPayment
+  payment2: ExtraPayment,
 ): Result<ExtraPayment, ExtraPaymentValidationError> {
   if (!isSameMonth(payment1, payment2)) {
     return { success: false, error: "InvalidPaymentMonth" };
@@ -212,7 +217,7 @@ export function isSmallExtraPayment(extraPayment: ExtraPayment): boolean {
  * Calculate total amount from array of extra payments
  */
 export function calculateTotalExtraPayments(
-  extraPayments: ExtraPayment[]
+  extraPayments: ExtraPayment[],
 ): Result<Money, ExtraPaymentValidationError> {
   if (extraPayments.length === 0) {
     const zeroResult = createMoney(0);
@@ -239,7 +244,7 @@ export function calculateTotalExtraPayments(
  * Group extra payments by month (combining amounts for same month)
  */
 export function groupExtraPaymentsByMonth(
-  extraPayments: ExtraPayment[]
+  extraPayments: ExtraPayment[],
 ): Result<ExtraPayment[], ExtraPaymentValidationError> {
   if (extraPayments.length === 0) {
     return { success: true, data: [] };
@@ -279,7 +284,7 @@ export function groupExtraPaymentsByMonth(
  */
 export function filterExtraPaymentsByYear(
   extraPayments: ExtraPayment[],
-  year: number
+  year: number,
 ): ExtraPayment[] {
   return extraPayments.filter((payment) => {
     const monthNumber = getMonthAsNumber(payment);

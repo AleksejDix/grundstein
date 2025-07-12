@@ -109,7 +109,7 @@ describe("MonthlyPayment", () => {
       if (principal.success && interest.success) {
         const result = createMonthlyPaymentFromMoney(
           principal.data,
-          interest.data
+          interest.data,
         );
         expect(result.success).toBe(true);
         if (result.success) {
@@ -266,14 +266,14 @@ describe("MonthlyPayment", () => {
       const payment3 = createMonthlyPayment(900, 100); // Total: 1000
 
       expect(payment1.success && payment2.success && payment3.success).toBe(
-        true
+        true,
       );
       if (payment1.success && payment2.success && payment3.success) {
         expect(
-          compareMonthlyPayments(payment1.data, payment2.data)
+          compareMonthlyPayments(payment1.data, payment2.data),
         ).toBeLessThan(0);
         expect(
-          compareMonthlyPayments(payment2.data, payment1.data)
+          compareMonthlyPayments(payment2.data, payment1.data),
         ).toBeGreaterThan(0);
         expect(compareMonthlyPayments(payment1.data, payment3.data)).toBe(0);
       }
@@ -285,7 +285,7 @@ describe("MonthlyPayment", () => {
       const payment3 = createMonthlyPayment(801, 200);
 
       expect(payment1.success && payment2.success && payment3.success).toBe(
-        true
+        true,
       );
       if (payment1.success && payment2.success && payment3.success) {
         expect(isEqualMonthlyPayment(payment1.data, payment2.data)).toBe(true);
@@ -359,7 +359,7 @@ describe("MonthlyPayment", () => {
       const exactly60Interest = createMonthlyPayment(400, 600); // 60% interest
 
       expect(exactly60Principal.success && exactly60Interest.success).toBe(
-        true
+        true,
       );
       if (exactly60Principal.success && exactly60Interest.success) {
         expect(isPrincipalHeavy(exactly60Principal.data)).toBe(false); // > 60%, not >= 60%
@@ -392,8 +392,8 @@ describe("MonthlyPayment", () => {
                 getInterestAmount(result.data);
               expect(total).toBeCloseTo(calculatedTotal, 10);
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -417,8 +417,8 @@ describe("MonthlyPayment", () => {
               // Percentages should sum to 100
               expect(principalPct + interestPct).toBeCloseTo(100, 10);
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -441,27 +441,52 @@ describe("MonthlyPayment", () => {
                 const interest1Money = createMoney(i1);
                 const principal2Money = createMoney(p2);
                 const interest2Money = createMoney(i2);
-                
-                if (principal1Money.success && interest1Money.success && 
-                    principal2Money.success && interest2Money.success) {
-                  
-                  const expectedPrincipalResult = addMoney(principal1Money.data, principal2Money.data);
-                  const expectedInterestResult = addMoney(interest1Money.data, interest2Money.data);
-                  
-                  if (expectedPrincipalResult.success && expectedInterestResult.success) {
-                    const expectedPrincipal = toEuros(expectedPrincipalResult.data);
-                    const expectedInterest = toEuros(expectedInterestResult.data);
+
+                if (
+                  principal1Money.success &&
+                  interest1Money.success &&
+                  principal2Money.success &&
+                  interest2Money.success
+                ) {
+                  const expectedPrincipalResult = addMoney(
+                    principal1Money.data,
+                    principal2Money.data,
+                  );
+                  const expectedInterestResult = addMoney(
+                    interest1Money.data,
+                    interest2Money.data,
+                  );
+
+                  if (
+                    expectedPrincipalResult.success &&
+                    expectedInterestResult.success
+                  ) {
+                    const expectedPrincipal = toEuros(
+                      expectedPrincipalResult.data,
+                    );
+                    const expectedInterest = toEuros(
+                      expectedInterestResult.data,
+                    );
                     const expectedTotal = expectedPrincipal + expectedInterest;
-                    
-                    expect(getPrincipalAmount(sum.data)).toBeCloseTo(expectedPrincipal, 2);
-                    expect(getInterestAmount(sum.data)).toBeCloseTo(expectedInterest, 2);
-                    expect(getTotalAmount(sum.data)).toBeCloseTo(expectedTotal, 2);
+
+                    expect(getPrincipalAmount(sum.data)).toBeCloseTo(
+                      expectedPrincipal,
+                      2,
+                    );
+                    expect(getInterestAmount(sum.data)).toBeCloseTo(
+                      expectedInterest,
+                      2,
+                    );
+                    expect(getTotalAmount(sum.data)).toBeCloseTo(
+                      expectedTotal,
+                      2,
+                    );
                   }
                 }
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -482,15 +507,15 @@ describe("MonthlyPayment", () => {
             if (payment1.success && payment2.success && payment3.success) {
               const cmp12 = compareMonthlyPayments(
                 payment1.data,
-                payment2.data
+                payment2.data,
               );
               const cmp23 = compareMonthlyPayments(
                 payment2.data,
-                payment3.data
+                payment3.data,
               );
               const cmp13 = compareMonthlyPayments(
                 payment1.data,
-                payment3.data
+                payment3.data,
               );
 
               // If payment1 <= payment2 and payment2 <= payment3, then payment1 <= payment3
@@ -498,8 +523,8 @@ describe("MonthlyPayment", () => {
                 expect(cmp13).toBeLessThanOrEqual(0);
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -522,7 +547,7 @@ describe("MonthlyPayment", () => {
 
       const payment = createMonthlyPayment(
         firstMonthPrincipal,
-        firstMonthInterest
+        firstMonthInterest,
       );
       expect(payment.success).toBe(true);
 
@@ -539,13 +564,13 @@ describe("MonthlyPayment", () => {
         // Verify components add up correctly
         expect(getTotalAmount(paymentData)).toBeCloseTo(
           getPrincipalAmount(paymentData) + getInterestAmount(paymentData),
-          2
+          2,
         );
 
         // For a 7-year loan (short term), principal is actually higher than interest from the start
         // This is different from longer loans (15-30 years) where interest dominates early payments
         expect(getPrincipalAmount(paymentData)).toBeGreaterThan(
-          getInterestAmount(paymentData)
+          getInterestAmount(paymentData),
         );
         expect(isPrincipalHeavy(paymentData)).toBe(true);
         expect(isInterestHeavy(paymentData)).toBe(false);
@@ -591,7 +616,7 @@ describe("MonthlyPayment", () => {
 
       const payment = createMonthlyPayment(
         firstMonthPrincipal,
-        firstMonthInterest
+        firstMonthInterest,
       );
       expect(payment.success).toBe(true);
 
@@ -608,13 +633,13 @@ describe("MonthlyPayment", () => {
         // Verify components add up correctly
         expect(getTotalAmount(paymentData)).toBeCloseTo(
           getPrincipalAmount(paymentData) + getInterestAmount(paymentData),
-          2
+          2,
         );
 
         // For a 10-year loan at 8% interest, the higher rate makes interest the larger portion
         // Unlike lower rates where principal dominates even for medium-term loans
         expect(getInterestAmount(paymentData)).toBeGreaterThan(
-          getPrincipalAmount(paymentData)
+          getPrincipalAmount(paymentData),
         );
         // Interest is ~55%, which is > 50% but < 60%, so not "heavy" by our definition
         expect(isInterestHeavy(paymentData)).toBe(false); // Needs > 60% to be "heavy"

@@ -31,7 +31,7 @@ const MAX_PAYMENT_MONTH = 480; // Maximum loan term (40 years)
  * @returns Result with either valid PaymentMonth or validation error
  */
 export function createPaymentMonth(
-  month: number
+  month: number,
 ): Result<PaymentMonth, PaymentMonthValidationError> {
   // First validate as PositiveInteger
   const positiveIntegerResult = createPositiveInteger(month);
@@ -87,7 +87,7 @@ export function getMonthInYear(paymentMonth: PaymentMonth): number {
  */
 export function fromYearAndMonth(
   year: number,
-  monthInYear: number
+  monthInYear: number,
 ): Result<PaymentMonth, PaymentMonthValidationError> {
   if (year < 1 || year > 40 || monthInYear < 1 || monthInYear > 12) {
     return { success: false, error: "InvalidPaymentMonth" };
@@ -102,7 +102,7 @@ export function fromYearAndMonth(
  */
 export function addMonths(
   paymentMonth: PaymentMonth,
-  monthsToAdd: number
+  monthsToAdd: number,
 ): Result<PaymentMonth, PaymentMonthValidationError> {
   const newMonth = toNumber(paymentMonth) + monthsToAdd;
   return createPaymentMonth(newMonth);
@@ -153,7 +153,7 @@ export function getFirstPaymentMonth(): PaymentMonth {
   const result = createPaymentMonth(MIN_PAYMENT_MONTH);
   if (!result.success) {
     throw new Error(
-      "Failed to create first payment month - this should never happen"
+      "Failed to create first payment month - this should never happen",
     );
   }
   return result.data;
@@ -166,7 +166,7 @@ export function getMaximumPaymentMonth(): PaymentMonth {
   const result = createPaymentMonth(MAX_PAYMENT_MONTH);
   if (!result.success) {
     throw new Error(
-      "Failed to create maximum payment month - this should never happen"
+      "Failed to create maximum payment month - this should never happen",
     );
   }
   return result.data;

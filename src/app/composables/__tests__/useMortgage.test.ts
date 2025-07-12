@@ -21,12 +21,10 @@ describe("MortgageService - Application Integration", () => {
 
       const result = await service.analyzeLoan(loanInput);
 
-
       expect(result.success).toBe(true);
 
       if (result.success) {
         const analysis = result.data;
-
 
         // Validate against our known calculation: €100K @ 5.6% for 7 years ≈ €1,441.76
         expect(analysis.monthlyPayment.total).toBeCloseTo(1441.76, 0);
@@ -38,13 +36,12 @@ describe("MortgageService - Application Integration", () => {
         // Total payment should be loan + interest
         expect(analysis.totals.totalPaid).toBeCloseTo(
           analysis.totals.interestPaid + loanInput.loanAmount,
-          0
+          0,
         );
 
         // Term should match
         expect(analysis.totals.termInYears).toBe(7);
         expect(analysis.totals.termInMonths).toBe(84);
-
       }
     });
 
@@ -62,7 +59,6 @@ describe("MortgageService - Application Integration", () => {
       if (result.success) {
         expect(result.data.totals.termInMonths).toBe(60);
         expect(result.data.totals.termInYears).toBe(5);
-
       }
     });
 
@@ -79,7 +75,6 @@ describe("MortgageService - Application Integration", () => {
       if (!result.success) {
         expect(result.error).toBe("InvalidLoanParameters");
       }
-
     });
   });
 
@@ -87,12 +82,10 @@ describe("MortgageService - Application Integration", () => {
     it("should provide quick loan estimates", () => {
       const estimate = service.getQuickEstimate(100000, 5.6, 7);
 
-
       // Should be close to our domain calculation
       expect(estimate.monthlyPayment).toBeCloseTo(1441.76, 0);
       expect(estimate.totalInterest).toBeGreaterThan(0);
       expect(estimate.totalPaid).toBeCloseTo(estimate.monthlyPayment * 84, 0);
-
     });
 
     it("should handle zero interest rate", () => {
@@ -102,7 +95,6 @@ describe("MortgageService - Application Integration", () => {
       const expectedPayment = 60000 / (5 * 12);
       expect(estimate.monthlyPayment).toBeCloseTo(expectedPayment, 2);
       expect(estimate.totalInterest).toBe(0);
-
     });
   });
 
@@ -121,15 +113,13 @@ describe("MortgageService - Application Integration", () => {
 
       const result = await service.analyzeSondertilgung(
         baseLoan,
-        extraPayments
+        extraPayments,
       );
-
 
       expect(result.success).toBe(true);
 
       if (result.success) {
         const analysis = result.data;
-
 
         // Should have calculated extra payments correctly
         expect(analysis.impact.totalExtraPayments).toBe(8000);
@@ -139,7 +129,6 @@ describe("MortgageService - Application Integration", () => {
 
         // Should calculate a return rate
         expect(analysis.impact.effectiveReturnRate).toBeGreaterThan(0);
-
       }
     });
   });
@@ -154,12 +143,10 @@ describe("MortgageService - Application Integration", () => {
 
       const result = await service.compareScenarios(scenarios);
 
-
       expect(result.success).toBe(true);
 
       if (result.success) {
         const comparison = result.data;
-
 
         expect(comparison.scenarios.length).toBe(3);
 
@@ -167,18 +154,17 @@ describe("MortgageService - Application Integration", () => {
         const scenario1 = comparison.scenarios[0]; // 5.0%
         const scenario2 = comparison.scenarios[1]; // 6.0%
         expect(scenario1.totals.interestPaid).toBeLessThan(
-          scenario2.totals.interestPaid
+          scenario2.totals.interestPaid,
         );
 
         // Longer term should result in lower monthly payment but higher total interest
         const scenario3 = comparison.scenarios[2]; // 15 years
         expect(scenario3.monthlyPayment.total).toBeLessThan(
-          scenario1.monthlyPayment.total
+          scenario1.monthlyPayment.total,
         );
         expect(scenario3.totals.interestPaid).toBeGreaterThan(
-          scenario1.totals.interestPaid
+          scenario1.totals.interestPaid,
         );
-
       }
     });
   });
@@ -189,7 +175,7 @@ describe("MortgageService - Application Integration", () => {
         5000, // Monthly income
         3000, // Monthly expenses
         200000, // Desired loan amount
-        5.5 // Interest rate
+        5.5, // Interest rate
       );
 
       expect(result.success).toBe(true);
@@ -197,13 +183,11 @@ describe("MortgageService - Application Integration", () => {
       if (result.success) {
         const analysis = result.data;
 
-
         // Available income: €2,000, so max payment should be 35% of that
         expect(analysis.maxAffordablePayment).toBeCloseTo(700, 0);
 
         // Should have a risk assessment
         expect(["low", "medium", "high"]).toContain(analysis.riskLevel);
-
       }
     });
   });

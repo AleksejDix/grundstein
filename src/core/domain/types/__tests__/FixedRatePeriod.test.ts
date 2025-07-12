@@ -63,7 +63,7 @@ describe("FixedRatePeriod", () => {
         const startDate = getStartDate(result.data);
         const now = new Date();
         expect(Math.abs(startDate.getTime() - now.getTime())).toBeLessThan(
-          1000
+          1000,
         );
       }
     });
@@ -321,7 +321,7 @@ describe("FixedRatePeriod", () => {
       if (period1Result.success && period2Result.success) {
         const comparison = compareByEndDate(
           period1Result.data,
-          period2Result.data
+          period2Result.data,
         );
 
         // period1 ends in 2029, period2 ends in 2034, so period1 should be less
