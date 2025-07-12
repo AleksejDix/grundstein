@@ -1,0 +1,66 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:base"],
+  "schedule": ["before 6am on monday"],
+  "timezone": "Europe/Berlin",
+  "labels": ["dependencies"],
+  "assignees": ["@me"],
+  
+  "packageRules": [
+    {
+      "description": "Group Vue ecosystem updates",
+      "groupName": "Vue ecosystem",
+      "matchPackagePatterns": ["^vue", "^@vue/", "^vite", "^@vitejs/"],
+      "schedule": ["before 6am on monday"]
+    },
+    {
+      "description": "Group testing framework updates",
+      "groupName": "Testing frameworks",
+      "matchPackagePatterns": ["^vitest", "^@vitest/", "^playwright", "^@playwright/"],
+      "schedule": ["before 6am on monday"]
+    },
+    {
+      "description": "Group TypeScript updates",
+      "groupName": "TypeScript",
+      "matchPackageNames": ["typescript", "@types/node"],
+      "schedule": ["before 6am on monday"]
+    },
+    {
+      "description": "Group linting and formatting tools",
+      "groupName": "Linting and formatting",
+      "matchPackagePatterns": ["^oxlint", "^prettier", "^@commitlint/"],
+      "schedule": ["before 6am on monday"]
+    },
+    {
+      "description": "Automerge patch updates for dev dependencies",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "description": "Separate major updates for careful review",
+      "matchUpdateTypes": ["major"],
+      "labels": ["major-update"],
+      "reviewers": ["@me"],
+      "schedule": ["before 6am on monday"]
+    }
+  ],
+  
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"],
+    "assignees": ["@me"]
+  },
+  
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on the first day of the month"]
+  },
+  
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 3,
+  
+  "commitMessagePrefix": "deps:",
+  "semanticCommits": "enabled"
+}

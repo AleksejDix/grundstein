@@ -1,3 +1,45 @@
 {
-  "recommendations": ["Vue.volar", "Vue.vscode-typescript-vue-plugin"]
+  "recommendations": [
+    // Vue.js Development
+    "Vue.volar",
+    "Vue.vscode-typescript-vue-plugin",
+    
+    // TypeScript & JavaScript
+    "ms-vscode.vscode-typescript-next",
+    
+    // Code Quality & Formatting
+    "esbenp.prettier-vscode",
+    
+    // Testing
+    "vitest.explorer",
+    "ms-playwright.playwright",
+    
+    // Tailwind CSS
+    "bradlc.vscode-tailwindcss",
+    
+    // Git
+    "eamodio.gitlens",
+    "github.vscode-github-actions",
+    
+    // Utilities
+    "christian-kohler.path-intellisense",
+    "usernamehw.errorlens",
+    "gruntfuggly.todo-tree",
+    "ms-vscode.vscode-json",
+    
+    // Productivity
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.npm-intellisense",
+    "ms-vscode.vscode-npm-script",
+    
+    // Markdown
+    "yzhang.markdown-all-in-one",
+    
+    // Themes (optional but nice)
+    "GitHub.github-vscode-theme"
+  ],
+  "unwantedRecommendations": [
+    // Avoid conflicting extensions
+    "octref.vetur"
+  ]
 }

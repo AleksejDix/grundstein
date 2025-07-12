@@ -29,7 +29,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Mortgage Portfolio Management Solution** for **Swiss and German markets** built with **Domain-Driven Design** and **functional programming** principles. The codebase follows a clean architecture with comprehensive type safety and professional portfolio management capabilities.
+This is a **Mortgage Portfolio Management Solution** primarily focused on the **German market (DE)** built with **Domain-Driven Design** and **functional programming** principles. The architecture supports multiple markets for future expansion. The codebase follows a clean architecture with comprehensive type safety and professional portfolio management capabilities.
 
 ## Architecture Overview
 
@@ -81,7 +81,7 @@ src/
 ### Portfolio Management
 
 - **Multi-Mortgage Portfolios**: Manage multiple loans in organized portfolios
-- **Swiss & German Market Support**: Market-specific validation and calculations
+- **German Market Focus**: DE-specific validation and calculations with extensible architecture
 - **Portfolio Analytics**: Summary statistics, optimization analysis, cash flow projections
 - **Portfolio Optimization**: Refinancing opportunities, consolidation analysis
 
@@ -89,7 +89,7 @@ src/
 
 - **Sondertilgung**: Extra payments with percentage limits (5%, 10%, 20%, 50%, unlimited)
 - **Parameter Locking**: Lock any loan parameter and recalculate others
-- **Market Compliance**: Swiss and German banking regulation compliance
+- **Market Compliance**: German banking regulation compliance (BaFin)
 - **Advanced Calculations**: Amortization schedules, interest sensitivity analysis
 
 ### Technical Excellence
@@ -136,7 +136,7 @@ const rate = 3.5; // Could be invalid rate
 - **Unit Tests**: Each domain type and calculation function
 - **Property-Based Testing**: Mathematical invariants with fast-check
 - **Integration Tests**: Service layer and repository integration
-- **Real-World Validation**: Swiss and German market scenarios
+- **Real-World Validation**: German market scenarios with real banking rules
 
 ## Technology Stack
 

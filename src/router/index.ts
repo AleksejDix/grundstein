@@ -22,75 +22,75 @@ const router = createRouter({
     {
       path: "/",
       name: ROUTE_NAMES.DASHBOARD.INDEX,
-      component: () => import("../views/CashFlowDashboard.view.vue"),
+      component: () => import("../app/views/CashFlowDashboard.view.vue"),
     },
 
     // Portfolio Resource Routes
     {
       path: "/portfolios",
       name: ROUTE_NAMES.PORTFOLIOS.INDEX,
-      component: () => import("../views/PortfolioDashboard.view.vue"),
+      component: () => import("../app/views/PortfolioDashboard.view.vue"),
     },
     {
       path: "/portfolios/create",
       name: ROUTE_NAMES.PORTFOLIOS.CREATE,
-      component: () => import("../views/PortfolioCreate.view.vue"),
+      component: () => import("../app/views/PortfolioCreate.view.vue"),
     },
     {
       path: "/portfolios/:id",
       name: ROUTE_NAMES.PORTFOLIOS.SHOW,
-      component: () => import("../views/PortfolioDetail.view.vue"),
+      component: () => import("../app/views/PortfolioDetail.view.vue"),
     },
     {
       path: "/portfolios/:id/edit",
       name: ROUTE_NAMES.PORTFOLIOS.EDIT,
-      component: () => import("../views/PortfolioEdit.view.vue"),
+      component: () => import("../app/views/PortfolioEdit.view.vue"),
     },
 
     // Mortgage Resource Routes
     {
       path: "/mortgages",
       name: ROUTE_NAMES.MORTGAGES.INDEX,
-      component: () => import("../views/MortgageIndex.view.vue"),
+      component: () => import("../app/views/MortgageIndex.view.vue"),
     },
     {
       path: "/mortgages/create",
       name: ROUTE_NAMES.MORTGAGES.CREATE,
-      component: () => import("../views/CreateMortgage.view.vue"),
+      component: () => import("../app/views/CreateMortgage.view.vue"),
     },
     {
       path: "/mortgages/:id",
       name: ROUTE_NAMES.MORTGAGES.SHOW,
-      component: () => import("../views/MortgageDetailView.vue"),
+      component: () => import("../app/views/MortgageDetailView.vue"),
     },
     {
       path: "/mortgages/:id/edit",
       name: ROUTE_NAMES.MORTGAGES.EDIT,
-      component: () => import("../views/MortgageEdit.view.vue"),
+      component: () => import("../app/views/MortgageEdit.view.vue"),
     },
 
     // Nested Resource: Portfolio Mortgages
     {
       path: "/portfolios/:portfolioId/mortgages",
       name: ROUTE_NAMES.PORTFOLIOS.MORTGAGES.INDEX,
-      component: () => import("../views/PortfolioMortgageIndex.view.vue"),
+      component: () => import("../app/views/PortfolioMortgageIndex.view.vue"),
     },
     {
       path: "/portfolios/:portfolioId/mortgages/create",
       name: ROUTE_NAMES.PORTFOLIOS.MORTGAGES.CREATE,
-      component: () => import("../views/PortfolioMortgageCreate.view.vue"),
+      component: () => import("../app/views/PortfolioMortgageCreate.view.vue"),
     },
 
     // Legacy routes (to be deprecated)
     {
       path: "/old-calculator",
       name: ROUTE_NAMES.LEGACY.CALCULATOR,
-      component: () => import("../views/MortgageModern.view.vue"),
+      component: () => import("../app/views/MortgageModern.view.vue"),
     },
     {
       path: "/mortgage-calculator",
       name: ROUTE_NAMES.LEGACY.MORTGAGE_CALCULATOR,
-      component: () => import("../views/MortgageCalculator.view.vue"),
+      component: () => import("../app/views/MortgageCalculator.view.vue"),
     },
 
     // Compatibility redirects
