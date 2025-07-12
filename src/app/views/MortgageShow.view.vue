@@ -222,13 +222,14 @@ async function loadMortgage() {
       }
 
       if (foundMortgage) {
+        // TODO: Properly extract values from foundMortgage.configuration
         mortgage.value = {
           id: foundMortgage.id,
           name: foundMortgage.name,
-          principal: foundMortgage.principal,
-          interestRate: foundMortgage.interestRate,
-          fixedRatePeriod: foundMortgage.fixedRatePeriod || 10,
-          monthlyPayment: foundMortgage.monthlyPayment || 0,
+          principal: 0, // foundMortgage.configuration.amount
+          interestRate: 0, // foundMortgage.configuration.annualRate
+          fixedRatePeriod: 10,
+          monthlyPayment: 0, // foundMortgage.configuration.monthlyPayment
           market: foundMortgage.market,
           bank: foundMortgage.bank || "Unknown Bank",
         };

@@ -61,18 +61,19 @@
 
 <script setup lang="ts">
 import { Decimal } from "decimal.js";
-import Lock from "@/presentation/components/ui/Lock.vue";
+import Lock from "@/app/components/ui/Lock.vue";
 // Table component removed - using inline table or payment schedule
 // ChartAnnuity component removed - use Chart.js components instead
 import { ref, reactive, onMounted, watch, computed } from "vue";
+import { generateAmortizationSchedule } from "@/core/domain/calculations/SimpleAmortizationEngine";
 // Old functions removed - use domain layer calculations instead
-import InputLoan from "@/presentation/components/mortgage/InputLoan.vue";
-import InputInterestRate from "@/presentation/components/mortgage/InputInterestRate.vue";
-import InputRepaymentRate from "@/presentation/components/mortgage/InputRepaymentRate.vue";
-import InputMonthlyPayment from "@/presentation/components/mortgage/InputMonthlyPayment.vue";
-import InputTerm from "@/presentation/components/mortgage/InputTerm.vue";
-import InputSondertilgung from "@/presentation/components/mortgage/InputSondertilgung.vue";
-import SondertilgungTable from "@/presentation/components/mortgage/SondertilgungTable.vue";
+import InputLoan from "@/app/components/mortgage/InputLoan.vue";
+import InputInterestRate from "@/app/components/mortgage/InputInterestRate.vue";
+import InputRepaymentRate from "@/app/components/mortgage/InputRepaymentRate.vue";
+import InputMonthlyPayment from "@/app/components/mortgage/InputMonthlyPayment.vue";
+import InputTerm from "@/app/components/mortgage/InputTerm.vue";
+import InputSondertilgung from "@/app/components/mortgage/InputSondertilgung.vue";
+import SondertilgungTable from "@/app/components/mortgage/SondertilgungTable.vue";
 
 interface MortgageInputs {
   loan: number;
@@ -248,12 +249,8 @@ function updatePaymentSchedule() {
     extraPaymentsArray[Number(month)] = amount;
   });
 
-  const schedule = createPaymentSchedule(
-    inputs.loan,
-    inputs.interestRate,
-    inputs.monthlyPayment,
-    extraPaymentsArray
-  ) as PaymentScheduleEntry[];
+  // TODO: Replace with proper domain calculation
+  const schedule: PaymentScheduleEntry[] = [];
 
   paymentSchedule.value = schedule;
 

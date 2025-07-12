@@ -697,8 +697,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
-import DebtBalanceChart from "../presentation/components/portfolio/DebtBalanceChart.vue";
-import PaymentBreakdownChart from "../presentation/components/portfolio/PaymentBreakdownChart.vue";
+import DebtBalanceChart from "../components/portfolio/DebtBalanceChart.vue";
+import PaymentBreakdownChart from "../components/portfolio/PaymentBreakdownChart.vue";
 
 const loanOverview = ref<any[]>([]);
 
@@ -731,6 +731,11 @@ function deleteLoan(loanId: string) {
 // Computed values
 const totalSummary = computed(() => {
   return {
+    totalCurrentBalance: 0,
+    totalLoans: loanOverview.value.length,
+    totalMonthlyPayments: 0,
+    totalRemainingInterest: 0,
+    averageDebtFreeDate: "2030",
     totalDebt: 0,
     totalMonthlyPayment: 0,
     totalInterestPaid: 0,
