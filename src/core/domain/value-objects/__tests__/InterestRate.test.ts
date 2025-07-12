@@ -44,16 +44,26 @@ describe("InterestRate Type", () => {
     });
 
     it("should reject rates below minimum", () => {
-      const belowMinimumRates = [0.05, 0.01, 0];
+      const belowMinimumRates = [-0.1, -1, -5]; // Only negative rates should be rejected
 
       belowMinimumRates.forEach((rate) => {
         const result = createInterestRate(rate);
 
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error).toBe("BelowMinimumRate");
+          // Negative values are caught by Percentage validation first
+          expect(result.error).toBe("PercentageValidationError");
         }
       });
+    });
+
+    it("should accept zero interest rate", () => {
+      const result = createInterestRate(0);
+      
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(toNumber(result.data)).toBe(0);
+      }
     });
 
     it("should reject rates above maximum", () => {
@@ -279,7 +289,7 @@ describe("InterestRate Type", () => {
       const minRate = getMinimumInterestRate();
       const value = toNumber(minRate);
 
-      expect(value).toBe(0.1);
+      expect(value).toBe(0.0); // Changed to support zero-interest loans
     });
 
     it("should provide valid maximum interest rate", () => {
@@ -290,8 +300,9 @@ describe("InterestRate Type", () => {
     });
 
     it("should validate interest rate range", () => {
-      expect(isValidInterestRateRange(0.05)).toBe(false); // Below minimum
-      expect(isValidInterestRateRange(0.1)).toBe(true); // At minimum
+      expect(isValidInterestRateRange(-0.1)).toBe(false); // Below minimum (negative)
+      expect(isValidInterestRateRange(0.0)).toBe(true); // At minimum (zero interest)
+      expect(isValidInterestRateRange(0.05)).toBe(true); // Small positive rate
       expect(isValidInterestRateRange(3.5)).toBe(true); // In range
       expect(isValidInterestRateRange(25.0)).toBe(true); // At maximum
       expect(isValidInterestRateRange(25.1)).toBe(false); // Above maximum
@@ -341,7 +352,7 @@ describe("InterestRate Property-Based Tests", () => {
       fc.assert(
         fc.property(
           fc.float({
-            min: Math.fround(0.1),
+            min: Math.fround(0.0),
             max: Math.fround(25.0),
             noNaN: true,
           }),
@@ -360,15 +371,15 @@ describe("InterestRate Property-Based Tests", () => {
       fc.assert(
         fc.property(
           fc.float({
-            min: Math.fround(0.001),
-            max: Math.fround(0.09),
+            min: Math.fround(-10.0),
+            max: Math.fround(-0.001), // Only negative rates should be rejected
             noNaN: true,
           }),
           (belowMinRate) => {
             const result = createInterestRate(belowMinRate);
             expect(result.success).toBe(false);
             if (!result.success) {
-              expect(result.error).toBe("BelowMinimumRate");
+              expect(result.error).toBe("PercentageValidationError");
             }
           }
         )
@@ -400,7 +411,7 @@ describe("InterestRate Property-Based Tests", () => {
       fc.assert(
         fc.property(
           fc.float({
-            min: Math.fround(0.1),
+            min: Math.fround(0.0),
             max: Math.fround(25.0),
             noNaN: true,
           }),
@@ -429,7 +440,7 @@ describe("InterestRate Property-Based Tests", () => {
       fc.assert(
         fc.property(
           fc.float({
-            min: Math.fround(0.1),
+            min: Math.fround(0.0),
             max: Math.fround(25.0),
             noNaN: true,
           }),
@@ -487,7 +498,7 @@ describe("InterestRate Property-Based Tests", () => {
       fc.assert(
         fc.property(
           fc.float({
-            min: Math.fround(0.1),
+            min: Math.fround(0.0),
             max: Math.fround(8.0),
             noNaN: true,
           }),

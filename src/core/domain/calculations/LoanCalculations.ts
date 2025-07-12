@@ -4,8 +4,11 @@
  * These are the core mathematical functions that power all mortgage calculations.
  * They operate on domain types and return precise financial calculations.
  * All functions are pure (no side effects) and thoroughly tested.
+ * 
+ * Uses decimal.js for arbitrary precision arithmetic to avoid floating-point errors.
  */
 
+import { Decimal } from "decimal.js";
 import { Result } from "../primitives/Brand";
 import type { LoanConfiguration } from "../types/LoanConfiguration";
 import type { MonthlyPayment } from "../types/MonthlyPayment";
@@ -21,6 +24,9 @@ import {
   createMonthCount,
   toNumber as monthCountToNumber,
 } from "../value-objects/MonthCount";
+
+// Configure Decimal.js for financial calculations
+Decimal.set({ precision: 20, rounding: Decimal.ROUND_HALF_UP });
 
 /**
  * Calculation errors for loan mathematics
@@ -41,14 +47,14 @@ export function calculateMonthlyPayment(
   loanConfiguration: LoanConfiguration,
 ): Result<MonthlyPayment, LoanCalculationError> {
   try {
-    const loanAmount = loanAmountToNumber(loanConfiguration.amount);
-    const annualRate = toDecimal(loanConfiguration.annualRate);
+    const loanAmount = new Decimal(loanAmountToNumber(loanConfiguration.amount));
+    const annualRate = new Decimal(toDecimal(loanConfiguration.annualRate));
     const termInMonths = monthCountToNumber(loanConfiguration.termInMonths);
 
     // Handle special case: 0% interest rate
-    if (annualRate === 0) {
-      const monthlyPayment = loanAmount / termInMonths;
-      const paymentResult = createMonthlyPayment(monthlyPayment, 0);
+    if (annualRate.isZero()) {
+      const monthlyPayment = loanAmount.dividedBy(termInMonths);
+      const paymentResult = createMonthlyPayment(monthlyPayment.toNumber(), 0);
       if (!paymentResult.success) {
         return { success: false, error: "MathematicalError" };
       }
@@ -56,26 +62,27 @@ export function calculateMonthlyPayment(
     }
 
     // Calculate monthly interest rate
-    const monthlyRate = annualRate / 12;
+    const monthlyRate = annualRate.dividedBy(12);
 
-    // Apply loan payment formula
-    const numerator =
-      loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, termInMonths));
-    const denominator = Math.pow(1 + monthlyRate, termInMonths) - 1;
+    // Apply loan payment formula: P = L[c(1 + c)^n]/[(1 + c)^n - 1]
+    const onePlusRate = monthlyRate.plus(1);
+    const factor = onePlusRate.pow(termInMonths);
+    const numerator = loanAmount.times(monthlyRate).times(factor);
+    const denominator = factor.minus(1);
 
-    if (denominator === 0) {
+    if (denominator.isZero()) {
       return { success: false, error: "MathematicalError" };
     }
 
-    const monthlyPaymentAmount = numerator / denominator;
+    const monthlyPaymentAmount = numerator.dividedBy(denominator);
 
     // Calculate first month's interest and principal breakdown
-    const firstMonthInterest = loanAmount * monthlyRate;
-    const firstMonthPrincipal = monthlyPaymentAmount - firstMonthInterest;
+    const firstMonthInterest = loanAmount.times(monthlyRate);
+    const firstMonthPrincipal = monthlyPaymentAmount.minus(firstMonthInterest);
 
     const paymentResult = createMonthlyPayment(
-      firstMonthPrincipal,
-      firstMonthInterest,
+      firstMonthPrincipal.toNumber(),
+      firstMonthInterest.toNumber(),
     );
     if (!paymentResult.success) {
       return { success: false, error: "MathematicalError" };
@@ -97,44 +104,46 @@ export function calculateLoanTerm(
   monthlyPayment: Money,
 ): Result<MonthCount, LoanCalculationError> {
   try {
-    const amount = loanAmountToNumber(loanAmount);
-    const rate = toDecimal(annualRate);
-    const payment = toEuros(monthlyPayment);
+    const amount = new Decimal(loanAmountToNumber(loanAmount));
+    const rate = new Decimal(toDecimal(annualRate));
+    const payment = new Decimal(toEuros(monthlyPayment));
 
     // Validate payment is sufficient
-    if (payment <= 0) {
+    if (payment.isZero() || payment.isNegative()) {
       return { success: false, error: "InsufficientPayment" };
     }
 
     // Handle special case: 0% interest rate
-    if (rate === 0) {
-      const months = Math.ceil(amount / payment);
-      const monthCountResult = createMonthCount(months);
+    if (rate.isZero()) {
+      const months = amount.dividedBy(payment).ceil();
+      const monthCountResult = createMonthCount(months.toNumber());
       if (!monthCountResult.success) {
         return { success: false, error: "InvalidParameters" };
       }
       return monthCountResult;
     }
 
-    const monthlyRate = rate / 12;
+    const monthlyRate = rate.dividedBy(12);
 
     // Check if payment is sufficient to cover interest
-    const monthlyInterest = amount * monthlyRate;
-    if (payment <= monthlyInterest) {
+    const monthlyInterest = amount.times(monthlyRate);
+    if (payment.lessThanOrEqualTo(monthlyInterest)) {
       return { success: false, error: "InsufficientPayment" };
     }
 
-    // Apply loan term formula
-    const ratio = (amount * monthlyRate) / payment;
-    const termInMonths = -Math.log(1 - ratio) / Math.log(1 + monthlyRate);
+    // Apply loan term formula: n = -ln(1 - (L * c / P)) / ln(1 + c)
+    const ratio = amount.times(monthlyRate).dividedBy(payment);
+    const onePlusRate = monthlyRate.plus(1);
+    const termInMonths = Decimal.ln(Decimal.sub(1, ratio)).negated()
+      .dividedBy(Decimal.ln(onePlusRate));
 
     // Validate result
-    if (!isFinite(termInMonths) || termInMonths <= 0) {
+    if (!termInMonths.isFinite() || termInMonths.isNegative() || termInMonths.isZero()) {
       return { success: false, error: "MathematicalError" };
     }
 
-    const roundedMonths = Math.ceil(termInMonths);
-    const monthCountResult = createMonthCount(roundedMonths);
+    const roundedMonths = termInMonths.ceil();
+    const monthCountResult = createMonthCount(roundedMonths.toNumber());
     if (!monthCountResult.success) {
       return { success: false, error: "InvalidParameters" };
     }
@@ -154,18 +163,18 @@ export function calculateInterestRate(
   termInMonths: MonthCount,
 ): Result<InterestRate, LoanCalculationError> {
   try {
-    const amount = loanAmountToNumber(loanAmount);
-    const payment = toEuros(monthlyPayment);
+    const amount = new Decimal(loanAmountToNumber(loanAmount));
+    const payment = new Decimal(toEuros(monthlyPayment));
     const months = monthCountToNumber(termInMonths);
 
     // Validate inputs
-    if (payment <= 0 || months <= 0 || amount <= 0) {
+    if (payment.isZero() || payment.isNegative() || months <= 0 || amount.isZero() || amount.isNegative()) {
       return { success: false, error: "InvalidParameters" };
     }
 
     // Check if payment matches 0% interest scenario
-    const zeroInterestPayment = amount / months;
-    if (Math.abs(payment - zeroInterestPayment) < 0.01) {
+    const zeroInterestPayment = amount.dividedBy(months);
+    if (payment.minus(zeroInterestPayment).abs().lessThan(0.01)) {
       const rateResult = createInterestRate(0);
       if (!rateResult.success) {
         return { success: false, error: "InvalidParameters" };
@@ -174,52 +183,54 @@ export function calculateInterestRate(
     }
 
     // Check if payment is reasonable
-    if (payment < zeroInterestPayment) {
+    if (payment.lessThan(zeroInterestPayment)) {
       return { success: false, error: "InsufficientPayment" };
     }
 
-    // Use Newton's method to find the interest rate
-    let rate = 0.05; // Initial guess: 5%
-    const maxIterations = 100;
-    const tolerance = 0.000001;
+    // Use bisection method for more robust convergence
+    let lowerBound = new Decimal(0.0001); // 0.01% annual
+    let upperBound = new Decimal(0.30); // 30% annual
+    const maxIterations = 50;
+    const tolerance = new Decimal(0.01); // €0.01 tolerance on payment
 
+    // Helper function to calculate payment for given annual rate
+    const calculatePaymentForRate = (annualRate: Decimal): Decimal => {
+      const monthlyRate = annualRate.dividedBy(12);
+      const onePlusRate = monthlyRate.plus(1);
+      const factor = onePlusRate.pow(months);
+      const numerator = amount.times(monthlyRate).times(factor);
+      const denominator = factor.minus(1);
+      return numerator.dividedBy(denominator);
+    };
+
+    // Check if payment is feasible with the bounds
+    const lowerPayment = calculatePaymentForRate(lowerBound);
+    const upperPayment = calculatePaymentForRate(upperBound);
+    
+    if (payment.lessThan(lowerPayment) || payment.greaterThan(upperPayment)) {
+      return { success: false, error: "MathematicalError" };
+    }
+
+    // Bisection method
     for (let i = 0; i < maxIterations; i++) {
-      const monthlyRate = rate / 12;
+      const midRate = lowerBound.plus(upperBound).dividedBy(2);
+      const calculatedPayment = calculatePaymentForRate(midRate);
+      const error = calculatedPayment.minus(payment);
 
-      if (monthlyRate === 0) {
-        rate = 0.000001; // Avoid division by zero
-        continue;
-      }
-
-      // Calculate payment with current rate
-      const factor = Math.pow(1 + monthlyRate, months);
-      const calculatedPayment =
-        (amount * (monthlyRate * factor)) / (factor - 1);
-
-      // Calculate derivative for Newton's method
-      const derivative = calculatePaymentDerivative(
-        amount,
-        months,
-        monthlyRate,
-      );
-
-      if (derivative === 0) {
-        return { success: false, error: "MathematicalError" };
-      }
-
-      const error = calculatedPayment - payment;
-      const newRate = rate - error / derivative;
-
-      if (Math.abs(newRate - rate) < tolerance) {
-        const annualRate = newRate * 100; // Convert to percentage
-        const rateResult = createInterestRate(annualRate);
+      if (error.abs().lessThan(tolerance)) {
+        const annualRatePercent = midRate.times(100); // Convert to percentage
+        const rateResult = createInterestRate(annualRatePercent.toNumber());
         if (!rateResult.success) {
           return { success: false, error: "InvalidParameters" };
         }
         return rateResult;
       }
 
-      rate = Math.max(0.0001, Math.min(25, newRate)); // Keep rate in reasonable bounds
+      if (error.isPositive()) {
+        upperBound = midRate;
+      } else {
+        lowerBound = midRate;
+      }
     }
 
     return { success: false, error: "MathematicalError" };
@@ -228,22 +239,6 @@ export function calculateInterestRate(
   }
 }
 
-/**
- * Helper function to calculate derivative for Newton's method
- */
-function calculatePaymentDerivative(
-  amount: number,
-  months: number,
-  monthlyRate: number,
-): number {
-  const factor = Math.pow(1 + monthlyRate, months);
-  const numerator = amount * months * factor;
-  const denominator = 12 * Math.pow(factor - 1, 2);
-
-  if (denominator === 0) return 0;
-
-  return numerator / denominator;
-}
 
 /**
  * Calculate total interest paid over the life of the loan
@@ -257,14 +252,14 @@ export function calculateTotalInterest(
       return { success: false, error: monthlyPaymentResult.error };
     }
 
-    const monthlyPaymentAmount = toEuros(monthlyPaymentResult.data.total);
-    const loanAmount = loanAmountToNumber(loanConfiguration.amount);
+    const monthlyPaymentAmount = new Decimal(toEuros(monthlyPaymentResult.data.total));
+    const loanAmount = new Decimal(loanAmountToNumber(loanConfiguration.amount));
     const termInMonths = monthCountToNumber(loanConfiguration.termInMonths);
 
-    const totalPayments = monthlyPaymentAmount * termInMonths;
-    const totalInterest = totalPayments - loanAmount;
+    const totalPayments = monthlyPaymentAmount.times(termInMonths);
+    const totalInterest = totalPayments.minus(loanAmount);
 
-    const moneyResult = createMoney(totalInterest);
+    const moneyResult = createMoney(totalInterest.toNumber());
     if (!moneyResult.success) {
       return { success: false, error: "MathematicalError" };
     }
@@ -286,8 +281,8 @@ export function calculateRemainingBalance(
       return { success: false, error: "InvalidParameters" };
     }
 
-    const loanAmount = loanAmountToNumber(loanConfiguration.amount);
-    const annualRate = toDecimal(loanConfiguration.annualRate);
+    const loanAmount = new Decimal(loanAmountToNumber(loanConfiguration.amount));
+    const annualRate = new Decimal(toDecimal(loanConfiguration.annualRate));
     const termInMonths = monthCountToNumber(loanConfiguration.termInMonths);
 
     if (paymentsMade >= termInMonths) {
@@ -298,33 +293,33 @@ export function calculateRemainingBalance(
       return zeroResult;
     }
 
-    if (annualRate === 0) {
+    if (annualRate.isZero()) {
       // Simple calculation for 0% interest
-      const monthlyPrincipal = loanAmount / termInMonths;
-      const remainingBalance = loanAmount - monthlyPrincipal * paymentsMade;
-      const balanceResult = createMoney(Math.max(0, remainingBalance));
+      const monthlyPrincipal = loanAmount.dividedBy(termInMonths);
+      const remainingBalance = loanAmount.minus(monthlyPrincipal.times(paymentsMade));
+      const balanceResult = createMoney(Decimal.max(0, remainingBalance).toNumber());
       if (!balanceResult.success) {
         return { success: false, error: "MathematicalError" };
       }
       return balanceResult;
     }
 
-    const monthlyRate = annualRate / 12;
+    const monthlyRate = annualRate.dividedBy(12);
     const monthlyPaymentResult = calculateMonthlyPayment(loanConfiguration);
 
     if (!monthlyPaymentResult.success) {
       return { success: false, error: monthlyPaymentResult.error };
     }
 
-    const _monthlyPaymentAmount = toEuros(monthlyPaymentResult.data.total);
-
     // Calculate remaining balance using amortization formula
-    const factor1 = Math.pow(1 + monthlyRate, termInMonths);
-    const factor2 = Math.pow(1 + monthlyRate, paymentsMade);
+    const onePlusRate = monthlyRate.plus(1);
+    const factor1 = onePlusRate.pow(termInMonths);
+    const factor2 = onePlusRate.pow(paymentsMade);
 
-    const remainingBalance = (loanAmount * (factor1 - factor2)) / (factor1 - 1);
+    const remainingBalance = loanAmount.times(factor1.minus(factor2))
+      .dividedBy(factor1.minus(1));
 
-    const balanceResult = createMoney(Math.max(0, remainingBalance));
+    const balanceResult = createMoney(Decimal.max(0, remainingBalance).toNumber());
     if (!balanceResult.success) {
       return { success: false, error: "MathematicalError" };
     }
@@ -353,18 +348,18 @@ export function calculateBreakEvenPoint(
       return { success: false, error: newPaymentResult.error };
     }
 
-    const currentPayment = toEuros(currentPaymentResult.data.total);
-    const newPayment = toEuros(newPaymentResult.data.total);
-    const costs = toEuros(refinancingCosts);
+    const currentPayment = new Decimal(toEuros(currentPaymentResult.data.total));
+    const newPayment = new Decimal(toEuros(newPaymentResult.data.total));
+    const costs = new Decimal(toEuros(refinancingCosts));
 
-    if (currentPayment <= newPayment) {
+    if (currentPayment.lessThanOrEqualTo(newPayment)) {
       return { success: false, error: "InsufficientPayment" }; // No savings
     }
 
-    const monthlySavings = currentPayment - newPayment;
-    const breakEvenMonths = Math.ceil(costs / monthlySavings);
+    const monthlySavings = currentPayment.minus(newPayment);
+    const breakEvenMonths = costs.dividedBy(monthlySavings).ceil();
 
-    const monthCountResult = createMonthCount(breakEvenMonths);
+    const monthCountResult = createMonthCount(breakEvenMonths.toNumber());
     if (!monthCountResult.success) {
       return { success: false, error: "InvalidParameters" };
     }

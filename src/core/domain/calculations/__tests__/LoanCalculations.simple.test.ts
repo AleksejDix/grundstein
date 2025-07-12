@@ -34,17 +34,17 @@ describe("LoanCalculations - Core Functions", () => {
 
       const result = calculateMonthlyPayment(loanConfig);
 
-      console.log("Payment calculation result:", result);
+      // console.log("Payment calculation result:", result);
 
       if (result.success) {
         const monthlyPayment = toEuros(result.data.total);
-        console.log("Calculated monthly payment:", monthlyPayment);
+        // console.log("Calculated monthly payment:", monthlyPayment);
 
         // €100k at 5% for 60 months should be around €1,887
         expect(monthlyPayment).toBeGreaterThan(1800);
         expect(monthlyPayment).toBeLessThan(2000);
       } else {
-        console.log("Payment calculation failed with error:", result.error);
+        // console.log("Payment calculation failed with error:", result.error);
         expect(result.success).toBe(true); // Force test failure with error info
       }
     }
@@ -73,7 +73,7 @@ describe("LoanCalculations - Core Functions", () => {
         expect(monthlyPayment).toBeCloseTo(expectedPayment, 2);
         expect(toEuros(result.data.interest)).toBe(0);
       } else {
-        console.log("Zero interest calculation failed:", result.error);
+        // console.log("Zero interest calculation failed:", result.error);
         expect(result.success).toBe(true);
       }
     }
@@ -102,12 +102,14 @@ describe("LoanCalculations - Core Functions", () => {
         // Should be approximately €1,441.76 based on real-world validation
         expect(monthlyPayment).toBeCloseTo(1441.76, 0);
 
+        /*
         console.log(
           "Real-world validation - Expected: €1,441.76, Got:",
           monthlyPayment
         );
+        */
       } else {
-        console.log("Real-world calculation failed:", result.error);
+        // console.log("Real-world calculation failed:", result.error);
         expect(result.success).toBe(true);
       }
     }

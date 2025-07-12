@@ -15,6 +15,14 @@ import { Result } from "../primitives/Brand";
 import type { LoanConfiguration } from "../types/LoanConfiguration";
 import type { SondertilgungPlan } from "../types/SondertilgungPlan";
 import type { PaymentMonth } from "../value-objects/PaymentMonth";
+import type { AmortizationError } from "../errors/AmortizationErrors";
+import {
+  createPaymentMonthCreationError,
+  createMoneyCreationError,
+  createMonthlyPaymentCalculationError,
+  createPercentageValidationError,
+  createRemainingMonthsCalculationError,
+} from "../errors/AmortizationErrors";
 import {
   createPaymentMonth,
   toNumber as paymentMonthToNumber,
@@ -42,13 +50,12 @@ import {
 } from "./LoanCalculations";
 
 /**
- * Amortization engine errors
+ * Amortization engine errors - now using structured errors
  */
-export type AmortizationError =
+export type AmortizationEngineError =
   | LoanCalculationError
-  | "ScheduleGenerationFailed"
-  | "InvalidAmortizationPlan"
-  | "ScheduleAnalysisError";
+  | AmortizationError
+  | "ScheduleAnalysisError"; // Legacy - will be replaced
 
 /**
  * Single month entry in the complete amortization schedule
@@ -100,7 +107,7 @@ export type ScheduleMetrics = {
 export function generateAmortizationSchedule(
   loanConfiguration: LoanConfiguration,
   sondertilgungPlan?: SondertilgungPlan,
-): Result<AmortizationSchedule, AmortizationError> {
+): Result<AmortizationSchedule, AmortizationEngineError> {
   try {
     const entries: AmortizationEntry[] = [];
 
@@ -128,7 +135,11 @@ export function generateAmortizationSchedule(
       // Safety limit
       const paymentMonthResult = createPaymentMonth(monthNumber);
       if (!paymentMonthResult.success) {
-        return { success: false, error: "ScheduleGenerationFailed" };
+        const error = createPaymentMonthCreationError(
+          monthNumber,
+          "generateAmortizationSchedule.createPaymentMonth"
+        );
+        return { success: false, error };
       }
 
       const currentMonth = paymentMonthResult.data;
@@ -150,7 +161,14 @@ export function generateAmortizationSchedule(
         monthlyInterest,
       );
       if (!regularPayment.success) {
-        return { success: false, error: "ScheduleGenerationFailed" };
+        const error = createMonthlyPaymentCalculationError(
+          regularPrincipal,
+          monthlyInterest,
+          loanAmount,
+          monthlyRate,
+          "generateAmortizationSchedule.createMonthlyPayment"
+        );
+        return { success: false, error };
       }
 
       // Check for extra payment this month
@@ -172,14 +190,24 @@ export function generateAmortizationSchedule(
       const totalPaymentAmount = regularPaymentAmount + extraPaymentAmount;
       const totalPaymentResult = createMoney(totalPaymentAmount);
       if (!totalPaymentResult.success) {
-        return { success: false, error: "ScheduleGenerationFailed" };
+        const error = createMoneyCreationError(
+          totalPaymentAmount,
+          totalPaymentAmount < 0 ? "negative" : "exceeds_maximum",
+          "generateAmortizationSchedule.createTotalPaymentMoney"
+        );
+        return { success: false, error };
       }
 
       // Update balance
       currentBalance -= regularPrincipal + extraPaymentAmount;
       const endingBalanceResult = createMoney(Math.max(0, currentBalance));
       if (!endingBalanceResult.success) {
-        return { success: false, error: "ScheduleGenerationFailed" };
+        const error = createMoneyCreationError(
+          Math.max(0, currentBalance),
+          currentBalance < 0 ? "negative" : "exceeds_maximum",
+          "generateAmortizationSchedule.createEndingBalanceMoney"
+        );
+        return { success: false, error };
       }
 
       // Update cumulative totals
@@ -187,38 +215,67 @@ export function generateAmortizationSchedule(
       cumulativePrincipal += regularPrincipal + extraPaymentAmount;
 
       // Calculate percentages
-      const principalPortion =
-        ((regularPrincipal + extraPaymentAmount) / totalPaymentAmount) * 100;
+      let principalPortion = 100; // Default to 100% if no payment
+      if (totalPaymentAmount > 0) {
+        principalPortion =
+          ((regularPrincipal + extraPaymentAmount) / totalPaymentAmount) * 100;
+      }
+      
+      // Ensure percentage is within valid range
+      principalPortion = Math.max(0, Math.min(100, principalPortion));
+      
       const principalPercentageResult = createPercentage(principalPortion);
       if (!principalPercentageResult.success) {
-        return { success: false, error: "ScheduleGenerationFailed" };
+        const error = createPercentageValidationError(
+          principalPortion,
+          "generateAmortizationSchedule.createPercentage"
+        );
+        return { success: false, error };
       }
 
-      // Calculate remaining months (estimate)
-      const estimatedRemainingMonths =
-        currentBalance <= 0
-          ? 0
-          : Math.ceil(
-              Math.log(
-                1 + (currentBalance * monthlyRate) / regularPaymentAmount,
-              ) / Math.log(1 + monthlyRate),
-            );
+      // Calculate remaining months (estimate) - simplified
+      const estimatedRemainingMonths = Math.max(1, originalTermMonths - monthNumber + 1);
       const remainingMonthsResult = createMonthCount(estimatedRemainingMonths);
       if (!remainingMonthsResult.success) {
-        return { success: false, error: "ScheduleGenerationFailed" };
+        const error = createRemainingMonthsCalculationError(
+          currentBalance,
+          monthlyRate,
+          regularPaymentAmount,
+          estimatedRemainingMonths,
+          "generateAmortizationSchedule.createMonthCount"
+        );
+        return { success: false, error };
       }
 
       // Create amortization entry
       const startingBalanceResult = createMoney(startingBalance);
-      const cumulativeInterestResult = createMoney(cumulativeInterest);
-      const cumulativePrincipalResult = createMoney(cumulativePrincipal);
+      if (!startingBalanceResult.success) {
+        const error = createMoneyCreationError(
+          startingBalance,
+          startingBalance < 0 ? "negative" : "exceeds_maximum",
+          "generateAmortizationSchedule.createStartingBalanceMoney"
+        );
+        return { success: false, error };
+      }
 
-      if (
-        !startingBalanceResult.success ||
-        !cumulativeInterestResult.success ||
-        !cumulativePrincipalResult.success
-      ) {
-        return { success: false, error: "ScheduleGenerationFailed" };
+      const cumulativeInterestResult = createMoney(cumulativeInterest);
+      if (!cumulativeInterestResult.success) {
+        const error = createMoneyCreationError(
+          cumulativeInterest,
+          cumulativeInterest < 0 ? "negative" : "exceeds_maximum",
+          "generateAmortizationSchedule.createCumulativeInterestMoney"
+        );
+        return { success: false, error };
+      }
+
+      const cumulativePrincipalResult = createMoney(cumulativePrincipal);
+      if (!cumulativePrincipalResult.success) {
+        const error = createMoneyCreationError(
+          cumulativePrincipal,
+          cumulativePrincipal < 0 ? "negative" : "exceeds_maximum",
+          "generateAmortizationSchedule.createCumulativePrincipalMoney"
+        );
+        return { success: false, error };
       }
 
       const entry: AmortizationEntry = {
@@ -241,12 +298,29 @@ export function generateAmortizationSchedule(
       if (currentBalance <= 0.01) break;
     }
 
+
     // Very simple placeholder metrics (temporarily skip complex type creation)
     const simpleMoney = createMoney(1000);
     const simpleCount = createMonthCount(entries.length);
 
-    if (!simpleMoney.success || !simpleCount.success) {
-      return { success: false, error: "ScheduleGenerationFailed" };
+    if (!simpleMoney.success) {
+      const error = createMoneyCreationError(
+        1000,
+        "invalid",
+        "generateAmortizationSchedule.createPlaceholderMoney"
+      );
+      return { success: false, error };
+    }
+    
+    if (!simpleCount.success) {
+      const error = createRemainingMonthsCalculationError(
+        0,
+        0,
+        0,
+        entries.length,
+        "generateAmortizationSchedule.createPlaceholderCount"
+      );
+      return { success: false, error };
     }
 
     const placeholderMetrics: ScheduleMetrics = {
@@ -277,7 +351,12 @@ export function generateAmortizationSchedule(
       },
     };
   } catch {
-    return { success: false, error: "ScheduleGenerationFailed" };
+    const structuredError = createMoneyCreationError(
+      0,
+      "invalid",
+      "generateAmortizationSchedule.unexpectedException",
+    );
+    return { success: false, error: structuredError };
   }
 }
 

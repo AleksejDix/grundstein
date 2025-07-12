@@ -24,7 +24,7 @@ export type InterestRateValidationError =
   | "AboveMaximumRate";
 
 // Business constants for interest rate limits
-const MIN_INTEREST_RATE = 0.1; // 0.1% minimum (historically low)
+const MIN_INTEREST_RATE = 0.0; // 0.0% minimum (allows zero-interest loans for family/promotional offers)
 const MAX_INTEREST_RATE = 25.0; // 25% maximum (extreme high, prevents unrealistic inputs)
 
 /**
