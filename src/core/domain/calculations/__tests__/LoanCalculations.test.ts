@@ -20,7 +20,6 @@ import { createLoanConfiguration } from "../../types/LoanConfiguration";
 import { createMoney, toEuros } from "../../value-objects/Money";
 import {
   createLoanAmount,
-  toMoney as loanAmountToMoney,
 } from "../../value-objects/LoanAmount";
 import {
   createInterestRate,
@@ -112,11 +111,11 @@ describe("LoanCalculations", () => {
   })();
 
   const zeroInterestLoan = (() => {
-    const amount = createLoanAmount(50000); // €50,000
-    const rate = createInterestRate(0.1); // 0.1% (minimum allowed)
+    const amount = createLoanAmount(60000); // €60,000 - divides evenly by 60
+    const rate = createInterestRate(0.0); // 0.0% (zero interest)
     const term = createYearCount(5); // 5 years
-    // Calculate correct payment for 0.1% interest rate
-    const payment = createMoney(836.34);
+    // Calculate correct payment for 0% interest rate: €60k / 60 months = €1000
+    const payment = createMoney(1000);
 
     if (!amount.success || !rate.success || !term.success || !payment.success) {
       throw new Error("Failed to create test loan configuration");
@@ -182,7 +181,7 @@ describe("LoanCalculations", () => {
       }
     });
 
-    it.skip("should handle zero interest rate correctly", () => {
+    it("should handle zero interest rate correctly", () => {
       if (!zeroInterestLoan.success) {
         throw new Error("Failed to create zero interest loan");
       }
@@ -192,11 +191,11 @@ describe("LoanCalculations", () => {
       expect(result.success).toBe(true);
       if (result.success) {
         const payment = toEuros(result.data.total);
-        const expectedPayment = 50000 / 60; // €50k / 60 months
+        const expectedPayment = 60000 / 60; // €60k / 60 months = €1000
 
-        expect(payment).toBeCloseTo(expectedPayment, 2);
+        expect(payment).toBe(expectedPayment);
         expect(toEuros(result.data.interest)).toBe(0);
-        expect(toEuros(result.data.principal)).toBeCloseTo(expectedPayment, 2);
+        expect(toEuros(result.data.principal)).toBe(expectedPayment);
       }
     });
 
@@ -296,8 +295,8 @@ describe("LoanCalculations", () => {
       }
     });
 
-    it.skip("should handle zero interest rate", () => {
-      const amount = createLoanAmount(50000);
+    it("should handle zero interest rate", () => {
+      const amount = createLoanAmount(60000);
       const rate = createInterestRate(0);
       const payment = createMoney(1000); // €1,000/month
 
@@ -310,7 +309,7 @@ describe("LoanCalculations", () => {
       expect(result.success).toBe(true);
       if (result.success) {
         const months = monthCountToNumber(result.data);
-        expect(months).toBe(50); // 50,000 / 1,000 = 50 months
+        expect(months).toBe(60); // 60,000 / 1,000 = 60 months
       }
     });
 
@@ -338,7 +337,7 @@ describe("LoanCalculations", () => {
   });
 
   describe("calculateInterestRate", () => {
-    it.skip("should calculate correct rate for known loan parameters", () => {
+    it("should calculate correct rate for known loan parameters", () => {
       if (!standardLoan.success) {
         throw new Error("Failed to create standard loan");
       }
@@ -359,16 +358,20 @@ describe("LoanCalculations", () => {
 
         // Debug info
         if (!rateResult.success) {
-          console.log("Rate calculation failed:", rateResult.error);
+          // console.log("Rate calculation failed:", rateResult.error);
+          /*
           console.log(
             "Amount:",
             toEuros(loanAmountToMoney(standardLoan.data.amount)),
           );
-          console.log("Payment:", toEuros(payment));
+          */
+          // console.log("Payment:", toEuros(payment));
+          /*
           console.log(
             "Term:",
             monthCountToNumber(standardLoan.data.termInMonths),
           );
+          */
         }
 
         expect(rateResult.success).toBe(true);
@@ -382,7 +385,7 @@ describe("LoanCalculations", () => {
       }
     });
 
-    it.skip("should detect zero interest rate scenario", () => {
+    it("should detect zero interest rate scenario", () => {
       const amount = createLoanAmount(60000);
       const term = createMonthCount(60);
       const payment = createMoney(1000); // Exactly €60k / 60 months
@@ -455,7 +458,7 @@ describe("LoanCalculations", () => {
       }
     });
 
-    it.skip("should return zero interest for zero-rate loan", () => {
+    it("should return zero interest for zero-rate loan", () => {
       if (!zeroInterestLoan.success) {
         throw new Error("Failed to create zero interest loan");
       }
@@ -503,7 +506,7 @@ describe("LoanCalculations", () => {
       }
     });
 
-    it.skip("should handle zero interest loans correctly", () => {
+    it("should handle zero interest loans correctly", () => {
       if (!zeroInterestLoan.success) {
         throw new Error("Failed to create zero interest loan");
       }
@@ -513,7 +516,7 @@ describe("LoanCalculations", () => {
       expect(result.success).toBe(true);
       if (result.success) {
         const remainingBalance = toEuros(result.data);
-        const expectedBalance = 50000 - (50000 / 60) * 24; // Linear paydown
+        const expectedBalance = 60000 - (60000 / 60) * 24; // Linear paydown = 36000
         expect(remainingBalance).toBeCloseTo(expectedBalance, 2);
       }
     });
@@ -707,7 +710,7 @@ describe("LoanCalculations", () => {
       }
     });
 
-    it.skip("should maintain numerical precision", () => {
+    it("should maintain numerical precision", () => {
       if (!standardLoan.success) {
         throw new Error("Failed to create standard loan");
       }

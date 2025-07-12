@@ -235,6 +235,7 @@ export function calculateSondertilgungImpact(
   sondertilgungPlan: SondertilgungPlan,
 ): Result<SondertilgungImpact, SondertilgungCalculationError> {
   try {
+    
     // Calculate original loan metrics
     const originalInterestResult = calculateTotalInterest(loanConfiguration);
     if (!originalInterestResult.success) {
@@ -245,17 +246,21 @@ export function calculateSondertilgungImpact(
       monthCountToNumber(loanConfiguration.termInMonths),
     );
     if (!originalTermMonths.success) {
+      console.log("Failed to create original term months");
       return { success: false, error: "PaymentPlanInconsistent" };
     }
 
+    
     // Calculate schedule with extra payments
     const scheduleResult = calculatePaymentSchedule(
       loanConfiguration,
       sondertilgungPlan,
     );
     if (!scheduleResult.success) {
+      console.log("Payment schedule calculation failed:", scheduleResult.error);
       return { success: false, error: scheduleResult.error };
     }
+    
 
     const schedule = scheduleResult.data;
 
@@ -263,8 +268,11 @@ export function calculateSondertilgungImpact(
     const originalInterest = toEuros(originalInterestResult.data);
     const interestSaved = toEuros(schedule.totalInterestSaved);
     const newTotalInterest = originalInterest - interestSaved;
-    const newInterestResult = createMoney(newTotalInterest);
+    
+    
+    const newInterestResult = createMoney(Math.max(0, newTotalInterest));
     if (!newInterestResult.success) {
+      console.log("Failed to create new total interest money");
       return { success: false, error: "PaymentPlanInconsistent" };
     }
 
@@ -274,14 +282,17 @@ export function calculateSondertilgungImpact(
         total + (entry.extraPayment ? toEuros(entry.extraPayment.amount) : 0)
       );
     }, 0);
+    
     const totalExtraResult = createMoney(totalExtraPayments);
     if (!totalExtraResult.success) {
+      console.log("Failed to create total extra payments money");
       return { success: false, error: "PaymentPlanInconsistent" };
     }
 
     // Calculate new term
     const newTermMonths = createMonthCount(schedule.entries.length);
     if (!newTermMonths.success) {
+      console.log("Failed to create new term months");
       return { success: false, error: "PaymentPlanInconsistent" };
     }
 
@@ -420,15 +431,10 @@ function findExtraPaymentForMonth(
   plan: SondertilgungPlan,
   month: PaymentMonth,
 ): ExtraPayment | undefined {
-  // This would depend on the structure of SondertilgungPlan
-  // For now, we'll assume it has an extraPayments array
-  if ("extraPayments" in plan && Array.isArray(plan.extraPayments)) {
-    return plan.extraPayments.find(
-      (payment) =>
-        paymentMonthToNumber(payment.month) === paymentMonthToNumber(month),
-    );
-  }
-  return undefined;
+  return plan.payments.find(
+    (payment) =>
+      paymentMonthToNumber(payment.month) === paymentMonthToNumber(month),
+  );
 }
 
 /**

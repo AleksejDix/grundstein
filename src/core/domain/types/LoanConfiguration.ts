@@ -3,6 +3,7 @@
  * Composite types that bring together foundation value types into meaningful business entities
  */
 
+import { Decimal } from "decimal.js";
 import { Result } from "../primitives/Brand";
 import type { LoanAmount } from "../value-objects/LoanAmount";
 import {
@@ -180,10 +181,17 @@ function validateParameterConsistency(
     return Math.abs(payment - expectedPayment) <= tolerance;
   }
 
-  // Standard loan payment calculation
-  const factor = Math.pow(1 + monthlyRate, numberOfPayments);
-  const expectedPayment =
-    (moneyToEuros(principal) * monthlyRate * factor) / (factor - 1);
+  // Standard loan payment calculation using Decimal.js for precision
+  const decimalPrincipal = new Decimal(moneyToEuros(principal));
+  const decimalRate = new Decimal(monthlyRate);
+  const decimalPayments = new Decimal(numberOfPayments);
+  
+  const onePlusRate = decimalRate.plus(1);
+  const factor = onePlusRate.pow(decimalPayments.toNumber());
+  const numerator = decimalPrincipal.times(decimalRate).times(factor);
+  const denominator = factor.minus(1);
+  
+  const expectedPayment = numerator.dividedBy(denominator).toNumber();
 
   // Allow for small rounding differences (€1 tolerance)
   const tolerance = 1.0;

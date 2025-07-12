@@ -21,22 +21,12 @@ describe("MortgageService - Application Integration", () => {
 
       const result = await service.analyzeLoan(loanInput);
 
-      console.log(
-        "Loan analysis result:",
-        result.success ? "SUCCESS" : "FAILED"
-      );
 
       expect(result.success).toBe(true);
 
       if (result.success) {
         const analysis = result.data;
 
-        console.log("Monthly Payment:", analysis.monthlyPayment.total);
-        console.log("Total Interest:", analysis.totals.interestPaid);
-        console.log(
-          "Principal %:",
-          analysis.monthlyPayment.principalPercentage.toFixed(1) + "%"
-        );
 
         // Validate against our known calculation: €100K @ 5.6% for 7 years ≈ €1,441.76
         expect(analysis.monthlyPayment.total).toBeCloseTo(1441.76, 0);
@@ -55,7 +45,6 @@ describe("MortgageService - Application Integration", () => {
         expect(analysis.totals.termInYears).toBe(7);
         expect(analysis.totals.termInMonths).toBe(84);
 
-        console.log("✅ Standard loan analysis passed");
       }
     });
 
@@ -74,7 +63,6 @@ describe("MortgageService - Application Integration", () => {
         expect(result.data.totals.termInMonths).toBe(60);
         expect(result.data.totals.termInYears).toBe(5);
 
-        console.log("✅ Month-based term specification passed");
       }
     });
 
@@ -92,7 +80,6 @@ describe("MortgageService - Application Integration", () => {
         expect(result.error).toBe("InvalidLoanParameters");
       }
 
-      console.log("✅ Invalid parameter rejection passed");
     });
   });
 
@@ -100,15 +87,12 @@ describe("MortgageService - Application Integration", () => {
     it("should provide quick loan estimates", () => {
       const estimate = service.getQuickEstimate(100000, 5.6, 7);
 
-      console.log("Quick estimate monthly payment:", estimate.monthlyPayment);
-      console.log("Quick estimate total interest:", estimate.totalInterest);
 
       // Should be close to our domain calculation
       expect(estimate.monthlyPayment).toBeCloseTo(1441.76, 0);
       expect(estimate.totalInterest).toBeGreaterThan(0);
       expect(estimate.totalPaid).toBeCloseTo(estimate.monthlyPayment * 84, 0);
 
-      console.log("✅ Quick estimate calculation passed");
     });
 
     it("should handle zero interest rate", () => {
@@ -119,12 +103,11 @@ describe("MortgageService - Application Integration", () => {
       expect(estimate.monthlyPayment).toBeCloseTo(expectedPayment, 2);
       expect(estimate.totalInterest).toBe(0);
 
-      console.log("✅ Zero interest handling passed");
     });
   });
 
   describe("analyzeSondertilgung", () => {
-    it.skip("should analyze extra payment scenarios", async () => {
+    it("should analyze extra payment scenarios", async () => {
       const baseLoan = {
         loanAmount: 80000,
         interestRate: 6.0,
@@ -141,25 +124,12 @@ describe("MortgageService - Application Integration", () => {
         extraPayments
       );
 
-      console.log(
-        "Sondertilgung analysis result:",
-        result.success ? "SUCCESS" : "FAILED"
-      );
 
       expect(result.success).toBe(true);
 
       if (result.success) {
         const analysis = result.data;
 
-        console.log(
-          "Total extra payments:",
-          analysis.impact.totalExtraPayments
-        );
-        console.log("Interest saved:", analysis.impact.totalInterestSaved);
-        console.log(
-          "Effective return rate:",
-          analysis.impact.effectiveReturnRate.toFixed(2) + "%"
-        );
 
         // Should have calculated extra payments correctly
         expect(analysis.impact.totalExtraPayments).toBe(8000);
@@ -170,7 +140,6 @@ describe("MortgageService - Application Integration", () => {
         // Should calculate a return rate
         expect(analysis.impact.effectiveReturnRate).toBeGreaterThan(0);
 
-        console.log("✅ Sondertilgung analysis passed");
       }
     });
   });
@@ -185,28 +154,12 @@ describe("MortgageService - Application Integration", () => {
 
       const result = await service.compareScenarios(scenarios);
 
-      console.log(
-        "Scenario comparison result:",
-        result.success ? "SUCCESS" : "FAILED"
-      );
 
       expect(result.success).toBe(true);
 
       if (result.success) {
         const comparison = result.data;
 
-        console.log(
-          "Number of scenarios analyzed:",
-          comparison.scenarios.length
-        );
-        console.log(
-          "Best payment scenario:",
-          comparison.bestCase.lowestPayment.monthlyPayment.total
-        );
-        console.log(
-          "Best interest scenario:",
-          comparison.bestCase.lowestTotalInterest.totals.interestPaid
-        );
 
         expect(comparison.scenarios.length).toBe(3);
 
@@ -226,7 +179,6 @@ describe("MortgageService - Application Integration", () => {
           scenario1.totals.interestPaid
         );
 
-        console.log("✅ Scenario comparison passed");
       }
     });
   });
@@ -245,9 +197,6 @@ describe("MortgageService - Application Integration", () => {
       if (result.success) {
         const analysis = result.data;
 
-        console.log("Max affordable payment:", analysis.maxAffordablePayment);
-        console.log("Recommended loan amount:", analysis.recommendedLoanAmount);
-        console.log("Risk level:", analysis.riskLevel);
 
         // Available income: €2,000, so max payment should be 35% of that
         expect(analysis.maxAffordablePayment).toBeCloseTo(700, 0);
@@ -255,7 +204,6 @@ describe("MortgageService - Application Integration", () => {
         // Should have a risk assessment
         expect(["low", "medium", "high"]).toContain(analysis.riskLevel);
 
-        console.log("✅ Affordability analysis passed");
       }
     });
   });
