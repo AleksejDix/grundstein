@@ -14,7 +14,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `npm test` - Run unit tests with Vitest
 - `npm run test:unit` - Run unit tests in jsdom environment
-- `npm run test:e2e` - Run Playwright end-to-end tests
 - `npm run coverage` - Generate test coverage report
 
 ### Code Quality
@@ -132,7 +131,6 @@ const rate = 3.5; // Could be invalid rate
 - **Vue 3** with TypeScript and Composition API
 - **Vite** for fast development and building
 - **Vitest** for unit testing with jsdom
-- **Playwright** for E2E testing
 - **Tailwind CSS** for styling
 - **Chart.js/vue-chartjs** for data visualization
 - **Decimal.js** for precise financial calculations
