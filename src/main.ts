@@ -1,18 +1,28 @@
-import { createApp } from "vue";
 import { createPinia } from "pinia";
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
+import { createApp } from "vue";
 
 import App from "./App.vue";
 
-import router from "./router";
-import { registerServiceWorker } from "./utils/serviceWorker";
-import { performanceMonitor } from "./utils/performance";
+import { createRouter, createWebHistory } from "vue-router";
+import { routes } from "vue-router/auto-routes";
 import { errorLogger } from "./utils/errorLogger";
+import { performanceMonitor } from "./utils/performance";
+import { registerServiceWorker } from "./utils/serviceWorker";
 
 import "./assets/main.css";
 
 const app = createApp(App);
 
-app.use(createPinia());
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes,
+});
+
+app.use(pinia);
 app.use(router);
 app.directive("outline-fixer");
 
