@@ -209,6 +209,33 @@ interface IRepository {
 
 For detailed standards, see: `/docs/CODING_STANDARDS.md`
 
+## CRITICAL: NEVER BYPASS QUALITY CHECKS
+
+### ❌ NEVER USE THESE FLAGS:
+
+- `--no-verify` - NEVER bypass git hooks
+- `--force` / `-f` - NEVER force push
+- `--skip-checks` - NEVER skip any checks
+- `npm test -- --no-coverage` - NEVER skip coverage
+- `git commit -n` - NEVER skip commit hooks
+
+### WHY THIS MATTERS:
+
+1. **Git hooks exist for a reason** - They catch errors before they reach CI/CD
+2. **Type checking prevents runtime errors** - Financial software needs to be reliable
+3. **Tests ensure code works** - Skipping them is lying to yourself
+4. **Linting maintains quality** - Consistent code is maintainable code
+
+### THE RIGHT APPROACH:
+
+- Fix the errors, don't bypass them
+- If type-check fails, fix the types
+- If tests fail, fix the code
+- If lint fails, fix the style
+- Take the time to do it right
+
+**Remember**: Every `--no-verify` is technical debt you're adding to the project. The PR will fail anyway, so you're just wasting time.
+
 ## CRITICAL LESSONS LEARNED - AVOID THESE MISTAKES
 
 ### 🚨 ALWAYS Analyze Before Acting
@@ -220,10 +247,11 @@ For detailed standards, see: `/docs/CODING_STANDARDS.md`
    - Check how types flow through the system
 
 2. **Respect the Result Type Pattern**
+
    ```typescript
    // ❌ WRONG - Never access .data without checking .success
    const value = result.data!;
-   
+
    // ✅ CORRECT - Always check success first
    if (result.success) {
      const value = result.data;
@@ -243,10 +271,12 @@ For detailed standards, see: `/docs/CODING_STANDARDS.md`
    - Example: `new MortgageService()` → `MortgageService.method()` or `useMortgageAdapter()`
 
 5. **Vue Template Comments**
+
    ```vue
    <!-- ✅ CORRECT - Use HTML comments in templates -->
-   {{ value }} <!-- TODO: fix this -->
-   
+   {{ value }}
+   <!-- TODO: fix this -->
+
    <!-- ❌ WRONG - Don't use JS-style comments in templates -->
    {{ value }} {{/* TODO: fix this */}}
    ```
@@ -287,6 +317,7 @@ For detailed standards, see: `/docs/CODING_STANDARDS.md`
 ### 🎯 The Right Approach
 
 When asked to make changes:
+
 1. **Analyze** the current state thoroughly
 2. **Plan** the changes with consideration for ripple effects
 3. **Execute** systematically with verification at each step
