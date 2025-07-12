@@ -35,6 +35,7 @@ export type Mortgage = {
     readonly contactPerson?: string;
     readonly notes?: string;
     readonly market?: "DE" | "CH" | "AT"; // Which market/country
+    readonly refinancedTo?: MortgageId; // Reference to new mortgage when refinanced
   };
 };
 
