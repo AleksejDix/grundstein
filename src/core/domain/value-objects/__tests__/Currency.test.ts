@@ -265,7 +265,7 @@ describe("Currency Types", () => {
             if (!Number.isFinite(amount) || amount < 0) {
               return;
             }
-            
+
             // Round to 2 decimal places
             const rounded = Math.round(amount * 100) / 100;
             const result = createEUR(rounded);
