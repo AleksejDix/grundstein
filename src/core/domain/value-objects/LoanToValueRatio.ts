@@ -25,9 +25,7 @@ import {
 import { toEuros } from "./Money";
 import type { LoanAmount } from "./LoanAmount";
 import { toNumber as loanAmountToNumber } from "./LoanAmount";
-import type {
-  PropertyValuation,
-} from "../types/PropertyValuation";
+import type { PropertyValuation } from "../types/PropertyValuation";
 import {
   getCurrentValue,
   getPropertyType,
@@ -77,7 +75,7 @@ export function createLoanToValueRatio(
   loanAmount: LoanAmount,
   propertyValuation: PropertyValuation,
   originalLoanAmount?: LoanAmount,
-  calculationDate: Date = new Date()
+  calculationDate: Date = new Date(),
 ): Result<LoanToValueRatio, LoanToValueValidationError> {
   // Validate property valuation is acceptable for mortgage
   if (!isAcceptableForMortgage(propertyValuation)) {
@@ -263,7 +261,7 @@ export function calculateEquityPercentage(ltv: LoanToValueRatio): number {
  * Get estimated interest rate premium based on LTV
  */
 export function getInterestRatePremium(ltv: LoanToValueRatio): number {
-  const currentLTV = getCurrentLTV(ltv);
+  const _currentLTV = getCurrentLTV(ltv);
   const riskCategory = getRiskCategory(ltv);
 
   switch (riskCategory) {
@@ -295,7 +293,7 @@ export function requiresMortgageInsurance(ltv: LoanToValueRatio): boolean {
  */
 export function calculateAmountToReachTargetLTV(
   ltv: LoanToValueRatio,
-  targetLTV: number
+  targetLTV: number,
 ): number {
   const propertyValue = toEuros(getCurrentValue(getPropertyValuation(ltv)));
   const currentLoanValue = loanAmountToNumber(getLoanAmount(ltv));
@@ -347,7 +345,7 @@ export function getRiskCategoryDescription(category: LTVRiskCategory): string {
  */
 export function compareByCurrentLTV(
   a: LoanToValueRatio,
-  b: LoanToValueRatio
+  b: LoanToValueRatio,
 ): number {
   return getCurrentLTV(a) - getCurrentLTV(b);
 }
@@ -365,7 +363,7 @@ export function isSafeForRefinancing(ltv: LoanToValueRatio): boolean {
  */
 export function calculateMaxAdditionalBorrowing(
   ltv: LoanToValueRatio,
-  targetLTV: number = 80
+  targetLTV: number = 80,
 ): number {
   const propertyValue = toEuros(getCurrentValue(getPropertyValuation(ltv)));
   const currentLoanValue = loanAmountToNumber(getLoanAmount(ltv));
@@ -394,7 +392,7 @@ export function getStandardLTVLimits(): {
  */
 export function isCalculationCurrent(
   ltv: LoanToValueRatio,
-  maxAgeMonths: number = 6
+  maxAgeMonths: number = 6,
 ): boolean {
   const calculationDate = getCalculationDate(ltv);
   const now = new Date();
@@ -409,13 +407,13 @@ export function isCalculationCurrent(
  */
 export function updateWithNewLoanAmount(
   ltv: LoanToValueRatio,
-  newLoanAmount: LoanAmount
+  newLoanAmount: LoanAmount,
 ): Result<LoanToValueRatio, LoanToValueValidationError> {
   return createLoanToValueRatio(
     newLoanAmount,
     getPropertyValuation(ltv),
     getLoanAmount(ltv), // Use current as original
-    new Date()
+    new Date(),
   );
 }
 
@@ -424,13 +422,13 @@ export function updateWithNewLoanAmount(
  */
 export function updateWithNewPropertyValuation(
   ltv: LoanToValueRatio,
-  newPropertyValuation: PropertyValuation
+  newPropertyValuation: PropertyValuation,
 ): Result<LoanToValueRatio, LoanToValueValidationError> {
   return createLoanToValueRatio(
     getLoanAmount(ltv),
     newPropertyValuation,
     getLoanAmount(ltv), // Keep same original loan amount
-    new Date()
+    new Date(),
   );
 }
 

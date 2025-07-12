@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
 import {
-  type PositiveInteger,
   createPositiveInteger,
   toNumber,
   addPositiveInteger,
@@ -13,7 +12,6 @@ import {
   formatPositiveInteger,
   ONE,
   TWELVE,
-  type PositiveIntegerValidationError,
 } from "../PositiveInteger";
 
 describe("PositiveInteger Type", () => {
@@ -275,7 +273,7 @@ describe("PositiveInteger Property-Based Tests", () => {
           if (result.success) {
             expect(toNumber(result.data)).toBe(value);
           }
-        })
+        }),
       );
     });
 
@@ -287,7 +285,7 @@ describe("PositiveInteger Property-Based Tests", () => {
           if (!result.success) {
             expect(result.error).toBe("NotPositive");
           }
-        })
+        }),
       );
     });
 
@@ -307,8 +305,8 @@ describe("PositiveInteger Property-Based Tests", () => {
             if (!result.success) {
               expect(result.error).toBe("NotInteger");
             }
-          }
-        )
+          },
+        ),
       );
     });
   });
@@ -329,8 +327,8 @@ describe("PositiveInteger Property-Based Tests", () => {
 
               expect(isEqualPositiveInteger(sum1, sum2)).toBe(true);
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -354,8 +352,8 @@ describe("PositiveInteger Property-Based Tests", () => {
 
               expect(isEqualPositiveInteger(leftAssoc, rightAssoc)).toBe(true);
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -369,7 +367,7 @@ describe("PositiveInteger Property-Based Tests", () => {
 
             expect(toNumber(sum)).toBe(a + 1);
           }
-        })
+        }),
       );
     });
   });
@@ -390,8 +388,8 @@ describe("PositiveInteger Property-Based Tests", () => {
 
               expect(isEqualPositiveInteger(product1, product2)).toBe(true);
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -405,7 +403,7 @@ describe("PositiveInteger Property-Based Tests", () => {
 
             expect(isEqualPositiveInteger(intA.data, product)).toBe(true);
           }
-        })
+        }),
       );
     });
   });
@@ -428,8 +426,8 @@ describe("PositiveInteger Property-Based Tests", () => {
                 expect(isEqualPositiveInteger(intA.data, diff.data)).toBe(true);
               }
             }
-          }
-        )
+          },
+        ),
       );
     });
   });

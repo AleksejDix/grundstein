@@ -12,16 +12,13 @@ import type { MonthlyPayment } from "../types/MonthlyPayment";
 import { createMonthlyPayment } from "../types/MonthlyPayment";
 import type { Money } from "../value-objects/Money";
 import { createMoney, toEuros } from "../value-objects/Money";
-import type { MonthCount } from "../value-objects/MonthCount";
 import { toNumber as monthCountToNumber } from "../value-objects/MonthCount";
 import { calculateMonthlyPayment } from "./LoanCalculations";
 
 /**
  * Amortization errors
  */
-export type AmortizationError =
-  | "InvalidLoanConfiguration"
-  | "CalculationError";
+export type AmortizationError = "InvalidLoanConfiguration" | "CalculationError";
 
 /**
  * Single payment in the schedule
@@ -50,7 +47,7 @@ export type PaymentSchedule = {
  */
 export function generateAmortizationSchedule(
   loanConfig: LoanConfiguration,
-  extraPayments: readonly ExtraPayment[] = []
+  extraPayments: readonly ExtraPayment[] = [],
 ): Result<PaymentSchedule, AmortizationError> {
   try {
     const monthlyPaymentResult = calculateMonthlyPayment(loanConfig);
@@ -61,14 +58,14 @@ export function generateAmortizationSchedule(
     const monthlyPayment = monthlyPaymentResult.data;
     const monthlyPaymentAmount = toEuros(monthlyPayment.total);
     const monthlyRate = toEuros(loanConfig.annualRate) / 100 / 12;
-    
+
     let remainingBalance = toEuros(loanConfig.amount);
     let cumulativeInterest = 0;
     let cumulativePrincipal = 0;
-    
+
     const entries: PaymentScheduleEntry[] = [];
     const maxMonths = monthCountToNumber(loanConfig.termInMonths);
-    
+
     // Create extra payment lookup
     const extraPaymentMap = new Map<number, number>();
     for (const extra of extraPayments) {
@@ -77,15 +74,25 @@ export function generateAmortizationSchedule(
       extraPaymentMap.set(month, amount);
     }
 
-    for (let month = 1; month <= maxMonths && remainingBalance > 0.01; month++) {
+    for (
+      let month = 1;
+      month <= maxMonths && remainingBalance > 0.01;
+      month++
+    ) {
       // Calculate interest for this month
       const interestPayment = remainingBalance * monthlyRate;
-      const principalPayment = Math.min(monthlyPaymentAmount - interestPayment, remainingBalance);
-      
+      const principalPayment = Math.min(
+        monthlyPaymentAmount - interestPayment,
+        remainingBalance,
+      );
+
       // Apply extra payment if any
       const extraPaymentAmount = extraPaymentMap.get(month) || 0;
-      const totalPrincipalPayment = Math.min(principalPayment + extraPaymentAmount, remainingBalance);
-      
+      const totalPrincipalPayment = Math.min(
+        principalPayment + extraPaymentAmount,
+        remainingBalance,
+      );
+
       // Update balances
       remainingBalance -= totalPrincipalPayment;
       cumulativeInterest += interestPayment;
@@ -99,15 +106,18 @@ export function generateAmortizationSchedule(
       }
 
       // Create money values with proper error handling
-      const extraPaymentResult = extraPaymentAmount > 0 ? createMoney(extraPaymentAmount) : null;
+      const extraPaymentResult =
+        extraPaymentAmount > 0 ? createMoney(extraPaymentAmount) : null;
       const remainingBalanceResult = createMoney(remainingBalance);
       const cumulativeInterestResult = createMoney(cumulativeInterest);
       const cumulativePrincipalResult = createMoney(cumulativePrincipal);
 
-      if ((extraPaymentResult && !extraPaymentResult.success) || 
-          !remainingBalanceResult.success || 
-          !cumulativeInterestResult.success || 
-          !cumulativePrincipalResult.success) {
+      if (
+        (extraPaymentResult && !extraPaymentResult.success) ||
+        !remainingBalanceResult.success ||
+        !cumulativeInterestResult.success ||
+        !cumulativePrincipalResult.success
+      ) {
         return Result.error("CalculationError");
       }
 
@@ -123,10 +133,16 @@ export function generateAmortizationSchedule(
 
     // Create final summary values with proper error handling
     const totalInterestResult = createMoney(cumulativeInterest);
-    const totalPaymentsResult = createMoney(cumulativePrincipal + cumulativeInterest);
+    const totalPaymentsResult = createMoney(
+      cumulativePrincipal + cumulativeInterest,
+    );
     const finalBalanceResult = createMoney(remainingBalance);
 
-    if (!totalInterestResult.success || !totalPaymentsResult.success || !finalBalanceResult.success) {
+    if (
+      !totalInterestResult.success ||
+      !totalPaymentsResult.success ||
+      !finalBalanceResult.success
+    ) {
       return Result.error("CalculationError");
     }
 
@@ -136,7 +152,7 @@ export function generateAmortizationSchedule(
       totalPayments: totalPaymentsResult.data,
       finalBalance: finalBalanceResult.data,
     });
-  } catch (error) {
+  } catch {
     return Result.error("CalculationError");
   }
 }
@@ -144,14 +160,15 @@ export function generateAmortizationSchedule(
 /**
  * Calculate simple loan summary without full schedule
  */
-export function calculateLoanSummary(
-  loanConfig: LoanConfiguration
-): Result<{
-  monthlyPayment: MonthlyPayment;
-  totalInterest: Money;
-  totalPayments: Money;
-  totalOfPayments: Money;
-}, AmortizationError> {
+export function calculateLoanSummary(loanConfig: LoanConfiguration): Result<
+  {
+    monthlyPayment: MonthlyPayment;
+    totalInterest: Money;
+    totalPayments: Money;
+    totalOfPayments: Money;
+  },
+  AmortizationError
+> {
   try {
     const monthlyPaymentResult = calculateMonthlyPayment(loanConfig);
     if (!monthlyPaymentResult.success) {
@@ -168,7 +185,11 @@ export function calculateLoanSummary(
     const totalPaymentsResult = createMoney(totalPayments);
     const totalOfPaymentsResult = createMoney(totalPayments);
 
-    if (!totalInterestResult.success || !totalPaymentsResult.success || !totalOfPaymentsResult.success) {
+    if (
+      !totalInterestResult.success ||
+      !totalPaymentsResult.success ||
+      !totalOfPaymentsResult.success
+    ) {
       return Result.error("CalculationError");
     }
 
@@ -178,7 +199,7 @@ export function calculateLoanSummary(
       totalPayments: totalPaymentsResult.data,
       totalOfPayments: totalOfPaymentsResult.data,
     });
-  } catch (error) {
+  } catch {
     return Result.error("CalculationError");
   }
 }

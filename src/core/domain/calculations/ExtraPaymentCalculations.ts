@@ -8,11 +8,13 @@
 import { Result } from "../primitives/Brand";
 import type { LoanConfiguration } from "../types/LoanConfiguration";
 import type { ExtraPayment } from "../types/ExtraPayment";
-import type { ExtraPaymentPlan } from "../types/ExtraPaymentPlan";
 import type { Money } from "../value-objects/Money";
 import { createMoney, toEuros } from "../value-objects/Money";
 import type { MonthCount } from "../value-objects/MonthCount";
-import { toNumber as monthCountToNumber, createMonthCount } from "../value-objects/MonthCount";
+import {
+  toNumber as monthCountToNumber,
+  createMonthCount,
+} from "../value-objects/MonthCount";
 import { calculateMonthlyPayment } from "./LoanCalculations";
 
 /**
@@ -41,7 +43,7 @@ export type ExtraPaymentImpact = {
  */
 export function calculateExtraPaymentImpact(
   loanConfig: LoanConfiguration,
-  extraPayments: readonly ExtraPayment[]
+  extraPayments: readonly ExtraPayment[],
 ): Result<ExtraPaymentImpact, ExtraPaymentCalculationError> {
   try {
     // Calculate original loan metrics
@@ -51,9 +53,10 @@ export function calculateExtraPaymentImpact(
     }
 
     const originalTerm = loanConfig.termInMonths;
-    const originalTotalPayment = toEuros(originalPayment.data.total) * monthCountToNumber(originalTerm);
+    const originalTotalPayment =
+      toEuros(originalPayment.data.total) * monthCountToNumber(originalTerm);
     const originalTotalInterest = createMoney(
-      originalTotalPayment - toEuros(loanConfig.amount)
+      originalTotalPayment - toEuros(loanConfig.amount),
     );
 
     if (!originalTotalInterest.success) {
@@ -61,10 +64,10 @@ export function calculateExtraPaymentImpact(
     }
 
     // Simple calculation: each extra payment reduces remaining balance
-    let remainingBalance = toEuros(loanConfig.amount);
+    let _remainingBalance = toEuros(loanConfig.amount);
     const monthlyPaymentAmount = toEuros(originalPayment.data.total);
     const monthlyPrincipal = toEuros(originalPayment.data.principal);
-    
+
     let totalExtraPayments = 0;
     let monthsSaved = 0;
 
@@ -72,18 +75,22 @@ export function calculateExtraPaymentImpact(
     for (const extraPayment of extraPayments) {
       const extraAmount = toEuros((extraPayment as any).amount);
       totalExtraPayments += extraAmount;
-      
+
       // Simple approximation: extra payment reduces balance directly
-      remainingBalance -= extraAmount;
-      
+      _remainingBalance -= extraAmount;
+
       // Each extra payment saves approximately extraAmount / monthlyPrincipal months
       monthsSaved += Math.round(extraAmount / monthlyPrincipal);
     }
 
-    const newTermMonths = Math.max(1, monthCountToNumber(originalTerm) - monthsSaved);
-    const newTotalPayment = monthlyPaymentAmount * newTermMonths + totalExtraPayments;
+    const newTermMonths = Math.max(
+      1,
+      monthCountToNumber(originalTerm) - monthsSaved,
+    );
+    const newTotalPayment =
+      monthlyPaymentAmount * newTermMonths + totalExtraPayments;
     const newTotalInterest = createMoney(
-      newTotalPayment - toEuros(loanConfig.amount)
+      newTotalPayment - toEuros(loanConfig.amount),
     );
 
     if (!newTotalInterest.success) {
@@ -91,7 +98,7 @@ export function calculateExtraPaymentImpact(
     }
 
     const interestSaved = createMoney(
-      toEuros(originalTotalInterest.data) - toEuros(newTotalInterest.data)
+      toEuros(originalTotalInterest.data) - toEuros(newTotalInterest.data),
     );
 
     if (!interestSaved.success) {
@@ -100,12 +107,14 @@ export function calculateExtraPaymentImpact(
 
     // Create money value with proper error handling
     const totalExtraPaymentsResult = createMoney(totalExtraPayments);
-    
+
     if (!totalExtraPaymentsResult.success) {
       return Result.error("CalculationError");
     }
 
-    const newTermResult = createMonthCount(monthCountToNumber(originalTerm) - monthsSaved);
+    const newTermResult = createMonthCount(
+      monthCountToNumber(originalTerm) - monthsSaved,
+    );
     if (!newTermResult.success) {
       return Result.error("CalculationError");
     }
@@ -119,7 +128,7 @@ export function calculateExtraPaymentImpact(
       interestSaved: interestSaved.data,
       totalExtraPayments: totalExtraPaymentsResult.data,
     });
-  } catch (error) {
+  } catch {
     return Result.error("CalculationError");
   }
 }
@@ -129,7 +138,7 @@ export function calculateExtraPaymentImpact(
  */
 export function calculateExtraPaymentRecommendation(
   loanConfig: LoanConfiguration,
-  availableAmount: Money
+  availableAmount: Money,
 ): {
   recommendedAmount: Money;
   estimatedSavings: Money;
@@ -137,18 +146,23 @@ export function calculateExtraPaymentRecommendation(
 } {
   const availableEuros = toEuros(availableAmount);
   const loanAmountEuros = toEuros(loanConfig.amount);
-  
+
   // Recommend 5-10% of loan amount, limited by available amount
   const recommendedEuros = Math.min(
     availableEuros,
-    loanAmountEuros * 0.1 // 10% max
+    loanAmountEuros * 0.1, // 10% max
   );
 
   // Simple approximation: 3% annual savings rate over remaining term
-  const estimatedSavingsEuros = recommendedEuros * 0.03 * (monthCountToNumber(loanConfig.termInMonths) / 12);
-  
+  const estimatedSavingsEuros =
+    recommendedEuros *
+    0.03 *
+    (monthCountToNumber(loanConfig.termInMonths) / 12);
+
   // Simple payoff reduction: ~1 month per 1% of loan amount
-  const payoffReductionMonths = Math.round((recommendedEuros / loanAmountEuros) * 12);
+  const payoffReductionMonths = Math.round(
+    (recommendedEuros / loanAmountEuros) * 12,
+  );
 
   // Create money values with proper error handling
   const recommendedAmountResult = createMoney(recommendedEuros);

@@ -20,27 +20,18 @@ import {
   type ExtraPayment,
   createExtraPayment,
   type SondertilgungPlan,
-  type Money,
   createMoney,
   toEuros,
-  type LoanAmount,
   createLoanAmount,
-  type InterestRate,
   createInterestRate,
   type MonthCount,
   createMonthCount,
-  type YearCount,
   createYearCount,
-  type PaymentMonth,
   createPaymentMonth,
   calculateMonthlyPayment,
   calculateTotalInterest,
   calculateRemainingBalance,
-  calculateBreakEvenPoint,
-  type LoanCalculationError,
   calculateSondertilgungImpact,
-  compareSondertilgungStrategies,
-  type SondertilgungCalculationError,
 } from "../../../../core/domain";
 
 /**
@@ -132,7 +123,7 @@ export type ScenarioComparison = {
  * Create and analyze a loan configuration
  */
 export async function analyzeLoan(
-  input: LoanScenarioInput
+  input: LoanScenarioInput,
 ): Promise<Result<LoanAnalysis, MortgageServiceError>> {
   try {
     // Create domain objects from input
@@ -197,7 +188,7 @@ export async function analyzeLoan(
       loanAmountResult.data,
       interestRateResult.data,
       termInMonths,
-      basePayment.data
+      basePayment.data,
     );
 
     if (!configResult.success) {
@@ -251,7 +242,7 @@ export async function analyzeLoan(
     };
 
     return { success: true, data: analysis };
-  } catch (error) {
+  } catch {
     return { success: false, error: "CalculationFailed" };
   }
 }
@@ -264,7 +255,7 @@ export async function analyzeLoan(
  */
 export async function analyzeSondertilgung(
   baseLoan: LoanScenarioInput,
-  extraPayments: Array<{ month: number; amount: number }>
+  extraPayments: Array<{ month: number; amount: number }>,
 ): Promise<Result<SondertilgungAnalysis, MortgageServiceError>> {
   try {
     // Analyze base loan
@@ -285,7 +276,7 @@ export async function analyzeSondertilgung(
 
       const extraPaymentResult = createExtraPayment(
         monthResult.data,
-        amountResult.data
+        amountResult.data,
       );
       if (!extraPaymentResult.success) {
         return { success: false, error: "SondertilgungPlanInvalid" };
@@ -303,7 +294,7 @@ export async function analyzeSondertilgung(
     // Calculate impact
     const impactResult = calculateSondertilgungImpact(
       baseLoanResult.data.configuration,
-      sondertilgungPlan
+      sondertilgungPlan,
     );
 
     if (!impactResult.success) {
@@ -313,7 +304,7 @@ export async function analyzeSondertilgung(
     // Create analysis with placeholder data (would be more detailed in full implementation)
     const totalExtraPayments = extraPayments.reduce(
       (sum, ep) => sum + ep.amount,
-      0
+      0,
     );
     const interestSaved = toEuros(impactResult.data.totalInterestSaved);
 
@@ -334,7 +325,7 @@ export async function analyzeSondertilgung(
     };
 
     return { success: true, data: analysis };
-  } catch (error) {
+  } catch {
     return { success: false, error: "CalculationFailed" };
   }
 }
@@ -346,7 +337,7 @@ export async function analyzeSondertilgung(
  * Compare multiple loan scenarios
  */
 export async function compareScenarios(
-  scenarios: LoanScenarioInput[]
+  scenarios: LoanScenarioInput[],
 ): Promise<Result<ScenarioComparison, MortgageServiceError>> {
   try {
     const analyses: LoanAnalysis[] = [];
@@ -366,15 +357,15 @@ export async function compareScenarios(
 
     // Find best cases
     const lowestPayment = analyses.reduce((min, current) =>
-      current.monthlyPayment.total < min.monthlyPayment.total ? current : min
+      current.monthlyPayment.total < min.monthlyPayment.total ? current : min,
     );
 
     const shortestTerm = analyses.reduce((min, current) =>
-      current.totals.termInMonths < min.totals.termInMonths ? current : min
+      current.totals.termInMonths < min.totals.termInMonths ? current : min,
     );
 
     const lowestTotalInterest = analyses.reduce((min, current) =>
-      current.totals.interestPaid < min.totals.interestPaid ? current : min
+      current.totals.interestPaid < min.totals.interestPaid ? current : min,
     );
 
     // Generate insights
@@ -385,7 +376,7 @@ export async function compareScenarios(
 
     if (paymentRange > 100) {
       insights.push(
-        `Monthly payments vary by €${paymentRange.toFixed(0)} across scenarios`
+        `Monthly payments vary by €${paymentRange.toFixed(0)} across scenarios`,
       );
     }
 
@@ -395,7 +386,7 @@ export async function compareScenarios(
 
     if (interestRange > 1000) {
       insights.push(
-        `Total interest varies by €${interestRange.toFixed(0)} across scenarios`
+        `Total interest varies by €${interestRange.toFixed(0)} across scenarios`,
       );
     }
 
@@ -410,7 +401,7 @@ export async function compareScenarios(
     };
 
     return { success: true, data: comparison };
-  } catch (error) {
+  } catch {
     return { success: false, error: "CalculationFailed" };
   }
 }
@@ -425,7 +416,7 @@ export async function calculateAffordability(
   monthlyIncome: number,
   monthlyExpenses: number,
   desiredLoanAmount: number,
-  interestRate: number
+  _interestRate: number,
 ): Promise<
   Result<
     {
@@ -448,8 +439,8 @@ export async function calculateAffordability(
       maxAffordablePayment < desiredLoanAmount * 0.004
         ? "high"
         : maxAffordablePayment < desiredLoanAmount * 0.006
-        ? "medium"
-        : "low";
+          ? "medium"
+          : "low";
 
     return {
       success: true,
@@ -459,7 +450,7 @@ export async function calculateAffordability(
         riskLevel,
       },
     };
-  } catch (error) {
+  } catch {
     return { success: false, error: "CalculationFailed" };
   }
 }
@@ -473,7 +464,7 @@ export async function calculateAffordability(
 export function getQuickEstimate(
   loanAmount: number,
   interestRate: number,
-  termYears: number
+  termYears: number,
 ): {
   monthlyPayment: number;
   totalInterest: number;

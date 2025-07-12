@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
 import {
-  type PositiveDecimal,
   createPositiveDecimal,
   toNumber,
   addPositiveDecimal,
@@ -15,7 +14,6 @@ import {
   roundPositiveDecimal,
   ONE_DECIMAL,
   HALF,
-  type PositiveDecimalValidationError,
 } from "../PositiveDecimal";
 
 describe("PositiveDecimal Type", () => {
@@ -338,8 +336,8 @@ describe("PositiveDecimal Property-Based Tests", () => {
             if (result.success) {
               expect(toNumber(result.data)).toBeCloseTo(value, 10);
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -356,7 +354,7 @@ describe("PositiveDecimal Property-Based Tests", () => {
               expect(result.error).toBe("NotPositive");
             }
           }
-        })
+        }),
       );
     });
   });
@@ -385,8 +383,8 @@ describe("PositiveDecimal Property-Based Tests", () => {
 
               expect(isEqualPositiveDecimal(sum1, sum2)).toBe(true);
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -422,8 +420,8 @@ describe("PositiveDecimal Property-Based Tests", () => {
 
               expect(isEqualPositiveDecimal(leftAssoc, rightAssoc)).toBe(true);
             }
-          }
-        )
+          },
+        ),
       );
     });
   });
@@ -449,17 +447,17 @@ describe("PositiveDecimal Property-Based Tests", () => {
             if (decimalA.success && decimalB.success) {
               const product1 = multiplyPositiveDecimal(
                 decimalA.data,
-                decimalB.data
+                decimalB.data,
               );
               const product2 = multiplyPositiveDecimal(
                 decimalB.data,
-                decimalA.data
+                decimalA.data,
               );
 
               expect(isEqualPositiveDecimal(product1, product2)).toBe(true);
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -477,13 +475,13 @@ describe("PositiveDecimal Property-Based Tests", () => {
             if (decimal.success) {
               const product = multiplyPositiveDecimal(
                 decimal.data,
-                ONE_DECIMAL
+                ONE_DECIMAL,
               );
 
               expect(isEqualPositiveDecimal(decimal.data, product)).toBe(true);
             }
-          }
-        )
+          },
+        ),
       );
     });
   });
@@ -509,16 +507,16 @@ describe("PositiveDecimal Property-Based Tests", () => {
             if (decimalA.success && decimalB.success) {
               const product = multiplyPositiveDecimal(
                 decimalA.data,
-                decimalB.data
+                decimalB.data,
               );
               const quotient = dividePositiveDecimal(product, decimalB.data);
 
               expect(
-                isEqualPositiveDecimal(decimalA.data, quotient, 1e-8)
+                isEqualPositiveDecimal(decimalA.data, quotient, 1e-8),
               ).toBe(true);
             }
-          }
-        )
+          },
+        ),
       );
     });
 
@@ -538,8 +536,8 @@ describe("PositiveDecimal Property-Based Tests", () => {
 
               expect(isEqualPositiveDecimal(decimal.data, quotient)).toBe(true);
             }
-          }
-        )
+          },
+        ),
       );
     });
   });

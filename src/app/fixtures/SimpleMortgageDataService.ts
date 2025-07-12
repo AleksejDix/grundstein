@@ -9,7 +9,6 @@ import {
   createLoanAmount,
   createInterestRate,
   createMoney,
-  createMonthlyPayment,
   createMonthlyPaymentFromMoney,
   createPercentageLimit,
   percentageFromDecimal,

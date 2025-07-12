@@ -99,7 +99,7 @@ export type ScheduleMetrics = {
  */
 export function generateAmortizationSchedule(
   loanConfiguration: LoanConfiguration,
-  sondertilgungPlan?: SondertilgungPlan
+  sondertilgungPlan?: SondertilgungPlan,
 ): Result<AmortizationSchedule, AmortizationError> {
   try {
     const entries: AmortizationEntry[] = [];
@@ -109,7 +109,7 @@ export function generateAmortizationSchedule(
     const annualRate = toDecimal(loanConfiguration.annualRate);
     const monthlyRate = annualRate / 12;
     const originalTermMonths = monthCountToNumber(
-      loanConfiguration.termInMonths
+      loanConfiguration.termInMonths,
     );
 
     // Calculate regular monthly payment
@@ -141,13 +141,13 @@ export function generateAmortizationSchedule(
       const regularPaymentAmount = toEuros(regularPaymentResult.data.total);
       const regularPrincipal = Math.min(
         regularPaymentAmount - monthlyInterest,
-        currentBalance
+        currentBalance,
       );
 
       // Create regular payment breakdown
       const regularPayment = createMonthlyPayment(
         regularPrincipal,
-        monthlyInterest
+        monthlyInterest,
       );
       if (!regularPayment.success) {
         return { success: false, error: "ScheduleGenerationFailed" };
@@ -156,7 +156,7 @@ export function generateAmortizationSchedule(
       // Check for extra payment this month
       const extraPayment = findExtraPaymentForMonth(
         sondertilgungPlan,
-        currentMonth
+        currentMonth,
       );
       let extraPaymentAmount = 0;
 
@@ -164,7 +164,7 @@ export function generateAmortizationSchedule(
         // Extra payment cannot exceed remaining balance after regular principal
         extraPaymentAmount = Math.min(
           toEuros(extraPayment.amount),
-          currentBalance - regularPrincipal
+          currentBalance - regularPrincipal,
         );
       }
 
@@ -200,8 +200,8 @@ export function generateAmortizationSchedule(
           ? 0
           : Math.ceil(
               Math.log(
-                1 + (currentBalance * monthlyRate) / regularPaymentAmount
-              ) / Math.log(1 + monthlyRate)
+                1 + (currentBalance * monthlyRate) / regularPaymentAmount,
+              ) / Math.log(1 + monthlyRate),
             );
       const remainingMonthsResult = createMonthCount(estimatedRemainingMonths);
       if (!remainingMonthsResult.success) {
@@ -276,7 +276,7 @@ export function generateAmortizationSchedule(
         metrics: placeholderMetrics,
       },
     };
-  } catch (error) {
+  } catch {
     return { success: false, error: "ScheduleGenerationFailed" };
   }
 }
@@ -287,7 +287,7 @@ export function generateAmortizationSchedule(
 export function calculateScheduleMetrics(
   loanConfiguration: LoanConfiguration,
   entries: AmortizationEntry[],
-  sondertilgungPlan?: SondertilgungPlan
+  _sondertilgungPlan?: SondertilgungPlan,
 ): Result<ScheduleMetrics, AmortizationError> {
   try {
     if (entries.length === 0) {
@@ -303,17 +303,17 @@ export function calculateScheduleMetrics(
     const totalExtraPayments = entries.reduce(
       (total, entry) =>
         total + (entry.extraPayment ? toEuros(entry.extraPayment.amount) : 0),
-      0
+      0,
     );
 
     const totalPayments = entries.reduce(
       (total, entry) => total + toEuros(entry.totalPaymentAmount),
-      0
+      0,
     );
 
     // Calculate original vs actual comparison
     const originalTermMonths = monthCountToNumber(
-      loanConfiguration.termInMonths
+      loanConfiguration.termInMonths,
     );
     const actualTermMonths = entries.length;
     const termReduction = Math.max(0, originalTermMonths - actualTermMonths);
@@ -330,12 +330,12 @@ export function calculateScheduleMetrics(
       originalTotalPayments - loanAmountToNumber(loanConfiguration.amount);
     const interestSaved = Math.max(
       0,
-      originalTotalInterest - totalInterestPaid
+      originalTotalInterest - totalInterestPaid,
     );
 
     // Calculate payment statistics
     const monthlyPayments = entries.map((entry) =>
-      toEuros(entry.totalPaymentAmount)
+      toEuros(entry.totalPaymentAmount),
     );
     const averagePayment = totalPayments / entries.length;
     const largestPayment = Math.max(...monthlyPayments);
@@ -365,17 +365,28 @@ export function calculateScheduleMetrics(
     const smallestPaymentResult = createMoney(smallestPayment);
 
     // Validate all results explicitly
-    if (!totalInterestResult.success) return { success: false, error: "ScheduleAnalysisError" };
-    if (!totalPrincipalResult.success) return { success: false, error: "ScheduleAnalysisError" };
-    if (!totalExtraResult.success) return { success: false, error: "ScheduleAnalysisError" };
-    if (!totalPaymentsResult.success) return { success: false, error: "ScheduleAnalysisError" };
-    if (!actualTermResult.success) return { success: false, error: "ScheduleAnalysisError" };
-    if (!interestSavedResult.success) return { success: false, error: "ScheduleAnalysisError" };
-    if (!termReductionResult.success) return { success: false, error: "ScheduleAnalysisError" };
-    if (!effectiveRateResult.success) return { success: false, error: "ScheduleAnalysisError" };
-    if (!averagePaymentResult.success) return { success: false, error: "ScheduleAnalysisError" };
-    if (!largestPaymentResult.success) return { success: false, error: "ScheduleAnalysisError" };
-    if (!smallestPaymentResult.success) return { success: false, error: "ScheduleAnalysisError" };
+    if (!totalInterestResult.success)
+      return { success: false, error: "ScheduleAnalysisError" };
+    if (!totalPrincipalResult.success)
+      return { success: false, error: "ScheduleAnalysisError" };
+    if (!totalExtraResult.success)
+      return { success: false, error: "ScheduleAnalysisError" };
+    if (!totalPaymentsResult.success)
+      return { success: false, error: "ScheduleAnalysisError" };
+    if (!actualTermResult.success)
+      return { success: false, error: "ScheduleAnalysisError" };
+    if (!interestSavedResult.success)
+      return { success: false, error: "ScheduleAnalysisError" };
+    if (!termReductionResult.success)
+      return { success: false, error: "ScheduleAnalysisError" };
+    if (!effectiveRateResult.success)
+      return { success: false, error: "ScheduleAnalysisError" };
+    if (!averagePaymentResult.success)
+      return { success: false, error: "ScheduleAnalysisError" };
+    if (!largestPaymentResult.success)
+      return { success: false, error: "ScheduleAnalysisError" };
+    if (!smallestPaymentResult.success)
+      return { success: false, error: "ScheduleAnalysisError" };
 
     return {
       success: true,
@@ -394,7 +405,7 @@ export function calculateScheduleMetrics(
         payoffDate: { year: payoffYear, month: payoffMonth },
       },
     };
-  } catch (error) {
+  } catch {
     return { success: false, error: "ScheduleAnalysisError" };
   }
 }
@@ -404,15 +415,15 @@ export function calculateScheduleMetrics(
  */
 export function applyExtraPayments(
   baseSchedule: AmortizationSchedule,
-  sondertilgungPlan: SondertilgungPlan
+  sondertilgungPlan: SondertilgungPlan,
 ): Result<AmortizationSchedule, AmortizationError> {
   try {
     // Generate new schedule with the extra payments
     return generateAmortizationSchedule(
       baseSchedule.loanConfiguration,
-      sondertilgungPlan
+      sondertilgungPlan,
     );
-  } catch (error) {
+  } catch {
     return { success: false, error: "ScheduleGenerationFailed" };
   }
 }
@@ -422,7 +433,7 @@ export function applyExtraPayments(
  */
 export function compareSchedules(
   baseSchedule: AmortizationSchedule,
-  comparisonSchedule: AmortizationSchedule
+  comparisonSchedule: AmortizationSchedule,
 ): Result<ScheduleComparison, AmortizationError> {
   try {
     const baseMetics = baseSchedule.metrics;
@@ -461,7 +472,7 @@ export function compareSchedules(
         isWorthwhile: interestSavings > 0 && returnOnInvestment > 2, // At least 2% return
       },
     };
-  } catch (error) {
+  } catch {
     return { success: false, error: "ScheduleAnalysisError" };
   }
 }
@@ -483,11 +494,11 @@ export type ScheduleComparison = {
  */
 export function getScheduleEntry(
   schedule: AmortizationSchedule,
-  month: PaymentMonth
+  month: PaymentMonth,
 ): AmortizationEntry | undefined {
   const monthNumber = paymentMonthToNumber(month);
   return schedule.entries.find(
-    (entry) => paymentMonthToNumber(entry.monthNumber) === monthNumber
+    (entry) => paymentMonthToNumber(entry.monthNumber) === monthNumber,
   );
 }
 
@@ -496,7 +507,7 @@ export function getScheduleEntry(
  */
 export function getRemainingBalance(
   schedule: AmortizationSchedule,
-  month: PaymentMonth
+  month: PaymentMonth,
 ): Result<Money, AmortizationError> {
   try {
     const entry = getScheduleEntry(schedule, month);
@@ -505,7 +516,7 @@ export function getRemainingBalance(
     }
 
     return { success: true, data: entry.endingBalance };
-  } catch (error) {
+  } catch {
     return { success: false, error: "ScheduleAnalysisError" };
   }
 }
@@ -515,7 +526,7 @@ export function getRemainingBalance(
  */
 function findExtraPaymentForMonth(
   plan: SondertilgungPlan | undefined,
-  month: PaymentMonth
+  month: PaymentMonth,
 ): ExtraPayment | undefined {
   if (!plan) return undefined;
 
@@ -523,10 +534,9 @@ function findExtraPaymentForMonth(
   if ("extraPayments" in plan && Array.isArray(plan.extraPayments)) {
     return plan.extraPayments.find(
       (payment) =>
-        paymentMonthToNumber(payment.month) === paymentMonthToNumber(month)
+        paymentMonthToNumber(payment.month) === paymentMonthToNumber(month),
     );
   }
 
   return undefined;
 }
-

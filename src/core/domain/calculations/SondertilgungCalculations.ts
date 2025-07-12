@@ -89,7 +89,7 @@ export type SondertilgungImpact = {
  */
 export function calculatePaymentSchedule(
   loanConfiguration: LoanConfiguration,
-  sondertilgungPlan: SondertilgungPlan
+  sondertilgungPlan: SondertilgungPlan,
 ): Result<PaymentSchedule, SondertilgungCalculationError> {
   try {
     const entries: PaymentScheduleEntry[] = [];
@@ -97,7 +97,7 @@ export function calculatePaymentSchedule(
     const annualRate = toDecimal(loanConfiguration.annualRate);
     const monthlyRate = annualRate / 12;
     const originalTermMonths = monthCountToNumber(
-      loanConfiguration.termInMonths
+      loanConfiguration.termInMonths,
     );
 
     // Calculate regular monthly payment
@@ -134,13 +134,13 @@ export function calculatePaymentSchedule(
       const monthlyInterest = remainingBalance * monthlyRate;
       const regularPrincipal = Math.min(
         regularPaymentAmount - monthlyInterest,
-        remainingBalance
+        remainingBalance,
       );
 
       // Create regular payment
       const regularPayment = createMonthlyPayment(
         regularPrincipal,
-        monthlyInterest
+        monthlyInterest,
       );
       if (!regularPayment.success) {
         return { success: false, error: "PaymentPlanInconsistent" };
@@ -149,7 +149,7 @@ export function calculatePaymentSchedule(
       // Check for extra payment this month
       const extraPaymentForMonth = findExtraPaymentForMonth(
         sondertilgungPlan,
-        currentMonth
+        currentMonth,
       );
       let extraPaymentAmount = 0;
       let extraPayment: ExtraPayment | undefined;
@@ -157,7 +157,7 @@ export function calculatePaymentSchedule(
       if (extraPaymentForMonth) {
         extraPaymentAmount = Math.min(
           toEuros(extraPaymentForMonth.amount),
-          remainingBalance - regularPrincipal
+          remainingBalance - regularPrincipal,
         );
         if (extraPaymentAmount > 0) {
           extraPayment = extraPaymentForMonth;
@@ -222,7 +222,7 @@ export function calculatePaymentSchedule(
         termReductionMonths: termReductionResult.data,
       },
     };
-  } catch (error) {
+  } catch {
     return { success: false, error: "PaymentPlanInconsistent" };
   }
 }
@@ -232,7 +232,7 @@ export function calculatePaymentSchedule(
  */
 export function calculateSondertilgungImpact(
   loanConfiguration: LoanConfiguration,
-  sondertilgungPlan: SondertilgungPlan
+  sondertilgungPlan: SondertilgungPlan,
 ): Result<SondertilgungImpact, SondertilgungCalculationError> {
   try {
     // Calculate original loan metrics
@@ -242,7 +242,7 @@ export function calculateSondertilgungImpact(
     }
 
     const originalTermMonths = createMonthCount(
-      monthCountToNumber(loanConfiguration.termInMonths)
+      monthCountToNumber(loanConfiguration.termInMonths),
     );
     if (!originalTermMonths.success) {
       return { success: false, error: "PaymentPlanInconsistent" };
@@ -251,7 +251,7 @@ export function calculateSondertilgungImpact(
     // Calculate schedule with extra payments
     const scheduleResult = calculatePaymentSchedule(
       loanConfiguration,
-      sondertilgungPlan
+      sondertilgungPlan,
     );
     if (!scheduleResult.success) {
       return { success: false, error: scheduleResult.error };
@@ -302,7 +302,7 @@ export function calculateSondertilgungImpact(
         effectiveInterestRate: effectiveRate,
       },
     };
-  } catch (error) {
+  } catch {
     return { success: false, error: "PaymentPlanInconsistent" };
   }
 }
@@ -313,12 +313,12 @@ export function calculateSondertilgungImpact(
 export function calculateOptimalExtraPayment(
   loanConfiguration: LoanConfiguration,
   paymentMonth: PaymentMonth,
-  maxExtraPayment: Money
+  maxExtraPayment: Money,
 ): Result<Money, SondertilgungCalculationError> {
   try {
     const remainingBalanceResult = calculateRemainingBalance(
       loanConfiguration,
-      paymentMonthToNumber(paymentMonth) - 1
+      paymentMonthToNumber(paymentMonth) - 1,
     );
     if (!remainingBalanceResult.success) {
       return { success: false, error: remainingBalanceResult.error };
@@ -328,13 +328,13 @@ export function calculateOptimalExtraPayment(
     const maxPayment = toEuros(maxExtraPayment);
     const annualRate = toDecimal(loanConfiguration.annualRate);
     const originalTermMonths = monthCountToNumber(
-      loanConfiguration.termInMonths
+      loanConfiguration.termInMonths,
     );
     const currentMonth = paymentMonthToNumber(paymentMonth);
 
     // Calculate interest savings for different payment amounts
-    const monthlyRate = annualRate / 12;
-    const remainingMonths = originalTermMonths - currentMonth;
+    const _monthlyRate = annualRate / 12;
+    const _remainingMonths = originalTermMonths - currentMonth;
 
     // Optimal payment is the minimum of:
     // 1. Maximum allowed payment
@@ -349,7 +349,7 @@ export function calculateOptimalExtraPayment(
       return { success: false, error: "PaymentPlanInconsistent" };
     }
     return optimalResult;
-  } catch (error) {
+  } catch {
     return { success: false, error: "PaymentPlanInconsistent" };
   }
 }
@@ -359,12 +359,12 @@ export function calculateOptimalExtraPayment(
  */
 export function calculatePayoffDate(
   loanConfiguration: LoanConfiguration,
-  sondertilgungPlan: SondertilgungPlan
+  sondertilgungPlan: SondertilgungPlan,
 ): Result<MonthCount, SondertilgungCalculationError> {
   try {
     const scheduleResult = calculatePaymentSchedule(
       loanConfiguration,
-      sondertilgungPlan
+      sondertilgungPlan,
     );
     if (!scheduleResult.success) {
       return { success: false, error: scheduleResult.error };
@@ -376,7 +376,7 @@ export function calculatePayoffDate(
       return { success: false, error: "PaymentPlanInconsistent" };
     }
     return monthCountResult;
-  } catch (error) {
+  } catch {
     return { success: false, error: "PaymentPlanInconsistent" };
   }
 }
@@ -386,7 +386,7 @@ export function calculatePayoffDate(
  */
 export function compareSondertilgungStrategies(
   loanConfiguration: LoanConfiguration,
-  strategies: SondertilgungPlan[]
+  strategies: SondertilgungPlan[],
 ): Result<SondertilgungImpact[], SondertilgungCalculationError> {
   try {
     const results: SondertilgungImpact[] = [];
@@ -394,7 +394,7 @@ export function compareSondertilgungStrategies(
     for (const strategy of strategies) {
       const impactResult = calculateSondertilgungImpact(
         loanConfiguration,
-        strategy
+        strategy,
       );
       if (!impactResult.success) {
         return { success: false, error: impactResult.error };
@@ -404,11 +404,11 @@ export function compareSondertilgungStrategies(
 
     // Sort by total interest saved (descending)
     results.sort(
-      (a, b) => toEuros(b.totalInterestSaved) - toEuros(a.totalInterestSaved)
+      (a, b) => toEuros(b.totalInterestSaved) - toEuros(a.totalInterestSaved),
     );
 
     return { success: true, data: results };
-  } catch (error) {
+  } catch {
     return { success: false, error: "PaymentPlanInconsistent" };
   }
 }
@@ -418,14 +418,14 @@ export function compareSondertilgungStrategies(
  */
 function findExtraPaymentForMonth(
   plan: SondertilgungPlan,
-  month: PaymentMonth
+  month: PaymentMonth,
 ): ExtraPayment | undefined {
   // This would depend on the structure of SondertilgungPlan
   // For now, we'll assume it has an extraPayments array
   if ("extraPayments" in plan && Array.isArray(plan.extraPayments)) {
     return plan.extraPayments.find(
       (payment) =>
-        paymentMonthToNumber(payment.month) === paymentMonthToNumber(month)
+        paymentMonthToNumber(payment.month) === paymentMonthToNumber(month),
     );
   }
   return undefined;
@@ -437,7 +437,7 @@ function findExtraPaymentForMonth(
 export function calculateInterestSensitivity(
   loanConfiguration: LoanConfiguration,
   extraPaymentAmount: Money,
-  paymentMonth: PaymentMonth
+  paymentMonth: PaymentMonth,
 ): Result<
   { lowRate: Money; highRate: Money; sensitivity: number },
   SondertilgungCalculationError
@@ -448,7 +448,7 @@ export function calculateInterestSensitivity(
     const highRate = Math.min(25, baseRate + 1); // 1% higher
 
     // Create modified loan configurations
-    const lowRateConfig = {
+    const _lowRateConfig = {
       ...loanConfiguration,
       annualRate: (() => {
         const result = createInterestRate(lowRate);
@@ -456,7 +456,7 @@ export function calculateInterestSensitivity(
       })(),
     };
 
-    const highRateConfig = {
+    const _highRateConfig = {
       ...loanConfiguration,
       annualRate: (() => {
         const result = createInterestRate(highRate);
@@ -467,7 +467,7 @@ export function calculateInterestSensitivity(
     // Calculate savings for each rate scenario
     const extraPaymentResult = createExtraPayment(
       paymentMonth,
-      extraPaymentAmount
+      extraPaymentAmount,
     );
     if (!extraPaymentResult.success) {
       return { success: false, error: "InvalidExtraPayment" };
@@ -503,7 +503,7 @@ export function calculateInterestSensitivity(
         sensitivity,
       },
     };
-  } catch (error) {
+  } catch {
     return { success: false, error: "PaymentPlanInconsistent" };
   }
 }

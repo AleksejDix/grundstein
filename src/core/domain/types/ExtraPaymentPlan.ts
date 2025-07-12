@@ -2,7 +2,6 @@ import { Result } from "../primitives/Brand";
 import type { Money } from "../value-objects/Money";
 import { createMoney, toEuros } from "../value-objects/Money";
 import type { ExtraPayment } from "./ExtraPayment";
-import type { PaymentMonth } from "../value-objects/PaymentMonth";
 import type { LoanAmount } from "../value-objects/LoanAmount";
 import { toNumber } from "../value-objects/LoanAmount";
 import type { ExtraPaymentLimit } from "./ExtraPaymentRules";
@@ -39,7 +38,7 @@ export type YearlyPaymentSummary = {
  */
 export function createExtraPaymentPlan(
   yearlyLimit: ExtraPaymentLimit,
-  payments: readonly ExtraPayment[] = []
+  payments: readonly ExtraPayment[] = [],
 ): Result<ExtraPaymentPlan, ExtraPaymentPlanValidationError> {
   if (payments.length === 0) {
     return Result.error("NoPayments");
@@ -57,7 +56,7 @@ export function createExtraPaymentPlan(
 
   return Result.ok({
     yearlyLimit,
-    payments
+    payments,
   });
 }
 
@@ -66,23 +65,23 @@ export function createExtraPaymentPlan(
  */
 export function validateExtraPaymentPlan(
   plan: ExtraPaymentPlan,
-  originalLoanAmount: LoanAmount
+  originalLoanAmount: LoanAmount,
 ): Result<void, ExtraPaymentPlanValidationError> {
   const loanAmount = toNumber(originalLoanAmount);
-  
+
   // Group payments by year and validate yearly limits
   const yearlyTotals = new Map<number, number>();
-  
+
   for (const payment of plan.payments) {
     const year = Math.ceil((payment as any).month / 12);
     const amount = toEuros((payment as any).amount);
-    
+
     const currentTotal = yearlyTotals.get(year) || 0;
     yearlyTotals.set(year, currentTotal + amount);
   }
 
   // Check each year against limit
-  for (const [year, totalAmount] of yearlyTotals) {
+  for (const [_year, totalAmount] of yearlyTotals) {
     if (plan.yearlyLimit.type === "Percentage") {
       const maxAllowed = loanAmount * (plan.yearlyLimit.value / 100);
       if (totalAmount > maxAllowed) {
@@ -99,18 +98,18 @@ export function validateExtraPaymentPlan(
  * Calculate yearly payment summaries
  */
 export function calculateYearlyPaymentSummaries(
-  plan: ExtraPaymentPlan
+  plan: ExtraPaymentPlan,
 ): YearlyPaymentSummary[] {
   const yearlyData = new Map<number, { total: number; count: number }>();
-  
+
   for (const payment of plan.payments) {
     const year = Math.ceil((payment as any).month / 12);
     const amount = toEuros((payment as any).amount);
-    
+
     const current = yearlyData.get(year) || { total: 0, count: 0 };
     yearlyData.set(year, {
       total: current.total + amount,
-      count: current.count + 1
+      count: current.count + 1,
     });
   }
 
@@ -118,17 +117,17 @@ export function calculateYearlyPaymentSummaries(
     .map(([year, data]) => {
       const totalAmountResult = createMoney(data.total);
       const averagePaymentResult = createMoney(data.total / data.count);
-      
+
       // Skip entries where money creation fails
       if (!totalAmountResult.success || !averagePaymentResult.success) {
         return null;
       }
-      
+
       return {
         year,
         totalAmount: totalAmountResult.data,
         paymentCount: data.count,
-        averagePayment: averagePaymentResult.data
+        averagePayment: averagePaymentResult.data,
       };
     })
     .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
@@ -139,9 +138,10 @@ export function calculateYearlyPaymentSummaries(
  * Format extra payment plan for display
  */
 export function formatExtraPaymentPlan(plan: ExtraPaymentPlan): string {
-  const limitText = plan.yearlyLimit.type === "Unlimited" 
-    ? "Unlimited" 
-    : `${plan.yearlyLimit.value}% yearly limit`;
-    
+  const limitText =
+    plan.yearlyLimit.type === "Unlimited"
+      ? "Unlimited"
+      : `${plan.yearlyLimit.value}% yearly limit`;
+
   return `${plan.payments.length} payments, ${limitText}`;
 }

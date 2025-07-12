@@ -38,7 +38,7 @@ export type LoanCalculationError =
  * Where: P = payment, L = loan amount, c = monthly rate, n = number of payments
  */
 export function calculateMonthlyPayment(
-  loanConfiguration: LoanConfiguration
+  loanConfiguration: LoanConfiguration,
 ): Result<MonthlyPayment, LoanCalculationError> {
   try {
     const loanAmount = loanAmountToNumber(loanConfiguration.amount);
@@ -75,13 +75,13 @@ export function calculateMonthlyPayment(
 
     const paymentResult = createMonthlyPayment(
       firstMonthPrincipal,
-      firstMonthInterest
+      firstMonthInterest,
     );
     if (!paymentResult.success) {
       return { success: false, error: "MathematicalError" };
     }
     return paymentResult;
-  } catch (error) {
+  } catch {
     return { success: false, error: "MathematicalError" };
   }
 }
@@ -94,7 +94,7 @@ export function calculateMonthlyPayment(
 export function calculateLoanTerm(
   loanAmount: LoanAmount,
   annualRate: InterestRate,
-  monthlyPayment: Money
+  monthlyPayment: Money,
 ): Result<MonthCount, LoanCalculationError> {
   try {
     const amount = loanAmountToNumber(loanAmount);
@@ -139,7 +139,7 @@ export function calculateLoanTerm(
       return { success: false, error: "InvalidParameters" };
     }
     return monthCountResult;
-  } catch (error) {
+  } catch {
     return { success: false, error: "MathematicalError" };
   }
 }
@@ -151,7 +151,7 @@ export function calculateLoanTerm(
 export function calculateInterestRate(
   loanAmount: LoanAmount,
   monthlyPayment: Money,
-  termInMonths: MonthCount
+  termInMonths: MonthCount,
 ): Result<InterestRate, LoanCalculationError> {
   try {
     const amount = loanAmountToNumber(loanAmount);
@@ -200,7 +200,7 @@ export function calculateInterestRate(
       const derivative = calculatePaymentDerivative(
         amount,
         months,
-        monthlyRate
+        monthlyRate,
       );
 
       if (derivative === 0) {
@@ -223,7 +223,7 @@ export function calculateInterestRate(
     }
 
     return { success: false, error: "MathematicalError" };
-  } catch (error) {
+  } catch {
     return { success: false, error: "MathematicalError" };
   }
 }
@@ -234,7 +234,7 @@ export function calculateInterestRate(
 function calculatePaymentDerivative(
   amount: number,
   months: number,
-  monthlyRate: number
+  monthlyRate: number,
 ): number {
   const factor = Math.pow(1 + monthlyRate, months);
   const numerator = amount * months * factor;
@@ -249,7 +249,7 @@ function calculatePaymentDerivative(
  * Calculate total interest paid over the life of the loan
  */
 export function calculateTotalInterest(
-  loanConfiguration: LoanConfiguration
+  loanConfiguration: LoanConfiguration,
 ): Result<Money, LoanCalculationError> {
   try {
     const monthlyPaymentResult = calculateMonthlyPayment(loanConfiguration);
@@ -269,7 +269,7 @@ export function calculateTotalInterest(
       return { success: false, error: "MathematicalError" };
     }
     return moneyResult;
-  } catch (error) {
+  } catch {
     return { success: false, error: "MathematicalError" };
   }
 }
@@ -279,7 +279,7 @@ export function calculateTotalInterest(
  */
 export function calculateRemainingBalance(
   loanConfiguration: LoanConfiguration,
-  paymentsMade: number
+  paymentsMade: number,
 ): Result<Money, LoanCalculationError> {
   try {
     if (paymentsMade < 0) {
@@ -316,7 +316,7 @@ export function calculateRemainingBalance(
       return { success: false, error: monthlyPaymentResult.error };
     }
 
-    const monthlyPaymentAmount = toEuros(monthlyPaymentResult.data.total);
+    const _monthlyPaymentAmount = toEuros(monthlyPaymentResult.data.total);
 
     // Calculate remaining balance using amortization formula
     const factor1 = Math.pow(1 + monthlyRate, termInMonths);
@@ -329,7 +329,7 @@ export function calculateRemainingBalance(
       return { success: false, error: "MathematicalError" };
     }
     return balanceResult;
-  } catch (error) {
+  } catch {
     return { success: false, error: "MathematicalError" };
   }
 }
@@ -340,7 +340,7 @@ export function calculateRemainingBalance(
 export function calculateBreakEvenPoint(
   currentLoan: LoanConfiguration,
   newLoan: LoanConfiguration,
-  refinancingCosts: Money
+  refinancingCosts: Money,
 ): Result<MonthCount, LoanCalculationError> {
   try {
     const currentPaymentResult = calculateMonthlyPayment(currentLoan);
@@ -369,7 +369,7 @@ export function calculateBreakEvenPoint(
       return { success: false, error: "InvalidParameters" };
     }
     return monthCountResult;
-  } catch (error) {
+  } catch {
     return { success: false, error: "MathematicalError" };
   }
 }
@@ -383,7 +383,7 @@ export function calculatePaymentScenarios(
     amountMultiplier?: number;
     rateAdjustment?: number; // In percentage points
     termAdjustment?: number; // In months
-  }[]
+  }[],
 ): Result<MonthlyPayment[], LoanCalculationError> {
   try {
     const results: MonthlyPayment[] = [];
@@ -437,7 +437,7 @@ export function calculatePaymentScenarios(
     }
 
     return { success: true, data: results };
-  } catch (error) {
+  } catch {
     return { success: false, error: "MathematicalError" };
   }
 }
