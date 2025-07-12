@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
-import { defineConfig } from "vitest/config";
 import vue from "@vitejs/plugin-vue";
 import { fileURLToPath, URL } from "node:url";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [vue()],
@@ -64,17 +64,21 @@ export default defineConfig({
       },
       {
         test: {
-          name: "components",
-          include: ["src/app/**/*.{test,spec}.{js,ts,vue}"],
-          environment: "jsdom",
-        },
-      },
-      {
-        test: {
           name: "browser",
-          include: ["src/**/*.{browser,e2e}.{test,spec}.{js,ts}"],
-          environment: "jsdom",
+          include: ["src/app/**/*.user.{test,spec}.{js,ts}"],
+          setupFiles: ["vitest-browser-vue"],
+          browser: {
+            enabled: true,
+            provider: "playwright",
+            instances: [
+              {
+                browser: "chromium",
+                headless: true,
+              },
+            ],
+          },
         },
+        plugins: [vue()],
       },
     ],
   },
