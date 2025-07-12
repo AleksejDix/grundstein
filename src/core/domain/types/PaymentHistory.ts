@@ -87,7 +87,7 @@ const MIN_PARTIAL_PAYMENT_PERCENT = 10; // Minimum 10% for partial payment
 export function createPaymentHistory(
   loanId: string,
   startDate: Date,
-  initialPayments: PaymentRecord[] = []
+  initialPayments: PaymentRecord[] = [],
 ): Result<PaymentHistory, PaymentHistoryValidationError> {
   // Validate loan ID
   if (!loanId.trim()) {
@@ -112,7 +112,7 @@ export function createPaymentHistory(
   const sortedPayments = [...initialPayments].sort(
     (a, b) =>
       paymentMonthToNumber(a.paymentMonth) -
-      paymentMonthToNumber(b.paymentMonth)
+      paymentMonthToNumber(b.paymentMonth),
   );
 
   return {
@@ -122,7 +122,7 @@ export function createPaymentHistory(
       payments: sortedPayments,
       startDate: new Date(startDate),
       lastUpdated: new Date(),
-    } as PaymentHistory,
+    } as unknown as PaymentHistory,
   };
 }
 
@@ -136,7 +136,7 @@ export function createPaymentRecord(
   paymentDate: Date,
   paymentMethod: PaymentMethod = "SEPA_DirectDebit",
   extraPaymentAmount?: number,
-  notes?: string
+  notes?: string,
 ): Result<PaymentRecord, PaymentHistoryValidationError> {
   // Create payment month
   const paymentMonthResult = createPaymentMonth(paymentMonth);
@@ -177,7 +177,7 @@ export function createPaymentRecord(
   const scheduledAmount = toEuros(scheduledPayment.total);
   const paymentStatus = determinePaymentStatus(
     actualPaymentAmount,
-    scheduledAmount
+    scheduledAmount,
   );
 
   return {
@@ -200,13 +200,13 @@ export function createPaymentRecord(
  */
 export function addPaymentRecord(
   history: PaymentHistory,
-  paymentRecord: PaymentRecord
+  paymentRecord: PaymentRecord,
 ): Result<PaymentHistory, PaymentHistoryValidationError> {
   // Check for duplicate payment month
   const existingPayment = (history as any).payments.find(
     (p: PaymentRecord) =>
       paymentMonthToNumber(p.paymentMonth) ===
-      paymentMonthToNumber(paymentRecord.paymentMonth)
+      paymentMonthToNumber(paymentRecord.paymentMonth),
   );
 
   if (existingPayment) {
@@ -217,7 +217,7 @@ export function addPaymentRecord(
   const updatedPayments = [...(history as any).payments, paymentRecord].sort(
     (a, b) =>
       paymentMonthToNumber(a.paymentMonth) -
-      paymentMonthToNumber(b.paymentMonth)
+      paymentMonthToNumber(b.paymentMonth),
   );
 
   return {
@@ -236,11 +236,11 @@ export function addPaymentRecord(
 export function updatePaymentRecord(
   history: PaymentHistory,
   paymentMonth: number,
-  updates: Partial<Omit<PaymentRecord, "paymentMonth">>
+  updates: Partial<Omit<PaymentRecord, "paymentMonth">>,
 ): Result<PaymentHistory, PaymentHistoryValidationError> {
   const payments = [...(history as any).payments];
   const paymentIndex = payments.findIndex(
-    (p) => paymentMonthToNumber(p.paymentMonth) === paymentMonth
+    (p) => paymentMonthToNumber(p.paymentMonth) === paymentMonth,
   );
 
   if (paymentIndex === -1) {
@@ -274,7 +274,7 @@ export function getLoanId(history: PaymentHistory): string {
  * Get all payment records
  */
 export function getPaymentRecords(
-  history: PaymentHistory
+  history: PaymentHistory,
 ): readonly PaymentRecord[] {
   return (history as any).payments;
 }
@@ -298,10 +298,10 @@ export function getLastUpdated(history: PaymentHistory): Date {
  */
 export function getPaymentRecord(
   history: PaymentHistory,
-  paymentMonth: number
+  paymentMonth: number,
 ): PaymentRecord | undefined {
   return getPaymentRecords(history).find(
-    (p) => paymentMonthToNumber(p.paymentMonth) === paymentMonth
+    (p) => paymentMonthToNumber(p.paymentMonth) === paymentMonth,
   );
 }
 
@@ -327,7 +327,7 @@ export function calculateTotalPaymentsMade(history: PaymentHistory): Money {
  * Calculate total scheduled payments
  */
 export function calculateTotalScheduledPayments(
-  history: PaymentHistory
+  history: PaymentHistory,
 ): Money {
   const payments = getPaymentRecords(history);
   let total = 0;
@@ -409,7 +409,7 @@ export function getPaymentStatistics(history: PaymentHistory): {
   // Calculate consistency score (0-100)
   const positivePayments = stats.onTimePayments + stats.overpayments;
   stats.paymentConsistencyScore = Math.round(
-    (positivePayments / payments.length) * 100
+    (positivePayments / payments.length) * 100,
   );
 
   return stats;
@@ -420,7 +420,7 @@ export function getPaymentStatistics(history: PaymentHistory): {
  */
 export function getPaymentsByStatus(
   history: PaymentHistory,
-  status: PaymentStatus
+  status: PaymentStatus,
 ): PaymentRecord[] {
   return getPaymentRecords(history).filter((p) => p.paymentStatus === status);
 }
@@ -431,10 +431,10 @@ export function getPaymentsByStatus(
 export function getPaymentsInDateRange(
   history: PaymentHistory,
   startDate: Date,
-  endDate: Date
+  endDate: Date,
 ): PaymentRecord[] {
   return getPaymentRecords(history).filter(
-    (p) => p.paymentDate >= startDate && p.paymentDate <= endDate
+    (p) => p.paymentDate >= startDate && p.paymentDate <= endDate,
   );
 }
 
@@ -466,7 +466,7 @@ export function isInGoodStanding(history: PaymentHistory): boolean {
  */
 export function calculateDaysLate(
   paymentRecord: PaymentRecord,
-  dueDate: Date
+  dueDate: Date,
 ): number {
   if (paymentRecord.paymentStatus !== "Late") {
     return 0;
@@ -481,7 +481,7 @@ export function calculateDaysLate(
  */
 function determinePaymentStatus(
   actualAmount: number,
-  scheduledAmount: number
+  scheduledAmount: number,
 ): PaymentStatus {
   if (actualAmount === 0) {
     return "Missed";
@@ -510,7 +510,7 @@ function determinePaymentStatus(
  * Validate payment records for consistency
  */
 function validatePaymentRecords(
-  payments: PaymentRecord[]
+  payments: PaymentRecord[],
 ): Result<void, PaymentHistoryValidationError> {
   const monthsSeen = new Set<number>();
 

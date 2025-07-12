@@ -11,27 +11,50 @@ export default defineConfig({
     },
   },
   test: {
-    // Browser testing with Playwright
-    browser: {
-      enabled: false, // Set to true when ready for browser testing
-      name: 'chromium',
-      provider: 'playwright',
-    },
+    // Global configuration
+    globals: true,
 
-    // Test file patterns
-    include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-    exclude: ["node_modules", "dist"],
+    // Core tests in Node environment
+    include: ["src/core/**/*.{test,spec}.{js,ts}"],
+    environment: "node",
+    testTimeout: 5000,
+    hookTimeout: 10000,
 
-    // No globals, no mocking setup
-    globals: false,
-    
-    // No coverage for now - will use real browser testing
+    // Coverage configuration
     coverage: {
-      enabled: false,
+      provider: "v8",
+      reporter: ["text", "json", "html", "lcov"],
+      reportsDirectory: "./coverage",
+
+      // Different thresholds for different parts
+      thresholds: {
+        // Domain logic should have high coverage
+        "src/core/domain/**": {
+          branches: 90,
+          functions: 90,
+          lines: 90,
+          statements: 90,
+        },
+        // UI components can have lower thresholds
+        "src/app/**": {
+          branches: 70,
+          functions: 70,
+          lines: 70,
+          statements: 70,
+        },
+      },
+
+      include: ["src/**/*.{js,jsx,ts,tsx,vue}"],
+      exclude: [
+        "src/**/*.d.ts",
+        "src/**/*.{test,spec}.{js,jsx,ts,tsx}",
+        "src/main.ts",
+        "src/App.vue",
+        "src/assets/**",
+      ],
     },
 
-    // Test timeouts
-    testTimeout: 30000, // Longer timeout for browser tests
-    hookTimeout: 30000,
+    // Reporter configuration
+    reporters: ["verbose"],
   },
 });

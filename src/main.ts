@@ -23,8 +23,7 @@ errorLogger.init();
 app.config.errorHandler = (err: unknown, instance, info) => {
   const error = err instanceof Error ? err : new Error(String(err));
   errorLogger.logError(error, {
-    context: 'VueErrorHandler',
-    info,
+    context: "VueErrorHandler",
     instance: instance?.$.type?.name,
   });
 };

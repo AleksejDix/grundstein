@@ -17,7 +17,7 @@ export {
   validateSondertilgungPayment,
   calculateSondertilgungFees,
   supportsUnlimitedSondertilgung,
-  getRecommendedStrategy
+  getRecommendedStrategy,
 } from "./primitives/GermanSondertilgungRules";
 
 // Value Objects (Branded types with business validation)
@@ -38,7 +38,7 @@ export {
   isEqualPercentage,
   ZERO_PERCENT,
   FIFTY_PERCENT,
-  HUNDRED_PERCENT
+  HUNDRED_PERCENT,
 } from "./value-objects/Percentage";
 
 // LoanAmount exports
@@ -48,7 +48,7 @@ export {
   createLoanAmount,
   toMoney as loanAmountToMoney,
   toNumber as loanAmountToNumber,
-  formatLoanAmount
+  formatLoanAmount,
 } from "./value-objects/LoanAmount";
 
 // InterestRate exports
@@ -63,10 +63,10 @@ export {
   compareInterestRate,
   toMonthlyRate,
   fromMonthlyRate,
-  addBasisPoints
+  addBasisPoints,
 } from "./value-objects/InterestRate";
 
-// MonthCount exports  
+// MonthCount exports
 export {
   type MonthCount,
   type MonthCountValidationError,
@@ -78,7 +78,7 @@ export {
   formatMonthCount,
   toYears,
   fromYears,
-  isEqualMonthCount
+  isEqualMonthCount,
 } from "./value-objects/MonthCount";
 
 // YearCount exports
@@ -90,7 +90,7 @@ export {
   toNumber as yearCountToNumber,
   toMonths as yearCountToMonths,
   formatYearCount,
-  isEqualYearCount
+  isEqualYearCount,
 } from "./value-objects/YearCount";
 
 // PaymentMonth exports
@@ -103,11 +103,36 @@ export {
   addMonths as paymentMonthAddMonths,
   formatPaymentMonth,
   isValidPaymentMonthRange,
-  comparePaymentMonth
+  comparePaymentMonth,
 } from "./value-objects/PaymentMonth";
 
-export * from "./value-objects/PositiveInteger";
-export * from "./value-objects/PositiveDecimal";
+// PositiveInteger exports (avoiding toNumber conflict)
+export {
+  type PositiveInteger,
+  type PositiveIntegerValidationError,
+  createPositiveInteger,
+  toNumber as positiveIntegerToNumber,
+  formatPositiveInteger,
+  addPositiveInteger,
+  subtractPositiveInteger,
+  multiplyPositiveInteger,
+  comparePositiveInteger,
+  isEqualPositiveInteger,
+} from "./value-objects/PositiveInteger";
+
+// PositiveDecimal exports
+export {
+  type PositiveDecimal,
+  type PositiveDecimalValidationError,
+  createPositiveDecimal,
+  toNumber as positiveDecimalToNumber,
+  formatPositiveDecimal,
+  addPositiveDecimal,
+  subtractPositiveDecimal,
+  multiplyPositiveDecimal,
+  comparePositiveDecimal,
+  isEqualPositiveDecimal,
+} from "./value-objects/PositiveDecimal";
 export * from "./value-objects/LoanToValueRatio";
 
 // Aggregates (Complex business entities)
@@ -120,30 +145,43 @@ export * from "./types/ExtraPayment";
 export {
   type SondertilgungPlan,
   type SondertilgungValidationError,
-  type ExtraPaymentSchedule,
+  type SondertilgungLimit,
+  type YearlyPaymentSummary,
   createSondertilgungPlan,
   createPercentageLimit,
   createUnlimitedLimit,
-  addExtraPayment,
-  removeExtraPayment,
-  getExtraPaymentsForYear,
+  getYearlyPaymentSummaries,
+  canAddPayment,
+  getRemainingYearlyLimit,
+  addPaymentToPlan,
+  removePaymentFromPlan,
   getTotalExtraPayments,
-  validateAgainstLimit,
-  formatSondertilgungPlan
+  formatSondertilgungLimit,
+  formatSondertilgungPlan,
 } from "./types/SondertilgungPlan";
 // FixedRatePeriod exports
 export {
   type FixedRatePeriod,
   type FixedRatePeriodValidationError,
-  type FixedRatePeriodYear,
+  type FixedRateType,
   createFixedRatePeriod,
-  getStartDate as fixedRatePeriodGetStartDate,
+  createStandardGermanPeriod,
+  getPeriodYears,
+  getInitialRate,
+  getRateType,
+  getStartDate,
   getEndDate,
-  isActive,
-  getRemainingMonths,
+  isCurrentlyActive,
+  getRemainingYears,
+  isTypicalPeriod,
   formatFixedRatePeriod,
-  compareFixedRatePeriods,
-  extendFixedRatePeriod
+  getDaysUntilExpiry,
+  isExpiringSoon,
+  compareByEndDate,
+  getTypicalPeriods,
+  isValidPeriodLength,
+  getMinimumPeriodYears,
+  getMaximumPeriodYears,
 } from "./types/FixedRatePeriod";
 export * from "./types/PropertyValuation";
 export * from "./types/PaymentHistory";

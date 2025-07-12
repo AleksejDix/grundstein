@@ -3,6 +3,7 @@ interface ErrorContext {
   route?: string;
   context?: string;
   componentStack?: string;
+  instance?: string;
   extra?: Record<string, any>;
 }
 
@@ -13,7 +14,7 @@ interface ErrorLog {
   url: string;
   userAgent: string;
   context?: ErrorContext;
-  level: 'error' | 'warn' | 'info';
+  level: "error" | "warn" | "info";
 }
 
 interface ErrorLoggerConfig {
@@ -24,7 +25,7 @@ interface ErrorLoggerConfig {
 }
 
 const config: ErrorLoggerConfig = {
-  enabled: import.meta.env.VITE_ENABLE_ERROR_REPORTING === 'true',
+  enabled: import.meta.env.VITE_ENABLE_ERROR_REPORTING === "true",
   endpoint: import.meta.env.VITE_ERROR_ENDPOINT,
   maxLogs: 50,
   sendInterval: 30000, // 30 seconds
@@ -37,9 +38,9 @@ export const errorLogger = {
     if (!config.enabled) return;
 
     // Global error handler
-    window.addEventListener('error', (event) => {
+    window.addEventListener("error", (event) => {
       this.logError(event.error || new Error(event.message), {
-        context: 'GlobalErrorHandler',
+        context: "GlobalErrorHandler",
         extra: {
           filename: event.filename,
           lineno: event.lineno,
@@ -49,16 +50,19 @@ export const errorLogger = {
     });
 
     // Unhandled promise rejection handler
-    window.addEventListener('unhandledrejection', (event) => {
+    window.addEventListener("unhandledrejection", (event) => {
       this.logError(new Error(event.reason), {
-        context: 'UnhandledPromiseRejection',
+        context: "UnhandledPromiseRejection",
       });
     });
 
     // Vue error handler (if available)
-    if (window.__VUE_APP_ERROR_HANDLER__) {
-      window.__VUE_APP_ERROR_HANDLER__ = (error: Error, context?: ErrorContext) => {
-        this.logError(error, { ...context, context: 'VueErrorHandler' });
+    if ((window as any).__VUE_APP_ERROR_HANDLER__) {
+      (window as any).__VUE_APP_ERROR_HANDLER__ = (
+        error: Error,
+        context?: ErrorContext,
+      ) => {
+        this.logError(error, { ...context, context: "VueErrorHandler" });
       };
     }
 
@@ -66,7 +70,7 @@ export const errorLogger = {
     setInterval(() => this.sendLogs(), config.sendInterval);
 
     // Send logs on page unload
-    window.addEventListener('beforeunload', () => this.sendLogs(true));
+    window.addEventListener("beforeunload", () => this.sendLogs(true));
   },
 
   logError(error: Error, context?: ErrorContext): void {
@@ -80,14 +84,14 @@ export const errorLogger = {
         route: window.location.pathname,
         ...context,
       },
-      level: 'error',
+      level: "error",
     };
 
     this.addToQueue(errorLog);
-    
+
     // Console log for development
     if (import.meta.env.DEV) {
-      console.error('Error logged:', errorLog);
+      console.error("Error logged:", errorLog);
     }
   },
 
@@ -101,7 +105,7 @@ export const errorLogger = {
         route: window.location.pathname,
         ...context,
       },
-      level: 'warn',
+      level: "warn",
     };
 
     this.addToQueue(errorLog);
@@ -117,7 +121,7 @@ export const errorLogger = {
         route: window.location.pathname,
         ...context,
       },
-      level: 'info',
+      level: "info",
     };
 
     this.addToQueue(errorLog);
@@ -136,7 +140,7 @@ export const errorLogger = {
     if (!config.endpoint || errorQueue.length === 0) return;
 
     const logsToSend = [...errorQueue];
-    
+
     try {
       const payload = {
         logs: logsToSend,
@@ -144,17 +148,17 @@ export const errorLogger = {
         timestamp: Date.now(),
       };
 
-      if (immediate && 'sendBeacon' in navigator) {
+      if (immediate && "sendBeacon" in navigator) {
         // Use sendBeacon for immediate sending on page unload
         navigator.sendBeacon(
           config.endpoint,
-          new Blob([JSON.stringify(payload)], { type: 'application/json' })
+          new Blob([JSON.stringify(payload)], { type: "application/json" }),
         );
       } else {
         await fetch(config.endpoint, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(payload),
         });
@@ -163,28 +167,29 @@ export const errorLogger = {
       // Clear sent logs
       errorQueue.length = 0;
     } catch (error) {
-      console.warn('Failed to send error logs:', error);
+      console.warn("Failed to send error logs:", error);
     }
   },
 
   getSessionId(): string {
-    const key = 'grundstein_session_id';
+    const key = "grundstein_session_id";
     let sessionId = sessionStorage.getItem(key);
-    
+
     if (!sessionId) {
       sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       sessionStorage.setItem(key, sessionId);
     }
-    
+
     return sessionId;
   },
 
   // Performance logging
   logPerformance(name: string, duration: number, context?: ErrorContext): void {
-    if (duration > 1000) { // Log slow operations (>1s)
+    if (duration > 1000) {
+      // Log slow operations (>1s)
       this.logWarning(`Slow operation: ${name} took ${duration}ms`, {
         ...context,
-        context: 'PerformanceIssue',
+        context: "PerformanceIssue",
         extra: { duration },
       });
     }
@@ -193,7 +198,7 @@ export const errorLogger = {
   // Network error logging
   logNetworkError(url: string, status: number, message: string): void {
     this.logError(new Error(`Network error: ${message}`), {
-      context: 'NetworkError',
+      context: "NetworkError",
       extra: { url, status },
     });
   },
@@ -201,7 +206,7 @@ export const errorLogger = {
   // Business logic error logging
   logBusinessError(operation: string, details: Record<string, any>): void {
     this.logError(new Error(`Business logic error in ${operation}`), {
-      context: 'BusinessLogic',
+      context: "BusinessLogic",
       extra: details,
     });
   },
