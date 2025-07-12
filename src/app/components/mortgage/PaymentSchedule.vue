@@ -101,7 +101,7 @@
           <tbody>
             <tr
               v-for="entry in visibleEntries"
-              :key="entry.month"
+              :key="entry.month.toString()"
               class="border-t hover:bg-gray-50"
               :class="{
                 'bg-green-50': entry.extraPayment,
@@ -185,6 +185,7 @@ import {
   createMoney,
   toEuros,
   toNumber as monthCountToNumber,
+  toNumber as paymentMonthToNumber,
   createPercentage,
 } from "../../../core/domain";
 
@@ -221,7 +222,14 @@ const visibleEntries = computed(() => {
 const filteredEntries = computed(() => {
   if (!schedule.value) return [];
 
-  let entries = schedule.value.entries;
+  // Transform domain entries to UI format
+  let entries = schedule.value.entries.map(entry => ({
+    month: paymentMonthToNumber(entry.month),
+    totalPayment: entry.totalPayment,
+    regularPayment: entry.regularPayment,
+    extraPayment: entry.extraPayment,
+    remainingBalance: entry.remainingBalance
+  }));
 
   // Filter by display months
   if (displayMonths.value < 999) {
@@ -359,7 +367,7 @@ async function calculateSchedule() {
       );
     }
 
-    // Calculate payment schedule
+    // Calculate payment schedule with Sondertilgung
     const scheduleResult = calculatePaymentSchedule(
       loanConfigResult.data,
       sondertilgungPlanResult.data

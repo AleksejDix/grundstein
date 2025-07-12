@@ -96,7 +96,7 @@ function createChart() {
           cornerRadius: 8,
           displayColors: true,
           callbacks: {
-            label: (context) => {
+            label: (context: any) => {
               const value = context.parsed;
               const percentage = (
                 (value / props.breakdown.total) *

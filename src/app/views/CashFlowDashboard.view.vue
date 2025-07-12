@@ -284,7 +284,7 @@ import { ref, onMounted, computed } from "vue";
 import {
   getAllPortfolios,
   getPortfolioWithSummary,
-  createPortfolio,
+  createPortfolio as createPortfolioInRepository,
 } from "../services/application/services/PortfolioApplicationService";
 import type { PortfolioWithSummary } from "../services/application/services/PortfolioApplicationService";
 // Repository is handled internally by PortfolioApplicationService
@@ -402,7 +402,7 @@ async function createPortfolio() {
   isCreatingPortfolio.value = true;
 
   try {
-    const result = await createPortfolio({
+    const result = await createPortfolioInRepository({
       name: newPortfolio.value.name.trim(),
       owner: newPortfolio.value.owner.trim(),
     });
