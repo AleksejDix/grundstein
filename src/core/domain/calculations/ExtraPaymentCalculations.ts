@@ -12,7 +12,7 @@ import type { ExtraPaymentPlan } from "../types/ExtraPaymentPlan";
 import type { Money } from "../value-objects/Money";
 import { createMoney, toEuros } from "../value-objects/Money";
 import type { MonthCount } from "../value-objects/MonthCount";
-import { toNumber as monthCountToNumber } from "../value-objects/MonthCount";
+import { toNumber as monthCountToNumber, createMonthCount } from "../value-objects/MonthCount";
 import { calculateMonthlyPayment } from "./LoanCalculations";
 
 /**
@@ -51,7 +51,7 @@ export function calculateExtraPaymentImpact(
     }
 
     const originalTerm = loanConfig.termInMonths;
-    const originalTotalPayment = toEuros(originalPayment.data.totalAmount) * monthCountToNumber(originalTerm);
+    const originalTotalPayment = toEuros(originalPayment.data.total) * monthCountToNumber(originalTerm);
     const originalTotalInterest = createMoney(
       originalTotalPayment - toEuros(loanConfig.amount)
     );
@@ -62,8 +62,8 @@ export function calculateExtraPaymentImpact(
 
     // Simple calculation: each extra payment reduces remaining balance
     let remainingBalance = toEuros(loanConfig.amount);
-    const monthlyPaymentAmount = toEuros(originalPayment.data.totalAmount);
-    const monthlyPrincipal = toEuros(originalPayment.data.principalAmount);
+    const monthlyPaymentAmount = toEuros(originalPayment.data.total);
+    const monthlyPrincipal = toEuros(originalPayment.data.principal);
     
     let totalExtraPayments = 0;
     let monthsSaved = 0;
@@ -105,9 +105,14 @@ export function calculateExtraPaymentImpact(
       return Result.error("CalculationError");
     }
 
+    const newTermResult = createMonthCount(monthCountToNumber(originalTerm) - monthsSaved);
+    if (!newTermResult.success) {
+      return Result.error("CalculationError");
+    }
+
     return Result.ok({
       originalTerm,
-      newTerm: { ...originalTerm, __brand: monthCountToNumber(originalTerm) - monthsSaved } as MonthCount,
+      newTerm: newTermResult.data,
       monthsSaved,
       originalTotalInterest: originalTotalInterest.data,
       newTotalInterest: newTotalInterest.data,
@@ -151,9 +156,10 @@ export function calculateExtraPaymentRecommendation(
 
   if (!recommendedAmountResult.success || !estimatedSavingsResult.success) {
     // Return reasonable defaults if creation fails
+    const zeroMoney = createMoney(0);
     return {
       recommendedAmount: availableAmount,
-      estimatedSavings: { __brand: 0, currency: "EUR" } as Money,
+      estimatedSavings: zeroMoney.success ? zeroMoney.data : availableAmount,
       payoffReduction: 0,
     };
   }

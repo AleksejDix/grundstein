@@ -208,3 +208,120 @@ interface IRepository {
 ```
 
 For detailed standards, see: `/docs/CODING_STANDARDS.md`
+
+## CRITICAL: NEVER BYPASS QUALITY CHECKS
+
+### ❌ NEVER USE THESE FLAGS:
+
+- `--no-verify` - NEVER bypass git hooks
+- `--force` / `-f` - NEVER force push
+- `--skip-checks` - NEVER skip any checks
+- `npm test -- --no-coverage` - NEVER skip coverage
+- `git commit -n` - NEVER skip commit hooks
+
+### WHY THIS MATTERS:
+
+1. **Git hooks exist for a reason** - They catch errors before they reach CI/CD
+2. **Type checking prevents runtime errors** - Financial software needs to be reliable
+3. **Tests ensure code works** - Skipping them is lying to yourself
+4. **Linting maintains quality** - Consistent code is maintainable code
+
+### THE RIGHT APPROACH:
+
+- Fix the errors, don't bypass them
+- If type-check fails, fix the types
+- If tests fail, fix the code
+- If lint fails, fix the style
+- Take the time to do it right
+
+**Remember**: Every `--no-verify` is technical debt you're adding to the project. The PR will fail anyway, so you're just wasting time.
+
+## CRITICAL LESSONS LEARNED - AVOID THESE MISTAKES
+
+### 🚨 ALWAYS Analyze Before Acting
+
+1. **Understand the Architecture First**
+   - Study the existing file structure and import patterns
+   - Identify the architectural patterns (Domain-Driven Design, functional programming)
+   - Map out dependencies before making changes
+   - Check how types flow through the system
+
+2. **Respect the Result Type Pattern**
+
+   ```typescript
+   // ❌ WRONG - Never access .data without checking .success
+   const value = result.data!;
+
+   // ✅ CORRECT - Always check success first
+   if (result.success) {
+     const value = result.data;
+   } else {
+     // Handle error case
+   }
+   ```
+
+3. **Import Path Changes Must Be Systematic**
+   - When moving files, update ALL import paths
+   - Use search/replace across the entire codebase
+   - Verify imports resolve correctly before proceeding
+
+4. **Service Pattern Changes**
+   - When converting from classes to functions, update ALL usages
+   - Don't just change the export, change how it's consumed
+   - Example: `new MortgageService()` → `MortgageService.method()` or `useMortgageAdapter()`
+
+5. **Vue Template Comments**
+
+   ```vue
+   <!-- ✅ CORRECT - Use HTML comments in templates -->
+   {{ value }}
+   <!-- TODO: fix this -->
+
+   <!-- ❌ WRONG - Don't use JS-style comments in templates -->
+   {{ value }} {{/* TODO: fix this */}}
+   ```
+
+### 🔍 Before Making Large Changes
+
+1. **Run type-check first** to establish baseline
+2. **Create a migration plan** with specific steps
+3. **Test incrementally** - don't make 50 changes at once
+4. **Verify each step** before proceeding to the next
+
+### 📝 Type System Gotchas
+
+1. **Branded Types**: This codebase uses branded types extensively
+   - `LoanAmount`, `Money`, `Percentage` are not just numbers
+   - Always use factory functions: `createLoanAmount()`, `createMoney()`
+   - Never cast or bypass the type system
+
+2. **Domain Types in UI**: When bridging domain and UI:
+   - Transform domain types to UI-friendly formats
+   - Don't expose domain complexity to components
+   - Create adapter layers when needed
+
+### 🛠️ When Integrating New Tools (like Rolldown)
+
+1. **Read the official documentation first**
+2. **Check for existing examples** in the ecosystem
+3. **Start with minimal changes** - get it working first
+4. **Fix breaking changes** before adding features
+
+### ⚠️ Common Pitfalls in This Codebase
+
+1. **Missing exports from domain/index.ts** - Always verify exports
+2. **Test files using .data!** - Tests often bypass type safety
+3. **Configuration object access** - `mortgage.configuration.amount` not `mortgage.amount`
+4. **Repository patterns** - Services have default repository parameters
+
+### 🎯 The Right Approach
+
+When asked to make changes:
+
+1. **Analyze** the current state thoroughly
+2. **Plan** the changes with consideration for ripple effects
+3. **Execute** systematically with verification at each step
+4. **Test** both build and type-check after changes
+5. **Document** any workarounds or TODOs created
+
+Remember: It's better to take time understanding the system than to rush and create cascading errors that take hours to fix.

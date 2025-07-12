@@ -12,7 +12,7 @@ interface PerformanceConfig {
 }
 
 const config: PerformanceConfig = {
-  enabled: import.meta.env.VITE_ENABLE_PERFORMANCE_MONITORING === 'true',
+  enabled: import.meta.env.VITE_ENABLE_PERFORMANCE_MONITORING === "true",
   sampleRate: 0.1, // 10% sampling rate
   endpoint: import.meta.env.VITE_PERFORMANCE_ENDPOINT,
 };
@@ -21,39 +21,42 @@ const metrics: PerformanceMetric[] = [];
 
 export const performanceMonitor = {
   init(): void {
-    if (!config.enabled || !('performance' in window)) return;
+    if (!config.enabled || !("performance" in window)) return;
 
     // Core Web Vitals
     this.observeWebVitals();
-    
+
     // Navigation timing
     this.observeNavigation();
-    
+
     // Resource timing
     this.observeResources();
-    
+
     // Send metrics periodically
     setInterval(() => this.sendMetrics(), 30000); // Every 30 seconds
   },
 
   observeWebVitals(): void {
-    if (!('PerformanceObserver' in window)) return;
+    if (!("PerformanceObserver" in window)) return;
 
     // Largest Contentful Paint (LCP)
     const lcpObserver = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        this.recordMetric('LCP', entry.startTime);
+        this.recordMetric("LCP", entry.startTime);
       }
     });
-    lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+    lcpObserver.observe({ type: "largest-contentful-paint", buffered: true });
 
     // First Input Delay (FID)
     const fidObserver = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        this.recordMetric('FID', (entry as any).processingStart - entry.startTime);
+        this.recordMetric(
+          "FID",
+          (entry as any).processingStart - entry.startTime,
+        );
       }
     });
-    fidObserver.observe({ type: 'first-input', buffered: true });
+    fidObserver.observe({ type: "first-input", buffered: true });
 
     // Cumulative Layout Shift (CLS)
     let clsValue = 0;
@@ -63,46 +66,55 @@ export const performanceMonitor = {
           clsValue += (entry as any).value;
         }
       }
-      this.recordMetric('CLS', clsValue);
+      this.recordMetric("CLS", clsValue);
     });
-    clsObserver.observe({ type: 'layout-shift', buffered: true });
+    clsObserver.observe({ type: "layout-shift", buffered: true });
   },
 
   observeNavigation(): void {
     if (!performance.getEntriesByType) return;
 
-    const navEntries = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
+    const navEntries = performance.getEntriesByType(
+      "navigation",
+    ) as PerformanceNavigationTiming[];
     if (navEntries.length === 0) return;
 
     const nav = navEntries[0];
-    
-    this.recordMetric('DNS', nav.domainLookupEnd - nav.domainLookupStart);
-    this.recordMetric('TCP', nav.connectEnd - nav.connectStart);
-    this.recordMetric('TLS', nav.connectEnd - nav.secureConnectionStart);
-    this.recordMetric('TTFB', nav.responseStart - nav.requestStart);
-    this.recordMetric('DOMContentLoaded', nav.domContentLoadedEventEnd - nav.navigationStart);
-    this.recordMetric('Load', nav.loadEventEnd - nav.navigationStart);
+
+    this.recordMetric("DNS", nav.domainLookupEnd - nav.domainLookupStart);
+    this.recordMetric("TCP", nav.connectEnd - nav.connectStart);
+    this.recordMetric("TLS", nav.connectEnd - nav.secureConnectionStart);
+    this.recordMetric("TTFB", nav.responseStart - nav.requestStart);
+    this.recordMetric(
+      "DOMContentLoaded",
+      nav.domContentLoadedEventEnd - nav.fetchStart,
+    );
+    this.recordMetric("Load", nav.loadEventEnd - nav.fetchStart);
   },
 
   observeResources(): void {
-    if (!('PerformanceObserver' in window)) return;
+    if (!("PerformanceObserver" in window)) return;
 
     const resourceObserver = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
         const resource = entry as PerformanceResourceTiming;
-        
+
         // Track slow resources (>1s)
         if (resource.duration > 1000) {
-          this.recordMetric('SlowResource', resource.duration, window.location.pathname);
+          this.recordMetric(
+            "SlowResource",
+            resource.duration,
+            window.location.pathname,
+          );
         }
-        
+
         // Track failed resources
         if (resource.transferSize === 0 && resource.decodedBodySize === 0) {
-          this.recordMetric('FailedResource', 1, window.location.pathname);
+          this.recordMetric("FailedResource", 1, window.location.pathname);
         }
       }
     });
-    resourceObserver.observe({ type: 'resource', buffered: true });
+    resourceObserver.observe({ type: "resource", buffered: true });
   },
 
   recordMetric(name: string, value: number, route?: string): void {
@@ -133,17 +145,17 @@ export const performanceMonitor = {
 
     try {
       await fetch(config.endpoint, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
       });
-      
+
       // Clear sent metrics
       metrics.length = 0;
     } catch (error) {
-      console.warn('Failed to send performance metrics:', error);
+      console.warn("Failed to send performance metrics:", error);
     }
   },
 
@@ -158,7 +170,7 @@ export const performanceMonitor = {
 
   // Track route changes
   trackRouteChange(route: string): void {
-    this.recordMetric('RouteChange', performance.now(), route);
+    this.recordMetric("RouteChange", performance.now(), route);
   },
 
   // Get current metrics (for debugging)

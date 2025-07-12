@@ -6,13 +6,21 @@
     "dev": "vite",
     "build": "npm run type-check && npm run build-only",
     "preview": "vite preview",
-    "test:unit": "vitest --environment jsdom --root src/",
+    "test:unit": "vitest run --project=unit",
+    "test:unit:watch": "vitest --project=unit",
+    "test:components": "vitest run --project=components",
+    "test:components:watch": "vitest --project=components",
+    "test:browser": "vitest run --project=browser",
+    "test:browser:watch": "vitest --project=browser",
     "test:e2e": "playwright test",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "oxlint src/",
-    "test": "vitest",
+    "test": "vitest run --project=unit --project=components",
+    "test:all": "vitest run",
+    "test:watch": "vitest",
     "coverage": "vitest run --coverage",
+    "coverage:ui": "vitest --coverage --ui",
     "test:staged": "vitest related --run",
     "analyze": "vite-bundle-analyzer dist",
     "build:analyze": "npm run build && npm run analyze",
@@ -50,10 +58,13 @@
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.3",
-    "vite": "^7.0.4",
+    "vite": "npm:rolldown-vite@latest",
     "vite-bundle-analyzer": "^1.1.0",
     "vitest": "^3.2.4",
     "vue-tsc": "^3.0.1"
+  },
+  "overrides": {
+    "vite": "npm:rolldown-vite@latest"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,vue}": [

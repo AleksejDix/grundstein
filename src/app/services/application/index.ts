@@ -5,4 +5,3 @@
  */
 
 export * from "./services/MortgageService";
-export * from "./services/PortfolioApplicationService";

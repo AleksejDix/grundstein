@@ -4,4 +4,4 @@
  * Export infrastructure services and repositories
  */
 
-export * from "./persistence/PortfolioRepository";
+// Portfolio repository removed - focusing on core mortgage functionality
