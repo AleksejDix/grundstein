@@ -829,15 +829,15 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { MortgageAdapter } from "../presentation/adapters/MortgageAdapter";
+import { useMortgageAdapter } from "../adapters/MortgageAdapter";
 
 // Components
-import EditableAmount from "../presentation/components/ui/EditableAmount.vue";
-import EditablePercentage from "../presentation/components/ui/EditablePercentage.vue";
-import PaymentSchedule from "../presentation/components/mortgage/PaymentScheduleSimple.vue";
+import EditableAmount from "../components/ui/EditableAmount.vue";
+import EditablePercentage from "../components/ui/EditablePercentage.vue";
+import PaymentSchedule from "../components/mortgage/PaymentScheduleSimple.vue";
 
-// Create adapter instance
-const adapter = new MortgageAdapter();
+// Create adapter instance using composable
+const adapter = useMortgageAdapter();
 
 // Loan storage service
 // const loanService = new LoanStorageService(); // Service deleted
