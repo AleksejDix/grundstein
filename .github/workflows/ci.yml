@@ -68,9 +68,11 @@ jobs:
 
       - name: 🔍 Run linter
         run: npm run lint
+        continue-on-error: false
 
       - name: 🎨 Check formatting
         run: npx prettier --check .
+        continue-on-error: false
 
   typecheck:
     name: 🔍 TypeScript Check
@@ -95,6 +97,7 @@ jobs:
 
       - name: 🔍 Type check
         run: npm run type-check
+        continue-on-error: false
 
   test:
     name: 🧪 Unit Tests
@@ -119,6 +122,7 @@ jobs:
 
       - name: 🧪 Run unit tests
         run: npm run coverage
+        continue-on-error: false
 
       - name: 📊 Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -153,6 +157,7 @@ jobs:
 
       - name: 🏗 Build for ${{ matrix.environment }}
         run: npm run build
+        continue-on-error: false
         env:
           NODE_ENV: ${{ matrix.environment }}
           VITE_APP_ENV: ${{ matrix.environment }}
@@ -190,9 +195,11 @@ jobs:
 
       - name: 🔒 Run security audit
         run: npm audit --audit-level=moderate
+        continue-on-error: false
 
       - name: 🔍 Check for known vulnerabilities
         run: npx better-npm-audit audit
+        continue-on-error: false
 
   deploy-staging:
     name: 🚀 Deploy to Staging
