@@ -19,7 +19,7 @@
     "test": "vitest run --project=unit --project=components",
     "test:all": "vitest run",
     "test:watch": "vitest",
-    "coverage": "vitest run --coverage",
+    "coverage": "vitest run --coverage --project=unit --project=components",
     "coverage:ui": "vitest --coverage --ui",
     "test:staged": "vitest related --run",
     "analyze": "vite-bundle-analyzer dist",
