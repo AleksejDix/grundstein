@@ -1,39 +1,30 @@
 /// <reference types="vitest" />
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vitest/config";
-import vue from "@vitejs/plugin-vue";
 
 export default defineConfig({
-  plugins: [vue()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
   test: {
+    name: "unit",
     globals: true,
     testTimeout: 5000,
     hookTimeout: 10000,
-    environment: "jsdom",
+    environment: "node",
     
-    // Include only unit tests by default
     include: [
-      "src/**/*.unit.test.{js,ts}",
-      "src/**/*.unit.spec.{js,ts}",
+      "src/core/**/*.unit.test.{js,ts}",
+      "src/core/**/*.unit.spec.{js,ts}",
     ],
-    // Explicitly exclude user tests to prevent browser import errors
-    exclude: [
-      "node_modules",
-      "dist",
-      "cypress",
-      "src/**/*.user.test.{js,ts}",
-      "src/**/*.user.spec.{js,ts}",
-    ],
+    exclude: ["src/core/**/*.user.test.{js,ts}"],
     
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
-      reportsDirectory: "./coverage",
+      reportsDirectory: "./coverage/unit",
       
       thresholds: {
         branches: 50,
@@ -42,13 +33,11 @@ export default defineConfig({
         statements: 50,
       },
       
-      include: ["src/**/*.{js,ts,vue}"],
+      include: ["src/core/**/*.{js,ts}"],
       exclude: [
         "src/**/*.d.ts",
         "src/**/*.{test,spec}.{js,ts}",
-        "src/**/*.{unit,user}.{test,spec}.{js,ts}",
-        "src/app.ts",
-        "src/main.ts",
+        "src/**/*.unit.{test,spec}.{js,ts}",
       ],
     },
     

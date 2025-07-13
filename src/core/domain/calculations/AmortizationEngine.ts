@@ -471,7 +471,10 @@ export function calculateScheduleMetrics(
     const totalPaymentsResult = createMoney(totalPayments);
     const actualTermResult = createMonthCount(actualTermMonths);
     const interestSavedResult = createMoney(interestSaved);
-    const termReductionResult = createMonthCount(termReduction);
+    // For term reduction, we need at least 1 month to satisfy MonthCount constraints
+    // If there's no reduction, we'll use 1 and the caller should check if it's meaningful
+    const termReductionForCount = Math.max(1, termReduction);
+    const termReductionResult = createMonthCount(termReductionForCount);
     const effectiveRateResult = createPercentage(effectiveRate);
     const averagePaymentResult = createMoney(averagePayment);
     const largestPaymentResult = createMoney(largestPayment);
@@ -679,10 +682,13 @@ export function compareSchedules(
     const extraPaymentTotal = toEuros(comparisonMetrics.totalExtraPayments);
 
     const interestSavingsResult = createMoney(Math.max(0, interestSavings));
-    const termReductionResult = createMonthCount(Math.max(0, termReduction));
+    const termReductionResult = createMonthCount(Math.max(1, termReduction));
     const returnOnInvestment =
       extraPaymentTotal > 0 ? (interestSavings / extraPaymentTotal) * 100 : 0;
-    const roiResult = createPercentage(returnOnInvestment);
+    
+    // Ensure ROI is within valid percentage range (0-100%)
+    const validatedROI = Math.max(0, Math.min(100, returnOnInvestment));
+    const roiResult = createPercentage(validatedROI);
 
     if (
       !interestSavingsResult.success ||

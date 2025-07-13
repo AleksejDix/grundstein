@@ -1,0 +1,521 @@
+
+> hippo@0.0.0 coverage:unit
+> vitest run --coverage --config vitest.config.unit.ts
+
+
+ RUN  v3.2.4 /Users/aleksej/Projects/grundstein
+      Coverage enabled with v8
+
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > createPositiveInteger > should create valid PositiveInteger for positive integers 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > createPositiveInteger > should create PositiveInteger for 1 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > createPositiveInteger > should reject zero 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > createPositiveInteger > should reject negative integers 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > createPositiveInteger > should reject decimal numbers 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > createPositiveInteger > should reject invalid values 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > addPositiveInteger > should add positive integers correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > addPositiveInteger > should handle adding one 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > subtractPositiveInteger > should subtract positive integers correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > subtractPositiveInteger > should handle subtracting to 1 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > subtractPositiveInteger > should reject subtraction that would result in zero or negative 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > subtractPositiveInteger > should reject subtraction where b > a 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > multiplyPositiveInteger > should multiply positive integers correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > multiplyPositiveInteger > should handle multiplication by one 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > dividePositiveInteger > should divide positive integers correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > dividePositiveInteger > should handle integer division with floor 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > dividePositiveInteger > should reject division that results in zero 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > comparePositiveInteger and isEqualPositiveInteger > should compare positive integers correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > formatPositiveInteger > should format positive integer in German locale 11ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > formatPositiveInteger > should format small numbers correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Type > Constants > should have valid positive integer constants 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Property-Based Tests > PositiveInteger creation properties > should always create valid PositiveInteger for valid inputs 6ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Property-Based Tests > PositiveInteger creation properties > should reject all non-positive integers 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Property-Based Tests > PositiveInteger creation properties > should reject all non-integers 7ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Property-Based Tests > Addition properties > should be commutative: a + b = b + a 3ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Property-Based Tests > Addition properties > should be associative: (a + b) + c = a + (b + c) 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Property-Based Tests > Addition properties > should have 1 as identity: a + 0 = a (but since we need positive, a + 1 > a) 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Property-Based Tests > Multiplication properties > should be commutative: a * b = b * a 7ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Property-Based Tests > Multiplication properties > should have 1 as identity: a * 1 = a 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveInteger.unit.test.ts > PositiveInteger Property-Based Tests > Subtraction properties > should be inverse of addition when result is positive: (a + b) - b = a 3ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > createMonthCount > should create valid MonthCount for realistic loan terms 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > createMonthCount > should reject terms below minimum 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > createMonthCount > should reject terms above maximum 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > createMonthCount > should reject invalid terms (PositiveInteger validation) 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Type conversion functions > should convert MonthCount to PositiveInteger correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Type conversion functions > should convert MonthCount to number correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Type conversion functions > should convert MonthCount to years correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Type conversion functions > should handle fractional years conversion 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Years conversion > should create MonthCount from years correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Years conversion > should handle fractional years with rounding 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Years conversion > should round fractional months appropriately 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Years conversion > should round-trip between months and years 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Month arithmetic > should add months correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Month arithmetic > should subtract months correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Month arithmetic > should calculate remaining months correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Month arithmetic > should reject operations that result in invalid terms 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Month arithmetic > should reject operations that exceed maximum 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Comparison functions > should compare month counts correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Formatting > should format short terms in months 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Formatting > should format single month correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Formatting > should format exact years 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Formatting > should format single year correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Formatting > should format mixed years and months 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Formatting > should format one year and one month correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Constants and limits > should provide valid minimum term 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Constants and limits > should provide valid maximum term 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Constants and limits > should validate term range 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Market term constants > should have valid typical term constants 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Market term constants > should ensure all constants are within valid range 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Market term constants > should have constants in logical order 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Type > Market term constants > should convert constants to years correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Property-Based Tests > Valid term range > should accept all terms in valid range 3ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Property-Based Tests > Valid term range > should reject all terms above maximum 4ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Property-Based Tests > Years conversion properties > should maintain relationship: months = years * 12 (for whole years) 4ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Property-Based Tests > Years conversion properties > should round-trip consistently for whole months 3ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Property-Based Tests > Arithmetic properties > should be commutative for addition: a + b = b + a 4ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Property-Based Tests > Arithmetic properties > should be inverse operations: (a + b) - b = a 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Property-Based Tests > Comparison properties > should be transitive: if a < b and b < c, then a < c 5ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Property-Based Tests > Comparison properties > should be reflexive: a = a 4ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/MonthCount.unit.test.ts > MonthCount Property-Based Tests > Formatting properties > should always produce valid German text 3ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > createPercentage > should create valid Percentage for values in range 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > createPercentage > should create Percentage for boundary values 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > createPercentage > should reject values below 0 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > createPercentage > should reject values above 100 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > createPercentage > should reject invalid values 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > toDecimal and fromDecimal > should convert percentage to decimal correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > toDecimal and fromDecimal > should create percentage from decimal 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > toDecimal and fromDecimal > should round-trip correctly: percentage -> decimal -> percentage 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > toDecimal and fromDecimal > should reject invalid decimals 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > addPercentage > should add percentages correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > addPercentage > should handle adding zero 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > addPercentage > should reject addition that exceeds 100% 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > subtractPercentage > should subtract percentages correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > subtractPercentage > should handle subtracting to zero 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > subtractPercentage > should reject subtraction that would result in negative 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > multiplyPercentage > should multiply percentage by factor 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > multiplyPercentage > should handle multiplication by zero 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > multiplyPercentage > should reject invalid factors 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > multiplyPercentage > should reject multiplication that exceeds 100% 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > comparePercentage and isEqualPercentage > should compare percentages correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > comparePercentage and isEqualPercentage > should handle floating point comparison correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > formatPercentage > should format percentage in German locale 12ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > formatPercentage > should format with custom decimal places 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Type > Constants > should have valid percentage constants 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Property-Based Tests > Percentage creation properties > should always create valid Percentage for valid inputs 4ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Property-Based Tests > Percentage creation properties > should reject all values outside 0-100 range 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Property-Based Tests > Decimal conversion properties > should round-trip correctly: percentage -> decimal -> percentage 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Property-Based Tests > Addition properties > should be commutative: a + b = b + a 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Property-Based Tests > Addition properties > should have zero as identity: a + 0 = a 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Property-Based Tests > Subtraction properties > should be inverse of addition: (a + b) - b = a 6ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Property-Based Tests > Subtraction properties > should result in zero when subtracting from itself: a - a = 0 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Property-Based Tests > Multiplication properties > should have 1 as identity: a * 1 = a 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Percentage.unit.test.ts > Percentage Property-Based Tests > Multiplication properties > should have 0 as absorbing element: a * 0 = 0 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > createInterestRate > should create valid InterestRate for realistic mortgage rates 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > createInterestRate > should reject rates below minimum 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > createInterestRate > should accept zero interest rate 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > createInterestRate > should reject rates above maximum 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > createInterestRate > should reject invalid rates (Percentage validation) 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Type conversion functions > should convert InterestRate to Percentage correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Type conversion functions > should convert InterestRate to number correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Type conversion functions > should convert InterestRate to decimal correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Decimal conversion > should create InterestRate from decimal correctly 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Decimal conversion > should round-trip between rate and decimal 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Monthly rate conversion > should calculate monthly rate correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Monthly rate conversion > should create annual rate from monthly rate 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Monthly rate conversion > should round-trip between annual and monthly rates 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Basis points operations > should add basis points correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Basis points operations > should handle negative basis points 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Basis points operations > should reject basis points that would exceed limits 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Comparison functions > should compare interest rates correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Formatting > should format InterestRate using German percentage format 11ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Formatting > should format with custom decimal places 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Constants and limits > should provide valid minimum interest rate 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Constants and limits > should provide valid maximum interest rate 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Constants and limits > should validate interest rate range 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Market rate constants > should have valid typical rate constants 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Market rate constants > should ensure all constants are within valid range 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Type > Market rate constants > should have constants in logical order 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Property-Based Tests > Valid interest rate range > should accept all rates in valid range 5ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Property-Based Tests > Valid interest rate range > should reject all rates below minimum 4ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Property-Based Tests > Valid interest rate range > should reject all rates above maximum 5ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Property-Based Tests > Decimal conversion properties > should maintain precision in decimal conversion: rate -> decimal -> rate 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Property-Based Tests > Monthly rate conversion properties > should maintain relationship: annual / 12 = monthly 4ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Property-Based Tests > Basis points properties > should be additive: rate + bp1 + bp2 = rate + (bp1 + bp2) 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/InterestRate.unit.test.ts > InterestRate Property-Based Tests > Comparison properties > should be transitive: if a < b and b < c, then a < c 6ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Type > createLoanAmount > should create valid LoanAmount for amounts within business range 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Type > createLoanAmount > should reject amounts below minimum loan amount 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Type > createLoanAmount > should reject amounts above maximum loan amount 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Type > createLoanAmount > should reject negative amounts (Money validation) 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Type > createLoanAmount > should reject invalid amounts (Money validation) 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Type > Type conversion functions > should convert LoanAmount to Money correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Type > Type conversion functions > should convert LoanAmount to number correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Type > Formatting > should format LoanAmount using German currency format 15ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Type > Formatting > should format large amounts correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Type > Constants and limits > should provide valid minimum loan amount 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Type > Constants and limits > should provide valid maximum loan amount 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Type > Constants and limits > should ensure constants are within valid range 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Type > Business rule validation > should enforce German mortgage market standards 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Type > Business rule validation > should reject unrealistic micro-loans 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Type > Business rule validation > should reject ultra-high amounts beyond practical lending 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Property-Based Tests > Valid loan amount range > should accept all amounts in valid range 7ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Property-Based Tests > Valid loan amount range > should reject all amounts below minimum 6ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Property-Based Tests > Valid loan amount range > should reject all amounts above maximum 3ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Property-Based Tests > Type conversion properties > should maintain value through conversion: LoanAmount -> number -> LoanAmount 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Property-Based Tests > Type conversion properties > should maintain value through Money conversion 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/LoanAmount.unit.test.ts > LoanAmount Property-Based Tests > Formatting properties > should always produce valid currency format string 11ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > createMonthlyPayment > should create valid monthly payment with principal and interest 1ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > createMonthlyPayment > should create zero payment correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > createMonthlyPayment > should create payment with only principal 1ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > createMonthlyPayment > should create payment with only interest 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > createMonthlyPayment > should reject negative principal 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > createMonthlyPayment > should reject negative interest 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > createMonthlyPayment > should handle large payment amounts 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > createMonthlyPayment > should handle small fractional amounts 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > createMonthlyPaymentFromMoney > should create payment from Money objects 1ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > createMonthlyPaymentWithTotal > should create payment when total matches expected 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > createMonthlyPaymentWithTotal > should accept small rounding differences 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > createMonthlyPaymentWithTotal > should reject when total doesn't match expected 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > amount getters > should get principal amount correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > amount getters > should get interest amount correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > amount getters > should get total amount correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > ratio and percentage calculations > should calculate principal to interest ratio correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > ratio and percentage calculations > should handle infinite ratio when interest is zero 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > ratio and percentage calculations > should calculate interest percentage correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > ratio and percentage calculations > should calculate principal percentage correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > ratio and percentage calculations > should handle zero total in percentage calculations 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > ratio and percentage calculations > should have percentages sum to 100 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > arithmetic operations > should add two monthly payments correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > arithmetic operations > should handle adding zero payments 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > comparison functions > should compare payments by total amount 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > comparison functions > should check equality correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > formatting > should format monthly payment correctly 16ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > formatting > should format payment breakdown with percentages 1ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > formatting > should format zero payment correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > payment type predicates > should identify principal-heavy payments 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > payment type predicates > should identify interest-heavy payments 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > payment type predicates > should handle edge cases for 60% threshold 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > zero payment utility > should create zero monthly payment 0ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > property-based testing > should maintain total = principal + interest invariant 4ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > property-based testing > should maintain percentage invariants 4ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > property-based testing > should maintain arithmetic operation correctness 8ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > property-based testing > should maintain comparison transitivity 2ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > property-based testing > should handle realistic mortgage payment scenario: €100,000 at 5.6% for 7 years 1ms
+ ✓ |unit| src/core/domain/types/__tests__/MonthlyPayment.unit.test.ts > MonthlyPayment > property-based testing > should handle realistic smaller loan scenario: €15,000 at 8% for 10 years 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts > AmortizationEngine > generateAmortizationSchedule > should generate a complete amortization schedule for a simple loan 6ms
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts > AmortizationEngine > generateAmortizationSchedule > should handle loans with extra payments (Sondertilgung) 1ms
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts > AmortizationEngine > generateAmortizationSchedule > should handle zero interest rate loans 1ms
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts > AmortizationEngine > generateAmortizationSchedule > should calculate cumulative values correctly 1ms
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts > AmortizationEngine > generateAmortizationSchedule > should handle very small loan amounts 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts > AmortizationEngine > generateAmortizationSchedule > should handle very large loan amounts 1ms
+ × |unit| src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts > AmortizationEngine > calculateScheduleMetrics > should calculate comprehensive metrics for a payment schedule 8ms
+   → expected 115873.2 to be close to 115872.84, received difference is 0.3600000000005821, but expected 0.05
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts > AmortizationEngine > calculateScheduleMetrics > should handle schedules with extra payments 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts > AmortizationEngine > calculateScheduleMetrics > should return error for empty schedule 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts > AmortizationEngine > compareSchedules > should compare schedules with and without extra payments 1ms
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts > AmortizationEngine > getScheduleEntry > should retrieve specific month entry from schedule 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts > AmortizationEngine > getRemainingBalance > should return remaining balance for any month 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts > AmortizationEngine > getRemainingBalance > should return error for non-existent month 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts > AmortizationEngine > applyExtraPayments > should apply new extra payments to existing schedule 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > createPositiveDecimal > should create valid PositiveDecimal for positive numbers 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > createPositiveDecimal > should create PositiveDecimal for integers 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > createPositiveDecimal > should create PositiveDecimal for very small positive numbers 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > createPositiveDecimal > should reject zero 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > createPositiveDecimal > should reject negative numbers 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > createPositiveDecimal > should reject invalid values 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > addPositiveDecimal > should add positive decimals correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > addPositiveDecimal > should handle adding half 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > subtractPositiveDecimal > should subtract positive decimals correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > subtractPositiveDecimal > should handle subtracting to very small positive result 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > subtractPositiveDecimal > should reject subtraction that would result in zero 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > subtractPositiveDecimal > should reject subtraction where b > a 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > multiplyPositiveDecimal > should multiply positive decimals correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > multiplyPositiveDecimal > should handle multiplication by one 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > multiplyPositiveDecimal > should handle multiplication by half 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > dividePositiveDecimal > should divide positive decimals correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > dividePositiveDecimal > should handle division by one 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > dividePositiveDecimal > should handle division resulting in decimal 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > multiplyByFactor > should multiply by positive factor correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > multiplyByFactor > should reject invalid factors 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > comparePositiveDecimal and isEqualPositiveDecimal > should compare positive decimals correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > comparePositiveDecimal and isEqualPositiveDecimal > should handle floating point precision in equality 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > formatPositiveDecimal > should format positive decimal in German locale 12ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > formatPositiveDecimal > should format with custom decimal places 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > roundPositiveDecimal > should round to specified decimal places 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > roundPositiveDecimal > should round up correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Type > Constants > should have valid positive decimal constants 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Property-Based Tests > PositiveDecimal creation properties > should always create valid PositiveDecimal for valid inputs 7ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Property-Based Tests > PositiveDecimal creation properties > should reject all non-positive numbers 3ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Property-Based Tests > Addition properties > should be commutative: a + b = b + a 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Property-Based Tests > Addition properties > should be associative: (a + b) + c = a + (b + c) 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Property-Based Tests > Multiplication properties > should be commutative: a * b = b * a 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Property-Based Tests > Multiplication properties > should have 1 as identity: a * 1 = a 5ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Property-Based Tests > Division properties > should be inverse of multiplication: (a * b) / b = a 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/PositiveDecimal.unit.test.ts > PositiveDecimal Property-Based Tests > Division properties > should have 1 as identity: a / 1 = a 3ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > MortgageId factory functions > should create valid MortgageId from non-empty string 2ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > MortgageId factory functions > should reject empty string 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > MortgageId factory functions > should reject whitespace-only string 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > MortgageId factory functions > should generate unique mortgage IDs 1ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > MortgageId factory functions > should generate IDs with expected format 1ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > createMortgage > should create valid mortgage with all required fields 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > createMortgage > should create mortgage with custom ID 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > createMortgage > should create mortgage with optional fields 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > createMortgage > should trim whitespace from name and bank name 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > createMortgage > should reject empty mortgage name 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > createMortgage > should reject whitespace-only mortgage name 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > createMortgage > should reject empty bank name 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > createMortgage > should reject future start date 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > updateMortgage > should update mortgage name 1ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > updateMortgage > should update multiple fields 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > updateMortgage > should update metadata 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > updateMortgage > should trim whitespace from updated fields 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > updateMortgage > should reject empty name update 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > updateMortgage > should reject empty bank name update 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > updateMortgage > should preserve original values for undefined updates 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > status transitions > activateMortgage > should activate draft mortgage 2ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > status transitions > activateMortgage > should reject activating non-draft mortgage 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > status transitions > completeMortgage > should complete active mortgage 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > status transitions > completeMortgage > should reject completing non-active mortgage 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > status transitions > refinanceMortgage > should refinance active mortgage 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > status transitions > refinanceMortgage > should reject refinancing non-active mortgage 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > query functions > isActive > should return true for active mortgage 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > query functions > isActive > should return false for non-active mortgages 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > query functions > isCompleted > should return true for completed mortgage 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > query functions > isCompleted > should return false for non-completed mortgages 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > query functions > canMakePayments > should return true for active mortgage 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > query functions > canMakePayments > should return false for non-active mortgages 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > query functions > canAddExtraPayments > should return false for active mortgage without extra payment plan 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > query functions > canAddExtraPayments > should return false for non-active mortgages 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > utility functions > getMortgageAgeInMonths > should calculate age correctly 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > utility functions > getMortgageAgeInMonths > should return 0 for mortgage starting today 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > utility functions > getMortgageAgeInMonths > should use current date when no date provided 1ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > utility functions > getMortgageDisplayName > should include property address when available 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > utility functions > getMortgageDisplayName > should use only name when no property address 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > utility functions > isMortgage type guard > should return true for valid mortgage 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > utility functions > isMortgage type guard > should return false for null 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > utility functions > isMortgage type guard > should return false for undefined 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > utility functions > isMortgage type guard > should return false for non-object 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > utility functions > isMortgage type guard > should return false for object missing required fields 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > utility functions > isMortgage type guard > should return true for object with all required fields 0ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > property-based tests > should always create valid mortgages with valid inputs 25ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > property-based tests > should always reject invalid names and bank names 4ms
+ ✓ |unit| src/core/domain/entities/__tests__/Mortgage.unit.test.ts > Mortgage Entity > property-based tests > should maintain status transitions correctly 23ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > createPaymentMonthCreationError > should create payment month creation error 1ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > createPaymentMonthCreationError > should include cause error if provided 0ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > createMoneyCreationError > should create money creation error for negative value 0ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > createMoneyCreationError > should create money creation error for exceeds maximum 0ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > createMoneyCreationError > should create money creation error for invalid value 0ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > createMonthlyPaymentCalculationError > should create monthly payment calculation error 0ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > createPercentageValidationError > should create percentage validation error 0ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > createRemainingMonthsCalculationError > should create remaining months calculation error 0ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > createScheduleAnalysisError > should create schedule analysis error with all fields 0ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > createScheduleAnalysisError > should create schedule analysis error without field 0ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > createScheduleAnalysisError > should include cause error if provided 0ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > formatAmortizationError > should format simple error 0ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > formatAmortizationError > should format error with cause 0ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > formatAmortizationError > should format error with complex context 0ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > formatAmortizationError > should format deeply nested errors 0ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > Error type guards > should correctly identify error types 0ms
+ ✓ |unit| src/core/domain/errors/__tests__/AmortizationErrors.unit.test.ts > AmortizationErrors > Error context preservation > should preserve all context fields 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanConfiguration.unit.test.ts > LoanConfiguration Type > createLoanConfiguration > should create valid loan configuration from domain types 3ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanConfiguration.unit.test.ts > LoanConfiguration Type > createLoanConfiguration > should validate parameter consistency for typical mortgage 1ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanConfiguration.unit.test.ts > LoanConfiguration Type > createLoanConfiguration > should handle very low interest rate loans correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanConfiguration.unit.test.ts > LoanConfiguration Type > createLoanConfigurationFromInput > should create loan configuration from valid input with months 1ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanConfiguration.unit.test.ts > LoanConfiguration Type > createLoanConfigurationFromInput > should create loan configuration from valid input with years 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanConfiguration.unit.test.ts > LoanConfiguration Type > createLoanConfigurationFromInput > should prefer months over years when both provided 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanConfiguration.unit.test.ts > LoanConfiguration Type > createLoanConfigurationFromInput > should reject input missing required parameters 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanConfiguration.unit.test.ts > LoanConfiguration Type > createLoanConfigurationFromInput > should validate individual parameters 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanConfiguration.unit.test.ts > LoanConfiguration Type > getLoanParameters > should extract parameters as numbers 1ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanConfiguration.unit.test.ts > LoanConfiguration Type > formatLoanConfiguration > should format loan configuration in German 9ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanConfiguration.unit.test.ts > LoanConfiguration Type > compareLoanConfigurations > should compare two loan configurations 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanConfiguration.unit.test.ts > LoanConfiguration Type > createLoanScenario > should create loan scenario with name and description 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanConfiguration.unit.test.ts > LoanConfiguration Type > LOAN_PRESETS > should have valid preset configurations 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanConfiguration.unit.test.ts > LoanConfiguration Type > LOAN_PRESETS > should have presets in logical order by amount 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > createLoanToValueRatio > should create a valid LTV with standard inputs 1ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > createLoanToValueRatio > should create LTV with different original loan amount 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > createLoanToValueRatio > should reject unacceptable property valuation 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > createLoanToValueRatio > should reject property value too low 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > createLoanToValueRatio > should reject extremely high LTV 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > risk categorization > should categorize 50% LTV as VeryLow 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > risk categorization > should categorize 60% LTV as VeryLow 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > risk categorization > should categorize 70% LTV as Low 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > risk categorization > should categorize 80% LTV as Medium 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > risk categorization > should categorize 90% LTV as High 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > mortgage approval criteria > should accept standard residential property at 80% LTV 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > mortgage approval criteria > should accept premium location at 90% LTV 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > mortgage approval criteria > should limit investment property to 70% LTV 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > mortgage approval criteria > should qualify very low LTV for best rates 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > financial calculations > should calculate equity correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > financial calculations > should calculate interest rate premiums correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > financial calculations > should determine mortgage insurance requirement 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > financial calculations > should calculate amount to reach target LTV 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > financial calculations > should calculate maximum additional borrowing 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > refinancing scenarios > should identify safe LTV for refinancing 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > refinancing scenarios > should identify unsafe LTV for refinancing 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > refinancing scenarios > should update LTV with new loan amount 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > refinancing scenarios > should update LTV with new property valuation 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > formatting and display > should format LTV correctly 11ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > formatting and display > should provide risk category descriptions 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > comparison and utility functions > should compare LTV ratios correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > comparison and utility functions > should validate calculation currency 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > comparison and utility functions > should return correct standard LTV limits 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > comparison and utility functions > should return correct minimum property value 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > edge cases > should handle zero equity scenario 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > edge cases > should handle LTV improvement calculation edge cases 0ms
+ ✓ |unit| src/core/domain/types/__tests__/LoanToValueRatio.unit.test.ts > LoanToValueRatio > edge cases > should handle target LTV calculation edge cases 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > createFixedRatePeriod > should create a valid fixed rate period with valid inputs 1ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > createFixedRatePeriod > should use default values when not provided 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > createFixedRatePeriod > should reject period too short 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > createFixedRatePeriod > should reject period too long 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > createFixedRatePeriod > should reject invalid interest rate 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > createFixedRatePeriod > should reject very old start dates 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > createFixedRatePeriod > should accept recent past dates within reasonable range 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > createFixedRatePeriod > should handle all valid rate types 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > createStandardGermanPeriod > should create standard German periods 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > date calculations > should calculate correct end date 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > date calculations > should correctly determine if period is currently active 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > date calculations > should calculate remaining years correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > date calculations > should return 0 remaining years when period is expired 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > date calculations > should calculate days until expiry correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > date calculations > should return 0 days until expiry when already expired 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > business logic > should identify typical German mortgage periods 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > business logic > should correctly identify expiring periods 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > business logic > should not identify non-expiring periods as expiring soon 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > formatting and display > should format fixed rate period correctly 16ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > formatting and display > should format different rate types correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > comparison and sorting > should compare fixed rate periods by end date 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > utility functions > should return correct typical periods 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > utility functions > should validate period lengths correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > utility functions > should return correct minimum and maximum periods 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > edge cases > should handle leap year calculations correctly 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > edge cases > should handle maximum boundary values 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > edge cases > should handle minimum boundary values 0ms
+ ✓ |unit| src/core/domain/types/__tests__/FixedRatePeriod.unit.test.ts > FixedRatePeriod > edge cases > should ensure immutability of dates 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateMonthlyPayment > should calculate correct payment for standard loan (€100k at 5.6% for 7 years) 3ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateMonthlyPayment > should calculate correct payment for high interest loan (€15k at 8% for 10 years) 1ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateMonthlyPayment > should handle zero interest rate correctly 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateMonthlyPayment > should handle extreme interest rates 1ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateLoanTerm > should calculate correct term for known payment amount 2ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateLoanTerm > should handle zero interest rate 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateLoanTerm > should return error for insufficient payment 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateInterestRate > should calculate correct rate for known loan parameters 1ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateInterestRate > should detect zero interest rate scenario 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateInterestRate > should return error for impossible payment scenarios 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateTotalInterest > should calculate total interest correctly 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateTotalInterest > should return zero interest for zero-rate loan 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateRemainingBalance > should calculate correct remaining balance after payments 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateRemainingBalance > should return zero balance when loan is paid off 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateRemainingBalance > should handle zero interest loans correctly 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateBreakEvenPoint > should calculate break-even point for refinancing 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculateBreakEvenPoint > should return error when no savings exist 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculatePaymentScenarios > should calculate multiple payment scenarios correctly 1ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > calculatePaymentScenarios > should handle invalid scenario parameters 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > Edge Cases and Error Handling > should handle mathematical edge cases gracefully 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.unit.test.ts > LoanCalculations > Edge Cases and Error Handling > should maintain numerical precision 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > createMoney > should create valid Money for positive amounts 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > createMoney > should create Money for zero amount 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > createMoney > should handle floating point precision correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > createMoney > should reject negative amounts 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > createMoney > should reject invalid amounts 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > createMoney > should reject amounts exceeding maximum 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > toEuros > should convert Money back to euros correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > toEuros > should handle zero money 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > addMoney > should add two Money amounts correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > addMoney > should handle adding zero 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > addMoney > should reject addition that exceeds maximum 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > subtractMoney > should subtract Money amounts correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > subtractMoney > should handle subtracting to zero 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > subtractMoney > should reject subtraction that would result in negative 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > multiplyMoney > should multiply Money by positive factor 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > multiplyMoney > should handle multiplication by zero 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > multiplyMoney > should reject invalid factors 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > compareMoney and isEqualMoney > should compare Money amounts correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > formatMoney > should format Money in German locale 9ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > formatMoney > should format zero correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Type > ZERO_MONEY constant > should be valid zero money 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Property-Based Tests > Money creation properties > should always create valid Money for valid inputs 3ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Property-Based Tests > Money creation properties > should reject all negative amounts 3ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Property-Based Tests > Addition properties > should be commutative: a + b = b + a 3ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Property-Based Tests > Addition properties > should be associative: (a + b) + c = a + (b + c) 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Property-Based Tests > Addition properties > should have zero as identity: a + 0 = a 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Property-Based Tests > Subtraction properties > should be inverse of addition: (a + b) - b = a 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Property-Based Tests > Subtraction properties > should result in zero when subtracting from itself: a - a = 0 3ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Property-Based Tests > Multiplication properties > should have 1 as identity: a * 1 = a 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Money.unit.test.ts > Money Property-Based Tests > Multiplication properties > should have 0 as absorbing element: a * 0 = 0 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > EUR Creation > should create valid EUR amounts 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > EUR Creation > should reject negative amounts 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > EUR Creation > should reject invalid amounts 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > EUR Creation > should reject amounts with too many decimal places 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > EUR Creation > should handle maximum amounts 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > EUR Creation > should reject amounts exceeding maximum 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > CHF Creation > should create valid CHF amounts 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > CHF Creation > should handle Swiss rounding (0.05 precision) 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > USD Creation > should create valid USD amounts 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > Formatting > should format EUR correctly 11ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > Formatting > should format CHF correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > Formatting > should format USD correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > Type Guards > should identify EUR currency 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > Type Guards > should identify CHF currency 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > EUR Arithmetic > should add EUR amounts 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > EUR Arithmetic > should subtract EUR amounts 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > EUR Arithmetic > should reject subtraction resulting in negative 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > CHF Arithmetic > should add CHF amounts 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > CHF Arithmetic > should subtract CHF amounts 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > Currency Conversion > should convert EUR to CHF 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > Currency Conversion > should convert CHF to EUR 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > Currency Conversion > should handle conversion with decimal rates 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > Property-based tests > should always create valid currency for valid amounts 6ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > Property-based tests > should maintain value through conversions 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/Currency.unit.test.ts > Currency Types > Property-based tests > addition should be commutative 4ms
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.simple.unit.test.ts > AmortizationEngine - Core Functions > should generate a complete payment schedule 4ms
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.simple.unit.test.ts > AmortizationEngine - Core Functions > should handle loan payoff correctly 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/AmortizationEngine.simple.unit.test.ts > AmortizationEngine - Core Functions > should calculate decreasing balance over time 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > createYearCount > should create valid YearCount for realistic loan terms 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > createYearCount > should reject terms below minimum 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > createYearCount > should reject terms above maximum 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > createYearCount > should reject invalid terms (PositiveInteger validation) 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Type conversion functions > should convert YearCount to PositiveInteger correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Type conversion functions > should convert YearCount to number correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Type conversion functions > should convert YearCount to months correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Month conversion > should create YearCount from months correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Month conversion > should handle fractional years with rounding 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Month conversion > should round down for .4 years 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Year arithmetic > should add years correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Year arithmetic > should subtract years correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Year arithmetic > should calculate remaining years correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Formatting > should format single year correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Formatting > should format multiple years correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Constants and limits > should provide valid minimum term in years 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Constants and limits > should provide valid maximum term in years 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Constants and limits > should validate year term range 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Market term constants > should have valid typical term constants 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Market term constants > should ensure all constants are within valid range 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Market term constants > should have constants in logical order 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Type > Market term constants > should convert constants to months correctly 0ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Property-Based Tests > Valid term range > should accept all terms in valid range 5ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Property-Based Tests > Valid term range > should reject all terms above maximum 2ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Property-Based Tests > Month conversion properties > should maintain relationship: months = years * 12 1ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Property-Based Tests > Formatting properties > should always produce valid German text 5ms
+ ✓ |unit| src/core/domain/value-objects/__tests__/YearCount.unit.test.ts > YearCount Property-Based Tests > Formatting properties > should use singular for 1 year, plural for others 3ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.simple.unit.test.ts > LoanCalculations - Core Functions > should calculate monthly payment correctly 2ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.simple.unit.test.ts > LoanCalculations - Core Functions > should handle zero interest rate 0ms
+ ✓ |unit| src/core/domain/calculations/__tests__/LoanCalculations.simple.unit.test.ts > LoanCalculations - Core Functions > should validate our real-world example 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts > AmortizationEngine > calculateScheduleMetrics > should calculate comprehensive metrics for a payment schedule
+AssertionError: expected 115873.2 to be close to 115872.84, received difference is 0.3600000000005821, but expected 0.05
+ ❯ src/core/domain/calculations/__tests__/AmortizationEngine.unit.test.ts:254:29
+    252|       const totalPrincipal = toEuros(metrics.totalPrincipalPaid);
+    253|       const totalInterest = toEuros(metrics.totalInterestPaid);
+    254|       expect(totalPayments).toBeCloseTo(totalPrincipal + totalInterest…
+       |                             ^
+    255|       
+    256|       // Principal paid should equal loan amount
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 18 passed (19)
+      Tests  1 failed | 490 passed (491)
+   Start at  11:16:15
+   Duration  1.14s (transform 557ms, setup 0ms, collect 2.26s, tests 560ms, environment 3ms, prepare 1.65s)
+

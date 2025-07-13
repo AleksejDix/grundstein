@@ -12,9 +12,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Testing
 
-- `npm test` - Run unit tests with Vitest
+- `npm test` - Run both unit and user tests
 - `npm run test:unit` - Run unit tests in jsdom environment
-- `npm run coverage` - Generate test coverage report
+- `npm run test:user` - Run user tests in browser environment
+- `npm run test:unit:watch` - Run unit tests in watch mode
+- `npm run test:user:watch` - Run user tests in watch mode
+- `npm run test:watch` - Run all tests in watch mode
+- `npm run test:staged` - Run tests related to staged files
+- `npm run coverage` - Generate coverage report for both unit and user tests
+- `npm run coverage:unit` - Generate coverage report for unit tests
+- `npm run coverage:user` - Generate coverage report for user tests
+- `npm run coverage:ui` - Open coverage UI in browser
 
 ### Code Quality
 

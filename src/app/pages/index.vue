@@ -8,13 +8,13 @@
         </h1>
         <p class="text-xl text-gray-600 max-w-3xl mx-auto">
           Professional mortgage calculations with German banking features.
-          Calculate your monthly payments, explore Sondertilgung options, and
-          optimize your mortgage strategy.
+          Calculate your monthly payments, explore Sondertilgung options, 
+          lock parameters for reverse calculations, and optimize your mortgage strategy.
         </p>
       </div>
 
       <!-- Calculator Component -->
-      <MortgageCalculatorForm />
+      <EnhancedMortgageCalculatorForm />
 
       <!-- Features Section -->
       <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -103,5 +103,5 @@
 </template>
 
 <script setup lang="ts">
-import MortgageCalculatorForm from "../components/mortgage/MortgageCalculatorForm.vue";
+import EnhancedMortgageCalculatorForm from "../components/mortgage/EnhancedMortgageCalculatorForm.vue"
 </script>
