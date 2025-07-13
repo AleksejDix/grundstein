@@ -685,7 +685,7 @@ export function compareSchedules(
     const termReductionResult = createMonthCount(Math.max(1, termReduction));
     const returnOnInvestment =
       extraPaymentTotal > 0 ? (interestSavings / extraPaymentTotal) * 100 : 0;
-    
+
     // Ensure ROI is within valid percentage range (0-100%)
     const validatedROI = Math.max(0, Math.min(100, returnOnInvestment));
     const roiResult = createPercentage(validatedROI);
@@ -817,9 +817,9 @@ function findExtraPaymentForMonth(
 ): ExtraPayment | undefined {
   if (!plan) return undefined;
 
-  // Handle the union type of SondertilgungPlan
-  if ("extraPayments" in plan && Array.isArray(plan.extraPayments)) {
-    return plan.extraPayments.find(
+  // Handle the SondertilgungPlan type
+  if (plan.payments && Array.isArray(plan.payments)) {
+    return plan.payments.find(
       (payment) =>
         paymentMonthToNumber(payment.month) === paymentMonthToNumber(month),
     );
