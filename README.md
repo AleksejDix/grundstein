@@ -51,8 +51,14 @@ npm run dev
 # Build for production
 npm run build
 
-# Run tests
+# Run all tests (unit + user)
 npm test
+
+# Run unit tests only
+npm run test:unit
+
+# Run user tests only
+npm run test:user
 ```
 
 ## 📈 How It Works

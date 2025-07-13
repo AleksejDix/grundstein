@@ -40,15 +40,28 @@ jobs:
           fi
           echo "✅ TypeScript check passed!"
 
-      - name: 🧪 Test Check
+      - name: 🎭 Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: 🧪 Unit Test Check
         run: |
-          echo "Running tests..."
-          npm test
+          echo "Running unit tests..."
+          npm run test:unit
           if [ $? -ne 0 ]; then
-            echo "❌ Tests failed! Fix all failing tests before merging."
+            echo "❌ Unit tests failed! Fix all failing tests before merging."
             exit 1
           fi
-          echo "✅ All tests passed!"
+          echo "✅ Unit tests passed!"
+
+      - name: 🎭 User Test Check
+        run: |
+          echo "Running user tests..."
+          npm run test:user
+          if [ $? -ne 0 ]; then
+            echo "❌ User tests failed! Fix all failing tests before merging."
+            exit 1
+          fi
+          echo "✅ User tests passed!"
 
       - name: 🏗 Build Check
         run: |
@@ -67,7 +80,8 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ ESLint: No errors" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ TypeScript: No type errors" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Tests: All passing" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Unit Tests: All passing" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ User Tests: All passing" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Build: Successful" >> $GITHUB_STEP_SUMMARY
 
       - name: 📊 Failure Summary
