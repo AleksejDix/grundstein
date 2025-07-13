@@ -17,7 +17,7 @@ const mockBreakdown = {
   interestPercentage: 33.5,
 };
 
-test("user sees monthly payment breakdown heading in German", async () => {
+test("user sees monthly payment breakdown", async () => {
   const screen = render(PaymentBreakdown, {
     props: {
       breakdown: mockBreakdown,
@@ -25,7 +25,7 @@ test("user sees monthly payment breakdown heading in German", async () => {
   });
 
   await expect
-    .element(screen.getByText("Monatliche Rate aufgeschlüsselt"))
+    .element(screen.getByText("Total Monthly Payment"))
     .toBeInTheDocument();
 });
 
@@ -37,7 +37,7 @@ test("user sees total monthly payment amount", async () => {
   });
 
   await expect
-    .element(screen.getByText("Gesamte monatliche Rate"))
+    .element(screen.getByText("Total Monthly Payment"))
     .toBeInTheDocument();
 
   // User should see the payment amount in German currency format
@@ -51,9 +51,9 @@ test("user sees principal payment (Tilgung) section", async () => {
     },
   });
 
-  // Use more specific selector to find Tilgung heading
-  const tilgungHeading = screen.getByText("Tilgung").first();
-  await expect.element(tilgungHeading).toBeInTheDocument();
+  // User sees both English and German terms
+  await expect.element(screen.getByText("Principal")).toBeInTheDocument();
+  await expect.element(screen.getByText("(Tilgung)")).toBeInTheDocument();
 
   // User should see principal amount - use test id to avoid duplicates
   await expect
@@ -73,9 +73,9 @@ test("user sees interest payment (Zinsen) section", async () => {
     },
   });
 
-  // Use more specific selector to find Zinsen heading
-  const zinsenHeading = screen.getByText("Zinsen").first();
-  await expect.element(zinsenHeading).toBeInTheDocument();
+  // User sees both English and German terms
+  await expect.element(screen.getByText("Interest")).toBeInTheDocument();
+  await expect.element(screen.getByText("(Zinsen)")).toBeInTheDocument();
 
   // User should see interest amount - use test id to avoid duplicates
   await expect
@@ -95,41 +95,34 @@ test("user sees visual progress bar showing payment distribution", async () => {
     },
   });
 
+  // Check that visual elements exist with percentages
   await expect
-    .element(screen.getByText("Verteilung der monatlichen Rate"))
+    .element(screen.getByTestId("principal-percentage"))
     .toBeInTheDocument();
 
   await expect
-    .element(screen.getByText("Tilgung / Zinsen"))
+    .element(screen.getByTestId("interest-percentage"))
     .toBeInTheDocument();
 });
 
-test("user can understand German mortgage terminology", async () => {
+test("user can understand investment terminology", async () => {
   const screen = render(PaymentBreakdown, {
     props: {
       breakdown: mockBreakdown,
     },
   });
 
-  // All German terms should be visible to the user
+  // Key investment terms should be visible to the user
   await expect
-    .element(screen.getByText("Monatliche Rate aufgeschlüsselt"))
+    .element(screen.getByText("Total Monthly Payment"))
     .toBeInTheDocument();
 
-  await expect
-    .element(screen.getByText("Gesamte monatliche Rate"))
-    .toBeInTheDocument();
+  await expect.element(screen.getByText("Principal")).toBeInTheDocument();
+  await expect.element(screen.getByText("Interest")).toBeInTheDocument();
 
-  // For terms that appear multiple times, use first() to avoid strict mode violation
-  const tilgungElement = screen.getByText("Tilgung").first();
-  await expect.element(tilgungElement).toBeInTheDocument();
-
-  const zinsenElement = screen.getByText("Zinsen").first();
-  await expect.element(zinsenElement).toBeInTheDocument();
-
-  await expect
-    .element(screen.getByText("Verteilung der monatlichen Rate"))
-    .toBeInTheDocument();
+  // German translations are still shown for reference
+  await expect.element(screen.getByText("(Tilgung)")).toBeInTheDocument();
+  await expect.element(screen.getByText("(Zinsen)")).toBeInTheDocument();
 });
 
 test("user sees percentages for understanding payment split", async () => {

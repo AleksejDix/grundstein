@@ -9,84 +9,81 @@ import { render } from "vitest-browser-vue";
 import { expect, test } from "vitest";
 import EnhancedMortgageCalculatorForm from "../EnhancedMortgageCalculatorForm.vue";
 
-test("shows mortgage calculator heading", async () => {
+test("shows investment property calculator heading", async () => {
   const screen = render(EnhancedMortgageCalculatorForm);
 
   await expect
-    .element(screen.getByText("Mortgage Calculator"))
+    .element(screen.getByText("Investment Property Calculator"))
     .toBeInTheDocument();
 });
 
-test("shows loan amount input field", async () => {
+test("shows property price input field", async () => {
   const screen = render(EnhancedMortgageCalculatorForm);
 
-  const loanAmountInput = screen.getByLabelText(/loan amount/i);
-  await expect.element(loanAmountInput).toBeInTheDocument();
+  const propertyPriceInput = screen.getByLabelText(/property price/i);
+  await expect.element(propertyPriceInput).toBeInTheDocument();
 });
 
-test("allows user to type in loan amount", async () => {
+test("allows user to type in property price", async () => {
   const screen = render(EnhancedMortgageCalculatorForm);
 
-  const loanAmountInput = screen.getByLabelText(/loan amount/i);
-  await loanAmountInput.fill("300000");
+  const propertyPriceInput = screen.getByLabelText(/property price/i);
+  await propertyPriceInput.fill("300000");
 
-  await expect.element(loanAmountInput).toHaveValue(300000);
+  await expect.element(propertyPriceInput).toHaveValue(300000);
 });
 
-test("shows German market terminology", async () => {
+test("shows investment property terminology", async () => {
   const screen = render(EnhancedMortgageCalculatorForm);
 
-  // User should see German mortgage terms
-  await expect.element(screen.getByText(/darlehenssumme/i)).toBeInTheDocument();
-  await expect.element(screen.getByText(/zinssatz/i)).toBeInTheDocument();
-  await expect.element(screen.getByText(/laufzeit/i)).toBeInTheDocument();
-});
-
-test("shows interactive features info", async () => {
-  const screen = render(EnhancedMortgageCalculatorForm);
-
-  // Instead of a calculate button, we have interactive features
+  // User should see investment property terms
+  await expect.element(screen.getByText(/property price/i)).toBeInTheDocument();
+  await expect.element(screen.getByText(/interest rate/i)).toBeInTheDocument();
+  await expect.element(screen.getByText(/loan term/i)).toBeInTheDocument();
   await expect
-    .element(screen.getByText("🔒 Interactive Features"))
+    .element(screen.getByText(/monthly payment/i))
     .toBeInTheDocument();
+});
 
-  await expect
-    .element(screen.getByText(/Real-time Updates/))
-    .toBeInTheDocument();
+test("shows investment metrics section", async () => {
+  const screen = render(EnhancedMortgageCalculatorForm);
+
+  // Investment property calculator should show key metrics
+  await expect.element(screen.getByText(/monthly cost/i)).toBeInTheDocument();
+
+  await expect.element(screen.getByText(/rental income/i)).toBeInTheDocument();
 });
 
 test("user can fill in complete form", async () => {
   const screen = render(EnhancedMortgageCalculatorForm);
 
-  // User fills in loan amount
-  const loanAmountInput = screen.getByLabelText(/loan amount.*darlehenssumme/i);
-  await loanAmountInput.fill("300000");
-  await expect.element(loanAmountInput).toHaveValue(300000);
+  // User fills in property price
+  const propertyPriceInput = screen.getByLabelText(/property price/i);
+  await propertyPriceInput.fill("300000");
+  await expect.element(propertyPriceInput).toHaveValue(300000);
 
   // User fills in interest rate
-  const interestRateInput = screen.getByLabelText(
-    /annual interest rate.*zinssatz/i,
-  );
+  const interestRateInput = screen.getByLabelText(/interest rate/i);
   await interestRateInput.fill("3.5");
   await expect.element(interestRateInput).toHaveValue(3.5);
 
   // User fills in loan term in months
-  const loanTermInput = screen.getByLabelText(/loan term.*laufzeit/i);
+  const loanTermInput = screen.getByLabelText(/loan term/i);
   await loanTermInput.fill("360"); // 30 years = 360 months
   await expect.element(loanTermInput).toHaveValue(360);
 });
 
-test("shows real-time results section", async () => {
+test("shows investment analysis results", async () => {
   const screen = render(EnhancedMortgageCalculatorForm);
 
-  // The results section is shown when calculations are valid
-  // It contains the payment breakdown and financial summary components
+  // The results section shows investment analysis
+  await expect.element(screen.getByText(/total cost/i)).toBeInTheDocument();
+
+  // Should show equity building metrics
   await expect
-    .element(screen.getByText("Monatliche Rate aufgeschlüsselt"))
+    .element(screen.getByText(/building equity/i))
     .toBeInTheDocument();
 
-  // Should show financial summary
-  await expect
-    .element(screen.getByText("Jahresübersicht (Erstes Jahr)"))
-    .toBeInTheDocument();
+  // Should show ROI information
+  await expect.element(screen.getByText(/roi check/i)).toBeInTheDocument();
 });

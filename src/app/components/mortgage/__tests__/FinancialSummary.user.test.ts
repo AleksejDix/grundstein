@@ -20,7 +20,7 @@ const mockSummary = {
   annualPaydownRate: 3.83,
 };
 
-test("user sees first year overview heading in German", async () => {
+test("user sees paydown progress section", async () => {
   const screen = render(FinancialSummary, {
     props: {
       summary: mockSummary,
@@ -28,7 +28,7 @@ test("user sees first year overview heading in German", async () => {
   });
 
   await expect
-    .element(screen.getByText("Jahresübersicht (Erstes Jahr)"))
+    .element(screen.getByText("Paydown Progress"))
     .toBeInTheDocument();
 });
 
@@ -39,14 +39,12 @@ test("user sees total payments for the year", async () => {
     },
   });
 
-  await expect
-    .element(screen.getByText("Gesamte Zahlungen"))
-    .toBeInTheDocument();
+  await expect.element(screen.getByText("Total Payments")).toBeInTheDocument();
 
   // User should see total payments in German currency format
   await expect.element(screen.getByText(/17\.301,12/)).toBeInTheDocument();
 
-  await expect.element(screen.getByText("12 Monate")).toBeInTheDocument();
+  await expect.element(screen.getByText("12 months")).toBeInTheDocument();
 });
 
 test("user sees total interest paid in first year", async () => {
@@ -56,14 +54,10 @@ test("user sees total interest paid in first year", async () => {
     },
   });
 
-  await expect.element(screen.getByText("Zinsen gesamt")).toBeInTheDocument();
+  await expect.element(screen.getByText("Interest Paid")).toBeInTheDocument();
 
   // User should see interest amount
   await expect.element(screen.getByText(/5\.799,96/)).toBeInTheDocument();
-
-  // Use a more specific selector to avoid strict mode violation
-  const yearLabel = screen.getByText("Jahr 1").first();
-  await expect.element(yearLabel).toBeInTheDocument();
 });
 
 test("user sees total principal paid in first year", async () => {
@@ -73,7 +67,7 @@ test("user sees total principal paid in first year", async () => {
     },
   });
 
-  await expect.element(screen.getByText("Tilgung gesamt")).toBeInTheDocument();
+  await expect.element(screen.getByText("Principal Paid")).toBeInTheDocument();
 
   // User should see principal amount - use test id to avoid duplicates
   await expect
@@ -93,12 +87,12 @@ test("user sees remaining balance after first year", async () => {
     },
   });
 
-  await expect.element(screen.getByText("Restschuld")).toBeInTheDocument();
+  await expect
+    .element(screen.getByText("Remaining Balance"))
+    .toBeInTheDocument();
 
   // User should see remaining balance
   await expect.element(screen.getByText(/288\.498,84/)).toBeInTheDocument();
-
-  await expect.element(screen.getByText("Nach Jahr 1")).toBeInTheDocument();
 });
 
 test("user sees paydown progress visualization", async () => {
@@ -109,7 +103,7 @@ test("user sees paydown progress visualization", async () => {
   });
 
   await expect
-    .element(screen.getByText("Tilgungsfortschritt"))
+    .element(screen.getByText("Paydown Progress"))
     .toBeInTheDocument();
 
   // User should see progress percentage - use test id to avoid duplicates
@@ -128,40 +122,30 @@ test("user sees key financial metrics", async () => {
     },
   });
 
-  await expect
-    .element(screen.getByText("Wichtige Kennzahlen"))
-    .toBeInTheDocument();
+  await expect.element(screen.getByText("Effective Rate")).toBeInTheDocument();
 
-  await expect
-    .element(screen.getByText("Effektivzins p.a.:"))
-    .toBeInTheDocument();
-
-  await expect
-    .element(screen.getByText("Tilgungsrate p.a.:"))
-    .toBeInTheDocument();
+  await expect.element(screen.getByText("Annual Paydown")).toBeInTheDocument();
 });
 
-test("user understands German mortgage terminology", async () => {
+test("user understands investment terminology", async () => {
   const screen = render(FinancialSummary, {
     props: {
       summary: mockSummary,
     },
   });
 
-  // All German terms should be visible to the user
-  const germanTerms = [
-    "Jahresübersicht (Erstes Jahr)",
-    "Gesamte Zahlungen",
-    "Zinsen gesamt",
-    "Tilgung gesamt",
-    "Restschuld",
-    "Tilgungsfortschritt",
-    "Wichtige Kennzahlen",
-    "Effektivzins p.a.",
-    "Tilgungsrate p.a.",
+  // All investment terms should be visible to the user
+  const investmentTerms = [
+    "Total Payments",
+    "Interest Paid",
+    "Principal Paid",
+    "Remaining Balance",
+    "Paydown Progress",
+    "Effective Rate",
+    "Annual Paydown",
   ];
 
-  for (const term of germanTerms) {
+  for (const term of investmentTerms) {
     await expect.element(screen.getByText(term)).toBeInTheDocument();
   }
 });
@@ -174,7 +158,7 @@ test("user sees progress summary showing loan paydown", async () => {
   });
 
   // User should see how much was paid down vs original loan
-  await expect.element(screen.getByText(/getilgt/)).toBeInTheDocument();
+  await expect.element(screen.getByText(/300\.000,00/)).toBeInTheDocument();
 });
 
 test("user can see effective rate and annual paydown rate", async () => {
