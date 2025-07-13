@@ -307,8 +307,6 @@ describe("AmortizationEngine", () => {
       expect(metrics.actualTermMonths).toEqual(expectedTermResult.data);
 
       // No term reduction for base schedule
-      const termReductionMonths =
-        toEuros({ _brand: "Money" } as any) === 0 ? 0 : 1; // Hack to check if actually 0
       expect(metrics.termReductionMonths).toBeDefined();
     });
 

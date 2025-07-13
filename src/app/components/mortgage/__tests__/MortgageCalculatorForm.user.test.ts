@@ -49,7 +49,7 @@ test("shows interactive features info", async () => {
   await expect
     .element(screen.getByText("🔒 Interactive Features"))
     .toBeInTheDocument();
-  
+
   await expect
     .element(screen.getByText(/Real-time Updates/))
     .toBeInTheDocument();
@@ -81,8 +81,12 @@ test("shows real-time results section", async () => {
 
   // The results section is shown when calculations are valid
   // It contains the payment breakdown and financial summary components
-  await expect.element(screen.getByText("Monatliche Rate aufgeschlüsselt")).toBeInTheDocument();
-  
+  await expect
+    .element(screen.getByText("Monatliche Rate aufgeschlüsselt"))
+    .toBeInTheDocument();
+
   // Should show financial summary
-  await expect.element(screen.getByText("Jahresübersicht (Erstes Jahr)")).toBeInTheDocument();
+  await expect
+    .element(screen.getByText("Jahresübersicht (Erstes Jahr)"))
+    .toBeInTheDocument();
 });

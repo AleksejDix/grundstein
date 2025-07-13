@@ -14,25 +14,25 @@ export default defineConfig({
     testTimeout: 5000,
     hookTimeout: 10000,
     environment: "node",
-    
+
     include: [
       "src/core/**/*.unit.test.{js,ts}",
       "src/core/**/*.unit.spec.{js,ts}",
     ],
     exclude: ["src/core/**/*.user.test.{js,ts}"],
-    
+
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       reportsDirectory: "./coverage/unit",
-      
+
       thresholds: {
         branches: 50,
         functions: 50,
         lines: 50,
         statements: 50,
       },
-      
+
       include: ["src/core/**/*.{js,ts}"],
       exclude: [
         "src/**/*.d.ts",
@@ -40,7 +40,7 @@ export default defineConfig({
         "src/**/*.unit.{test,spec}.{js,ts}",
       ],
     },
-    
+
     reporters: ["verbose"],
   },
 });

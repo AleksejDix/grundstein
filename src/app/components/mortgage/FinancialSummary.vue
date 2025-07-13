@@ -1,84 +1,109 @@
 <template>
-  <div
-    class="bg-white border border-gray-200 rounded-lg shadow-sm p-6"
-    role="region"
-    aria-labelledby="financial-summary-title"
-  >
-    <h3 id="financial-summary-title" class="text-lg font-semibold text-gray-900 mb-4">
-      Jahresübersicht (Erstes Jahr)
-    </h3>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+  <div>
+    <!-- Key Metrics Grid -->
+    <div class="grid grid-cols-2 gap-x-8 gap-y-10">
       <!-- Total Payments -->
-      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-        <div class="text-blue-800 text-sm font-medium mb-1">Gesamte Zahlungen</div>
-        <div class="text-lg font-bold text-blue-900" data-testid="total-payments">
+      <div>
+        <div class="text-sm text-gray-500 uppercase tracking-wide mb-3">
+          Total Payments
+          <span class="text-xs normal-case text-gray-400">(12 months)</span>
+        </div>
+        <div
+          class="text-3xl font-light text-gray-900"
+          data-testid="total-payments"
+        >
           {{ formatEuros(summary.totalPayments) }}
         </div>
-        <div class="text-blue-700 text-xs mt-1">12 Monate</div>
       </div>
 
-      <!-- Total Interest -->
-      <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
-        <div class="text-orange-800 text-sm font-medium mb-1">Zinsen gesamt</div>
-        <div class="text-lg font-bold text-orange-900" data-testid="total-interest">
+      <!-- Interest Paid -->
+      <div>
+        <div class="text-sm text-gray-500 uppercase tracking-wide mb-3">
+          Interest Paid
+        </div>
+        <div
+          class="text-3xl font-light text-red-600"
+          data-testid="total-interest"
+        >
           {{ formatEuros(summary.totalInterest) }}
         </div>
-        <div class="text-orange-700 text-xs mt-1">Jahr 1</div>
       </div>
 
-      <!-- Total Principal -->
-      <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-        <div class="text-green-800 text-sm font-medium mb-1">Tilgung gesamt</div>
-        <div class="text-lg font-bold text-green-900" data-testid="total-principal">
+      <!-- Principal Paid -->
+      <div>
+        <div class="text-sm text-gray-500 uppercase tracking-wide mb-3">
+          Principal Paid
+        </div>
+        <div
+          class="text-3xl font-light text-green-600"
+          data-testid="total-principal"
+        >
           {{ formatEuros(summary.totalPrincipal) }}
         </div>
-        <div class="text-green-700 text-xs mt-1">Jahr 1</div>
       </div>
 
       <!-- Remaining Balance -->
-      <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-        <div class="text-gray-800 text-sm font-medium mb-1">Restschuld</div>
-        <div class="text-lg font-bold text-gray-900" data-testid="remaining-balance">
+      <div>
+        <div class="text-sm text-gray-500 uppercase tracking-wide mb-3">
+          Remaining Balance
+        </div>
+        <div
+          class="text-3xl font-light text-gray-900"
+          data-testid="remaining-balance"
+        >
           {{ formatEuros(summary.remainingBalance) }}
         </div>
-        <div class="text-gray-700 text-xs mt-1">Nach Jahr 1</div>
       </div>
     </div>
 
-    <!-- Progress Indicator -->
-    <div class="mt-6">
-      <div class="flex justify-between text-sm text-gray-600 mb-2">
-        <span>Tilgungsfortschritt</span>
-        <span>{{ formatPercentage(summary.paydownPercentage) }}</span>
+    <!-- Progress Section -->
+    <div class="mt-12 pt-8 border-t border-gray-100">
+      <div class="text-sm text-gray-500 uppercase tracking-wide mb-4">
+        Paydown Progress
       </div>
-      <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-        <div
-          class="bg-green-500 h-full transition-all duration-500"
-          :style="{ width: `${summary.paydownPercentage}%` }"
-          :title="`${formatPercentage(summary.paydownPercentage)} der ursprünglichen Darlehenssumme getilgt`"
-        ></div>
-      </div>
-      <div class="text-xs text-gray-500 mt-1">
-        {{ formatEuros(summary.totalPrincipal) }} von {{ formatEuros(summary.originalLoanAmount) }} getilgt
-      </div>
-    </div>
 
-    <!-- Key Insights -->
-    <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-      <h4 class="text-sm font-medium text-blue-900 mb-2">Wichtige Kennzahlen</h4>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-        <div class="flex justify-between">
-          <span class="text-blue-800">Effektivzins p.a.:</span>
-          <span class="font-medium text-blue-900" data-testid="effective-rate">
-            {{ formatPercentage(summary.effectiveRate) }}
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span
+            class="text-2xl font-light text-gray-900"
+            data-testid="paydown-rate"
+          >
+            {{ formatPercentage(summary.paydownPercentage) }}
+          </span>
+          <span class="text-sm text-gray-500">
+            {{ formatEuros(summary.totalPrincipal) }} of
+            {{ formatEuros(summary.originalLoanAmount) }}
           </span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-blue-800">Tilgungsrate p.a.:</span>
-          <span class="font-medium text-blue-900" data-testid="paydown-rate">
-            {{ formatPercentage(summary.annualPaydownRate) }}
-          </span>
+
+        <div class="w-full bg-gray-100 h-2 overflow-hidden">
+          <div
+            class="bg-green-500 h-full transition-all duration-500"
+            :style="{ width: `${summary.paydownPercentage}%` }"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Rates -->
+    <div class="mt-10 grid grid-cols-2 gap-8">
+      <div>
+        <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">
+          Effective Rate
+        </div>
+        <div
+          class="text-xl font-light text-gray-900"
+          data-testid="effective-rate"
+        >
+          {{ formatPercentage(summary.effectiveRate) }}
+        </div>
+      </div>
+      <div>
+        <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">
+          Annual Paydown
+        </div>
+        <div class="text-xl font-light text-gray-900">
+          {{ formatPercentage(summary.annualPaydownRate) }}
         </div>
       </div>
     </div>
@@ -88,46 +113,46 @@
 <script setup lang="ts">
 interface FinancialSummary {
   // First year totals
-  totalPayments: number
-  totalInterest: number
-  totalPrincipal: number
-  remainingBalance: number
-  
+  totalPayments: number;
+  totalInterest: number;
+  totalPrincipal: number;
+  remainingBalance: number;
+
   // Progress metrics
-  paydownPercentage: number
-  originalLoanAmount: number
-  
+  paydownPercentage: number;
+  originalLoanAmount: number;
+
   // Key rates
-  effectiveRate: number
-  annualPaydownRate: number
+  effectiveRate: number;
+  annualPaydownRate: number;
 }
 
 interface Props {
-  summary: FinancialSummary
+  summary: FinancialSummary;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 
 /**
  * Format amount as euros using German locale
  */
 function formatEuros(amount: number): string {
-  return new Intl.NumberFormat('de-DE', {
-    style: 'currency',
-    currency: 'EUR',
+  return new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency: "EUR",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(amount)
+  }).format(amount);
 }
 
 /**
  * Format percentage using German locale
  */
 function formatPercentage(percentage: number): string {
-  return new Intl.NumberFormat('de-DE', {
-    style: 'percent',
+  return new Intl.NumberFormat("de-DE", {
+    style: "percent",
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
-  }).format(percentage / 100)
+  }).format(percentage / 100);
 }
 </script>

@@ -138,8 +138,13 @@ export function useMortgage() {
    */
   async function handleParameterChange(changedParam: string) {
     lastChanged.value = changedParam;
-    
-    if (inputs.monthlyPayment <= 0 || inputs.termMonths <= 0 || inputs.loan <= 0 || inputs.interestRate < 0) {
+
+    if (
+      inputs.monthlyPayment <= 0 ||
+      inputs.termMonths <= 0 ||
+      inputs.loan <= 0 ||
+      inputs.interestRate < 0
+    ) {
       return; // Need valid values for reverse calculations
     }
 
@@ -150,33 +155,40 @@ export function useMortgage() {
       const termResult = createMonthCount(inputs.termMonths);
       const paymentResult = createMoney(inputs.monthlyPayment);
 
-      if (!loanAmountResult.success || !interestRateResult.success || 
-          !termResult.success || !paymentResult.success) {
+      if (
+        !loanAmountResult.success ||
+        !interestRateResult.success ||
+        !termResult.success ||
+        !paymentResult.success
+      ) {
         return; // Invalid inputs
       }
 
       // Determine what to calculate based on locks
-      if (!locks.termMonths && changedParam !== 'termMonths') {
+      if (!locks.termMonths && changedParam !== "termMonths") {
         // Calculate term using domain function
         const termCalculationResult = calculateLoanTerm(
           loanAmountResult.data,
           interestRateResult.data,
-          paymentResult.data
+          paymentResult.data,
         );
         if (termCalculationResult.success) {
-          inputs.termMonths = Math.round(monthCountToNumber(termCalculationResult.data));
+          inputs.termMonths = Math.round(
+            monthCountToNumber(termCalculationResult.data),
+          );
         }
-      } else if (!locks.interestRate && changedParam !== 'interestRate') {
+      } else if (!locks.interestRate && changedParam !== "interestRate") {
         // Calculate interest rate using domain function
         const rateResult = calculateInterestRate(
           loanAmountResult.data,
           paymentResult.data,
-          termResult.data
+          termResult.data,
         );
         if (rateResult.success) {
-          inputs.interestRate = Math.round(interestRateToNumber(rateResult.data) * 100) / 100;
+          inputs.interestRate =
+            Math.round(interestRateToNumber(rateResult.data) * 100) / 100;
         }
-      } else if (!locks.loanAmount && changedParam !== 'loan') {
+      } else if (!locks.loanAmount && changedParam !== "loan") {
         // Calculate loan amount using reverse calculation
         const monthlyRate = inputs.interestRate / 100 / 12;
         const termMonths = inputs.termMonths;
@@ -187,12 +199,12 @@ export function useMortgage() {
           calculatedAmount = payment * termMonths;
         } else {
           const factor = Math.pow(1 + monthlyRate, termMonths);
-          calculatedAmount = payment * (factor - 1) / (monthlyRate * factor);
+          calculatedAmount = (payment * (factor - 1)) / (monthlyRate * factor);
         }
         inputs.loan = Math.round(calculatedAmount);
       }
     } catch (error) {
-      console.error('Reverse calculation error:', error);
+      console.error("Reverse calculation error:", error);
     }
   }
 
@@ -239,7 +251,7 @@ export function useMortgage() {
 
         // Balance information
         remainingBalance: inputs.loan - monthlyPrincipal * 12,
-        paydownPercentage: (monthlyPrincipal * 12 / inputs.loan) * 100,
+        paydownPercentage: ((monthlyPrincipal * 12) / inputs.loan) * 100,
 
         isValid: true,
       };

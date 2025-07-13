@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 import { fileURLToPath, URL } from "node:url";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 
 export default defineConfig({
@@ -15,12 +15,9 @@ export default defineConfig({
     testTimeout: 5000,
     hookTimeout: 10000,
     environment: "jsdom",
-    
+
     // Include only unit tests by default
-    include: [
-      "src/**/*.unit.test.{js,ts}",
-      "src/**/*.unit.spec.{js,ts}",
-    ],
+    include: ["src/**/*.unit.test.{js,ts}", "src/**/*.unit.spec.{js,ts}"],
     // Explicitly exclude user tests to prevent browser import errors
     exclude: [
       "node_modules",
@@ -29,19 +26,19 @@ export default defineConfig({
       "src/**/*.user.test.{js,ts}",
       "src/**/*.user.spec.{js,ts}",
     ],
-    
+
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       reportsDirectory: "./coverage",
-      
+
       thresholds: {
         branches: 50,
         functions: 50,
         lines: 50,
         statements: 50,
       },
-      
+
       include: ["src/**/*.{js,ts,vue}"],
       exclude: [
         "src/**/*.d.ts",
@@ -51,7 +48,7 @@ export default defineConfig({
         "src/main.ts",
       ],
     },
-    
+
     reporters: ["verbose"],
   },
 });
